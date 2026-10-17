@@ -22,7 +22,7 @@ local CONFIG = {
 	-- PRESENCE (siapa yang online): buat Firebase Realtime Database gratis, tempel URL-nya di sini, contoh "https://nama-project-default-rtdb.firebaseio.com" (tanpa "/" di akhir).
 	-- Rules database: { "rules": { ".read": true, ".write": true } }. Kosongkan (nil) = fitur online & siaran mati.
 	PRESENCE_URL = "https://rendrasy-1f3e4-default-rtdb.asia-southeast1.firebasedatabase.app",
-	SELF_URL = nil, -- opsional: URL loader script ini, supaya ikut jalan otomatis setelah server hop
+	SELF_URL = "https://pastebin.com/raw/qhHDLLES", -- opsional: URL loader script ini, supaya ikut jalan otomatis setelah server hop
 	SELF_FILE = nil, -- opsional: nama file script ini di folder workspace executor (dipakai kalau SELF_URL kosong). Kosong = dicari otomatis (script*.lua / .txt)
 	-- sumber tambahan Search script (endpoint bisa kamu ubah). {q} = kata kunci, {slug} = id script untuk URL raw
 	SEARCH_SOURCES = {
@@ -141,7 +141,7 @@ local state = {
 	scripts = { { name = "Script 1", code = "" } },
 	execIdx = 1,
 	hud = true,
-	autoExec = true, watch = true, joinNote = false, lookHist = {}, lookSaved = {}, lookSeen = {}, scanSpeed = "", scanInstant = false, autoTr = true, scanCrossN = "5", lastAnn = 0, daytime = true, dayDate = false, clock12 = true, hopSess = {},
+	autoExec = true, peerNote = true, watch = true, joinNote = false, lookHist = {}, lookSaved = {}, lookSeen = {}, scanSpeed = "", scanInstant = false, autoTr = true, scanCrossN = "5", lastAnn = 0, daytime = true, dayDate = false, clock12 = true, hopSess = {},
 	perf = 0, afk = true, hopMode = 1, fly = false, flySpeed = 60, noclip = false, moveOn = false, walk = 16, jump = 50, infJump = false, esp = false, espName = true, espDist = true, espHp = true, hopMax = "", hopLow = false, hopRegion = 1,
 	fullbright = false, nofog = false, ctp = false, ctpMode = 1, shader = false, shMode = 1,
 	wpAuto = false, wp = {},
@@ -190,7 +190,7 @@ local SAVE_FILE = "ucb20ce_" .. tostring(game:GetService("Players").LocalPlayer.
 local OLD_FILE = "vcb20ce.json"
 local custom, favs = {}, {}
 local SAVE_KEYS = { "theme", "range", "volSfx", "volClick", "volMusic", "music", "intensity", "sound", "shake", "cinema", "banner", "feedOn", "blur", "random", "mode", "musicCustom", "musicId", "outAuto", "outA", "outB", "outThick", "outAnim", "bgCustom", "bgA", "bgB", "bgRot", "bgTrans", "fbLast", "uiScale", "uiX", "uiY", "lang", "scripts", "execIdx", "notes", "selected", "cat", "kills", "hud", "aura", "daytime", "dayDate", "clock12", "lastAnn", "autoExec", "watch", "joinNote", "lookHist", "lookSaved", "lookSeen", "scanSpeed", "scanInstant", "autoTr", "scanCrossN", "fov", "grav", "zoomFree", "hopSess", "perf", "afk", "hopMode", "hopMax", "hopLow", "hopRegion", "fullbright", "nofog", "ctp", "ctpMode", "shader", "shMode", "wpAuto", "wp", "fly", "flySpeed", "noclip", "moveOn", "walk", "jump", "infJump", "esp", "espName", "espDist", "espHp", "hudX", "hudY", "uiW", "uiH", "aiProv", "aiModel", "aiUsed", "aiLock", "aiDay", "themePack", "kbOpen", "kbQuick", "kbTest", "kbFly", "macroOn", "targetNotes", "quickItems", "bgImageId", "bgShine", "titleShine", "chOn", "chStyle", "chCustom", "chSize", "chX", "chY", "chColor", "curOn", "curStyle", "curCustom", "curSize", "curColor", "chKind", "chSaved", "curKind", "curSaved", "musicSpeed", "shine", "lastReqSeen", "ccatCustom" }
-for _, k in ipairs({ "lastHistSeen", "espCustom", "espCol", "ckMulti", "hk" }) do SAVE_KEYS[#SAVE_KEYS + 1] = k end
+for _, k in ipairs({ "lastHistSeen", "espCustom", "espCol", "ckMulti", "hk", "peerNote", "tpAfter" }) do SAVE_KEYS[#SAVE_KEYS + 1] = k end
 local U -- (diisi nanti) dipakai saveCfg untuk sinkron akun
 local function cfgTable()
 	local d = { custom = custom, favs = favs }
@@ -7629,7 +7629,7 @@ U.boot = function()
 			for id, t in pairs(ss.recent) do if now - t > 900 then ss.recent[id] = nil end end
 			saveCfg()
 			local qld = U.selfLoader(game.PlaceId)
-			if queue_on_teleport and qld and not state.autoExec then pcall(queue_on_teleport, qld) end
+			if queue_on_teleport and qld then pcall(queue_on_teleport, qld) end
 			say("hop", L("Pindah: ", "Joining: ") .. pick.playing .. "/" .. pick.maxPlayers .. L(" pemain (data server)", " players (server data)") .. note)
 			local ok, e = pcall(function() TeleportService:TeleportToPlaceInstance(PLACE, pick.id, player) end)
 			if not ok then done(L("Gagal teleport: ", "Teleport failed: ") .. tostring(e)) end
@@ -8186,9 +8186,16 @@ U.boot = function()
 		placeId = tonumber(placeId)
 		if not placeId or type(jobId) ~= "string" or jobId == "" then cb(false, "data server tidak lengkap (pengguna lama / belum update)") return end
 		local qld = U.selfLoader(placeId)
-		if queue_on_teleport and qld and not state.autoExec then pcall(queue_on_teleport, qld) end
-		-- cek status server dulu (penuh / sudah tutup / dilarang), supaya alasan gagal jelas
+		if queue_on_teleport and qld then pcall(queue_on_teleport, qld) end -- script ikut jalan di game tujuan (juga beda game)
+		local TS = game:GetService("TeleportService")
+		local link = "roblox://experiences/start?placeId=" .. placeId .. "&gameInstanceId=" .. jobId
+		local function fallback(why)
+			local okc = pcall(function() if setclipboard then setclipboard(link) elseif toclipboard then toclipboard(link) else error("x") end end)
+			cb(false, tostring(why) .. (okc and "  |  link join disalin ke clipboard (tempel di browser)" or ""))
+		end
+		-- status server (penuh / tutup) supaya alasan gagal jelas
 		local req = httpReq()
+		local full = false
 		if req then
 			local ok, r = pcall(req, {
 				Url = "https://gamejoin.roblox.com/v1/join-game-instance", Method = "POST",
@@ -8196,25 +8203,39 @@ U.boot = function()
 				Body = HttpService:JSONEncode({ placeId = placeId, isTeleport = true, gameId = jobId, gameJoinAttemptId = HttpService:GenerateGUID(false) }),
 			})
 			local d = ok and type(r) == "table" and type(r.Body) == "string" and jdecode(r.Body)
-			if type(d) == "table" and d.status and d.status ~= 2 and d.status ~= 1 then
-				U.note("Info server: status " .. tostring(d.status) .. " - " .. tostring(d.message or "?") .. " (tetap dicoba teleport)")
+			if type(d) == "table" and d.status then
+				if d.status == 6 then full = true
+				elseif d.status == 12 or d.status == 11 then cb(false, "tidak bisa join: " .. tostring(d.message or "dilarang / game privat")) return
+				elseif d.status == 5 or d.status == 4 then cb(false, "server sudah tutup / tidak ada") return end
 			end
 		end
-		local TS = game:GetService("TeleportService")
-		local conn
-		conn = TS.TeleportInitFailed:Connect(function(pl, res, msg)
-			if pl ~= player then return end
-			conn:Disconnect()
-			cb(false, tostring(res) .. ": " .. tostring(msg))
-		end)
-		task.delay(25, function() if conn.Connected then conn:Disconnect() end end)
-		local ok, err = pcall(function() TS:TeleportToPlaceInstance(placeId, jobId, player) end)
-		if not ok then
-			conn:Disconnect()
-			cb(false, tostring(err))
-		else
-			cb(true)
+		if full then U.note("Server penuh — tetap dicoba, mungkin ada slot") end
+		local tries, done = 0, false
+		local function attempt()
+			tries = tries + 1
+			local conn
+			conn = TS.TeleportInitFailed:Connect(function(pl, res, msg)
+				if pl ~= player or done then return end
+				conn:Disconnect()
+				local r = tostring(res)
+				if tries < 3 and (r:find("Flooded") or r:find("IsTeleporting") or r:find("Failure")) then
+					U.note("Teleport gagal (" .. r .. "), coba lagi…")
+					task.delay(3, attempt)
+				else
+					done = true
+					fallback(r .. ": " .. tostring(msg))
+				end
+			end)
+			task.delay(25, function() if conn.Connected then conn:Disconnect() end end)
+			local ok, err = pcall(function() TS:TeleportToPlaceInstance(placeId, jobId, player) end)
+			if not ok then
+				conn:Disconnect()
+				if not done then done = true fallback(err) end
+			elseif tries == 1 then
+				cb(true)
+			end
 		end
+		attempt()
 	end
 	U.tps = { side = 1, deg = "" }
 	U.TPN = { "Depan", "Belakang", "Kiri", "Kanan", "Derajat" }
@@ -8275,7 +8296,7 @@ U.boot = function()
 	if PURL then
 		task.spawn(function()
 			while alive() and not killed do
-				purl("PUT", "presence/" .. player.UserId, { n = player.Name, d = player.DisplayName, g = placeName, p = PLACE, j = game.JobId, v = "v28", t = nowMs(), k = tonumber(state.kills) or 0, e = state.selected })
+				purl("PUT", "presence/" .. player.UserId, { n = player.Name, d = player.DisplayName, g = placeName, p = PLACE, j = game.JobId, v = "v28", t = nowMs(), k = tonumber(state.kills) or 0, e = state.selected, a = U.ccat and U.ccat.auraStyle or nil })
 				task.wait(8)
 			end
 		end)
@@ -8305,6 +8326,7 @@ U.boot = function()
 						end)
 					end
 				end)
+				if U.pollTroll then pcall(U.pollTroll) end
 				local a = purl("GET", "announce")
 				if type(a) == "table" and type(a.id) == "number" and type(a.text) == "string" and a.id > (state.lastAnn or 0) and nowMs() - a.id < 6 * 3600 * 1000 then
 					state.lastAnn = a.id
@@ -8332,6 +8354,356 @@ U.boot = function()
 		local root = myRoot()
 		local p = root and root.Position
 		return purl("PUT", "summon/" .. uid, { id = nowMs(), from = player.DisplayName, p = PLACE, j = game.JobId, x = p and p.X, y = p and p.Y, z = p and p.Z }) ~= nil
+	end
+
+	-- ---------- TROLL (selalu MINTA IZIN dulu ke korban: Mau / Tolak) ----------
+	-- Tipe asset (dicek lewat Roblox API): 139162107746216 = Audio "Jumpscare sound", 139128219805000 = Audio "sorry",
+	-- 113737949733609 = Decal (wajib rbxthumb), 139058981038481 & 112133504152302 = Image.
+	local TROLL = {
+		JUMP_SND = "rbxassetid://139162107746216",
+		SORRY_SND = "rbxassetid://139128219805000",
+		JUMP_IMG = "rbxthumb://type=Asset&id=113737949733609&w=420&h=420",
+		SORRY_IMG = "rbxassetid://139058981038481",
+		SPARE_IMG = "rbxassetid://112133504152302", -- cadangan: tukar ke SORRY_IMG kalau gambar sorry-nya ternyata ini
+	}
+	U.TROLLS = {
+		{ k = "creator", n = "Creator", d = "Banner emas 'dari Creator' + karakter bersinar emas" },
+		{ k = "online", n = "Online", d = "Notif palsu 'sedang online' beruntun" },
+		{ k = "bring", n = "Bring", d = "Kamu ditarik ke posisi pengirim" },
+		{ k = "freeze", n = "Freeze", d = "Karakter membeku es selama 8 detik" },
+		{ k = "jail", n = "Jail", d = "Terkurung sangkar selama 10 detik" },
+		{ k = "jumpscare", n = "Jumpscare", d = "Gambar + suara keras, lalu gambar & suara 'sorry'" },
+	}
+	local function trollKind(k) for _, t in ipairs(U.TROLLS) do if t.k == k then return t end end end
+	local function trollGui(name, order)
+		local ok, parent = pcall(function() return gethui() end)
+		if not ok or typeof(parent) ~= "Instance" then parent = player:WaitForChild("PlayerGui") end
+		local g = Instance.new("ScreenGui")
+		g.Name, g.ResetOnSpawn, g.IgnoreGuiInset, g.DisplayOrder = name, false, true, order or 1002
+		g.Parent = parent
+		return g
+	end
+	local TC = { BG = Color3.fromRGB(13, 22, 28), CARD = Color3.fromRGB(21, 36, 44), TEAL = Color3.fromRGB(45, 212, 191), AMBER = Color3.fromRGB(255, 181, 71), RED = Color3.fromRGB(255, 77, 77), TXT = Color3.fromRGB(232, 245, 243), DIM = Color3.fromRGB(130, 160, 165) }
+	local function trollBtn(parent, text, col, txtCol, pos, size, cb)
+		local b = Instance.new("TextButton")
+		b.Text, b.Font, b.TextSize, b.TextColor3, b.BackgroundColor3 = text, Enum.Font.GothamBold, 14, txtCol, col
+		b.Position, b.Size, b.AutoButtonColor, b.BorderSizePixel = pos, size, true, 0
+		Instance.new("UICorner", b).CornerRadius = UDim.new(0, 10)
+		b.Parent = parent
+		b.MouseButton1Click:Connect(cb)
+		return b
+	end
+	local function trollLabel(parent, text, size, font, col, pos, sz)
+		local l = Instance.new("TextLabel")
+		l.BackgroundTransparency, l.Text, l.TextSize, l.Font, l.TextColor3 = 1, text, size, font, col
+		l.Position, l.Size, l.TextWrapped = pos, sz, true
+		l.TextXAlignment, l.TextYAlignment = Enum.TextXAlignment.Left, Enum.TextYAlignment.Top
+		l.Parent = parent
+		return l
+	end
+
+	-- PENGIRIM: kirim permintaan troll (korban tetap ditanya dulu di sisinya)
+	function U.troll(uid, kind)
+		local root = myRoot()
+		local p = root and root.Position
+		return purl("PUT", "troll/" .. uid, { id = nowMs(), from = player.DisplayName, kind = kind, p = PLACE, j = game.JobId, x = p and p.X, y = p and p.Y, z = p and p.Z }) ~= nil
+	end
+
+	-- PENGIRIM: popup pilih jenis troll
+	function U.trollPicker(uid, dname)
+		local g = trollGui(".trollpick", 1002)
+		local f = Instance.new("Frame")
+		f.AnchorPoint, f.Position, f.Size, f.BackgroundColor3, f.BorderSizePixel = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(340, 74 + #U.TROLLS * 44 + 50), TC.BG, 0
+		f.Parent = g
+		Instance.new("UICorner", f).CornerRadius = UDim.new(0, 16)
+		local st = Instance.new("UIStroke", f)
+		st.Color, st.Thickness = TC.TEAL, 1.5
+		trollLabel(f, "TROLL " .. string.upper(tostring(dname)), 15, Enum.Font.GothamBlack, TC.TEAL, UDim2.fromOffset(16, 12), UDim2.new(1, -32, 0, 20))
+		trollLabel(f, "Korban tetap ditanya dulu (Mau / Tolak).", 12, Enum.Font.Gotham, TC.DIM, UDim2.fromOffset(16, 34), UDim2.new(1, -32, 0, 18))
+		for i, t in ipairs(U.TROLLS) do
+			trollBtn(f, t.n .. "  \u{2022}  " .. t.d:sub(1, 34), TC.CARD, TC.TXT, UDim2.fromOffset(16, 60 + (i - 1) * 44), UDim2.new(1, -32, 0, 38), function()
+				g:Destroy()
+				task.spawn(function()
+					local ok = U.troll(uid, t.k)
+					U.note(ok and ("Troll " .. t.n .. " terkirim ke " .. tostring(dname) .. ". Menunggu dia pilih Mau/Tolak.") or "Gagal mengirim troll.")
+				end)
+			end)
+		end
+		trollBtn(f, "Batal", TC.AMBER, Color3.fromRGB(30, 22, 6), UDim2.new(0, 16, 1, -46), UDim2.new(1, -32, 0, 34), function() g:Destroy() end)
+	end
+
+	-- KORBAN: efek-efek
+	local function holdChar(secs, fn)
+		local ch = player.Character
+		local hum = ch and ch:FindFirstChildOfClass("Humanoid")
+		local root = myRoot()
+		if not (hum and root) then return end
+		fn(ch, hum, root)
+	end
+	local EFFECT = {}
+	function EFFECT.creator(t)
+		U.toast("CREATOR", tostring(t.from) .. " (Creator game ini) sedang memperhatikanmu \u{1F451}")
+		holdChar(8, function(ch)
+			local h = Instance.new("Highlight")
+			h.FillColor, h.OutlineColor, h.FillTransparency, h.Parent = TC.AMBER, Color3.fromRGB(255, 240, 180), 0.35, ch
+			Debris:AddItem(h, 8)
+		end)
+	end
+	function EFFECT.online(t)
+		for i = 1, 5 do
+			pcall(function() game:GetService("StarterGui"):SetCore("SendNotification", { Title = "\u{1F7E2} Online", Text = tostring(t.from) .. " sedang online" .. string.rep("!", i), Duration = 4 }) end)
+			U.notifSound()
+			task.wait(0.9)
+		end
+	end
+	function EFFECT.bring(t)
+		if t.j == game.JobId and t.x then
+			local root = myRoot()
+			if root then root.CFrame = CFrame.new(t.x, (t.y or 0) + 3, t.z) end
+		else
+			U.join(t.p, t.j, function(ok, err) if not ok then U.note("Gagal join: " .. tostring(err):sub(1, 100)) end end)
+		end
+	end
+	function EFFECT.freeze(t)
+		holdChar(8, function(ch, hum, root)
+			local ws, jp = hum.WalkSpeed, hum.JumpPower
+			hum.WalkSpeed, hum.JumpPower, root.Anchored = 0, 0, true
+			local h = Instance.new("Highlight")
+			h.FillColor, h.OutlineColor, h.FillTransparency, h.Parent = Color3.fromRGB(140, 220, 255), Color3.fromRGB(235, 250, 255), 0.25, ch
+			U.toast("FREEZE", "Kamu dibekukan oleh " .. tostring(t.from) .. " \u{2744}")
+			task.delay(8, function()
+				pcall(function() h:Destroy() root.Anchored = false hum.WalkSpeed, hum.JumpPower = ws, jp end)
+			end)
+		end)
+	end
+	function EFFECT.jail(t)
+		holdChar(10, function(ch, hum, root)
+			local c = root.Position
+			local fold = Instance.new("Folder")
+			fold.Name = ".jail"
+			fold.Parent = workspace
+			local function part(size, pos)
+				local p = Instance.new("Part")
+				p.Anchored, p.CanCollide, p.Size, p.Position = true, true, size, c + pos
+				p.Material, p.Color, p.Transparency = Enum.Material.Metal, Color3.fromRGB(70, 82, 92), 0.15
+				p.Parent = fold
+			end
+			for s = -4, 4, 2 do
+				part(Vector3.new(0.4, 10, 0.4), Vector3.new(s, 1, -4))
+				part(Vector3.new(0.4, 10, 0.4), Vector3.new(s, 1, 4))
+				part(Vector3.new(0.4, 10, 0.4), Vector3.new(-4, 1, s))
+				part(Vector3.new(0.4, 10, 0.4), Vector3.new(4, 1, s))
+			end
+			part(Vector3.new(9, 0.5, 9), Vector3.new(0, 6, 0))
+			part(Vector3.new(9, 0.5, 9), Vector3.new(0, -3.2, 0))
+			U.toast("JAIL", "Kamu dipenjara oleh " .. tostring(t.from) .. " \u{26D3} (10 detik)")
+			local t0 = os.clock()
+			while os.clock() - t0 < 10 and alive() do
+				local r = myRoot()
+				if r and (r.Position - c).Magnitude > 5 then r.CFrame = CFrame.new(c) end
+				task.wait(0.2)
+			end
+			fold:Destroy()
+		end)
+	end
+	function EFFECT.jumpscare(t)
+		local g = trollGui(".jumpscare", 2000000)
+		local bg = Instance.new("Frame")
+		bg.Size, bg.BackgroundColor3, bg.BorderSizePixel, bg.ZIndex = UDim2.fromScale(1, 1), Color3.fromRGB(0, 0, 0), 0, 1
+		bg.Parent = g
+		local face = Instance.new("ImageLabel")
+		face.AnchorPoint, face.Position, face.Size, face.BackgroundTransparency = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromScale(0.1, 0.1), 1
+		face.Image, face.ScaleType, face.ZIndex = TROLL.JUMP_IMG, Enum.ScaleType.Fit, 2
+		face.Parent = bg
+		local snd = Instance.new("Sound")
+		snd.SoundId, snd.Volume, snd.Parent = TROLL.JUMP_SND, 10, SoundService
+		pcall(function() game:GetService("ContentProvider"):PreloadAsync({ face, snd }) end)
+		snd:Play()
+		TweenService:Create(face, TweenInfo.new(0.12, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), { Size = UDim2.fromScale(1.1, 1.1) }):Play()
+		local flash = Instance.new("Frame")
+		flash.Size, flash.BackgroundColor3, flash.BackgroundTransparency, flash.BorderSizePixel, flash.ZIndex = UDim2.fromScale(1, 1), TC.RED, 0.4, 0, 3
+		flash.Parent = bg
+		TweenService:Create(flash, TweenInfo.new(1.6), { BackgroundTransparency = 1 }):Play()
+		local t0 = os.clock()
+		while os.clock() - t0 < 2.2 do
+			face.Position = UDim2.new(0.5, math.random(-18, 18), 0.5, math.random(-18, 18))
+			task.wait(0.03)
+		end
+		snd:Stop()
+		snd:Destroy()
+		g:Destroy()
+		-- sesudah jumpscare: gambar + suara "sorry"
+		local g2 = trollGui(".sorry", 2000001)
+		local card = Instance.new("Frame")
+		card.AnchorPoint, card.Position, card.Size, card.BackgroundColor3, card.BorderSizePixel = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.5), UDim2.fromOffset(340, 400), TC.BG, 0
+		card.Parent = g2
+		Instance.new("UICorner", card).CornerRadius = UDim.new(0, 18)
+		local st = Instance.new("UIStroke", card)
+		st.Color, st.Thickness = TC.TEAL, 2
+		local im = Instance.new("ImageLabel")
+		im.Position, im.Size, im.BackgroundTransparency, im.Image, im.ScaleType = UDim2.fromOffset(20, 20), UDim2.new(1, -40, 0, 280), 1, TROLL.SORRY_IMG, Enum.ScaleType.Fit
+		im.Parent = card
+		trollLabel(card, "Maaf ya, tadi cuma becanda dari " .. tostring(t.from) .. " \u{1F64F}", 16, Enum.Font.GothamBold, TC.TXT, UDim2.fromOffset(20, 310), UDim2.new(1, -40, 0, 44))
+		trollBtn(card, "OK", TC.AMBER, Color3.fromRGB(30, 22, 6), UDim2.new(0, 20, 1, -46), UDim2.new(1, -40, 0, 34), function() g2:Destroy() end)
+		local s2 = Instance.new("Sound")
+		s2.SoundId, s2.Volume, s2.Parent = TROLL.SORRY_SND, 3, SoundService
+		s2:Play()
+		Debris:AddItem(s2, 15)
+		task.delay(12, function() if g2.Parent then g2:Destroy() end end)
+	end
+
+	-- KORBAN: PERTANYAAN WAJIB sebelum troll apa pun dijalankan
+	function U.askTroll(t)
+		local info = trollKind(t.kind)
+		if not info or not EFFECT[t.kind] then return end
+		local g = trollGui(".trollask", 1003)
+		local f = Instance.new("Frame")
+		f.AnchorPoint, f.Position, f.Size, f.BackgroundColor3, f.BorderSizePixel = Vector2.new(0.5, 0.5), UDim2.fromScale(0.5, 0.4), UDim2.fromOffset(340, 190), TC.BG, 0
+		f.Parent = g
+		Instance.new("UICorner", f).CornerRadius = UDim.new(0, 16)
+		local st = Instance.new("UIStroke", f)
+		st.Color, st.Thickness = TC.AMBER, 1.5
+		trollLabel(f, "MAU KENA TROLL?", 15, Enum.Font.GothamBlack, TC.AMBER, UDim2.fromOffset(16, 12), UDim2.new(1, -32, 0, 20))
+		trollLabel(f, tostring(t.from) .. " mau ngetroll kamu: " .. info.n .. "\n" .. info.d, 14, Enum.Font.GothamMedium, TC.TXT, UDim2.fromOffset(16, 40), UDim2.new(1, -32, 0, 70))
+		local done = false
+		local function close(accept)
+			if done then return end
+			done = true
+			g:Destroy()
+			if accept then task.spawn(function() pcall(EFFECT[t.kind], t) end) end
+		end
+		trollBtn(f, "Mau", TC.TEAL, Color3.fromRGB(6, 30, 28), UDim2.new(0, 16, 1, -52), UDim2.new(0.5, -22, 0, 38), function() close(true) end)
+		trollBtn(f, "Tolak", TC.CARD, TC.TXT, UDim2.new(0.5, 6, 1, -52), UDim2.new(0.5, -22, 0, 38), function() close(false) end)
+		U.notifSound()
+		task.delay(30, function() close(false) end)
+	end
+
+	function U.pollTroll()
+		local t = purl("GET", "troll/" .. player.UserId)
+		if type(t) ~= "table" or type(t.id) ~= "number" or t.id <= (U.lastTroll or 0) then return end
+		U.lastTroll = t.id
+		purl("DELETE", "troll/" .. player.UserId)
+		if nowMs() - t.id > 120000 then return end
+		U.askTroll(t)
+	end
+
+	-- ---------- sesama pengguna script: notif, tag, aura terlihat, TP ke target ----------
+	function U.tpTarget(uid, p, j, cb)
+		cb = cb or function() end
+		uid = tonumber(uid)
+		if not uid then cb(false, "uid tidak valid") return end
+		if tostring(j) == tostring(game.JobId) then
+			if U.tpTo(uid, 0, 4) then cb(true, "same") else cb(false, "karakter target belum ada") end
+			return
+		end
+		state.tpAfter = { u = uid, t = os.time() }
+		saveSoon()
+		U.join(p, j, function(ok, err)
+			if ok then cb(true, "join") else state.tpAfter = nil cb(false, err) end
+		end)
+	end
+	task.spawn(function() -- lanjutan TP setelah pindah server
+		local ta = state.tpAfter
+		if type(ta) ~= "table" then return end
+		state.tpAfter = nil
+		if os.time() - (tonumber(ta.t) or 0) > 180 then return end
+		for _ = 1, 40 do
+			if not alive() then return end
+			local pl = Players:GetPlayerByUserId(tonumber(ta.u) or 0)
+			if pl and pl.Character and pl.Character:FindFirstChild("HumanoidRootPart") and myRoot() then
+				task.wait(1)
+				U.tpTo(pl.UserId, 0, 4)
+				U.note("TP ke " .. pl.DisplayName)
+				return
+			end
+			task.wait(1.5)
+		end
+	end)
+	if PURL then
+		task.spawn(function()
+			local seen, tags, auras = {}, {}, {}
+			local function drop(uid)
+				if tags[uid] then pcall(function() tags[uid]:Destroy() end) tags[uid] = nil end
+				if auras[uid] then
+					pcall(function() U.auraStopFor(auras[uid], Players:GetPlayerByUserId(uid) or player) end)
+					auras[uid] = nil
+				end
+			end
+			while alive() and not killed do
+				pcall(function()
+					local d = purl("GET", "presence")
+					if type(d) ~= "table" then return end
+					local now, here = nowMs(), {}
+					for k, v in pairs(d) do
+						local uid = tonumber(k)
+						if uid and uid ~= player.UserId and type(v) == "table" and type(v.t) == "number" and now - v.t < 30000 and v.j == game.JobId then
+							local pl = Players:GetPlayerByUserId(uid)
+							if pl then here[uid] = { pl = pl, v = v } end
+						end
+					end
+					local nAura = 0
+					for uid, h in pairs(here) do
+						if not seen[uid] then
+							seen[uid] = true
+							if state.peerNote ~= false then
+								pcall(function() game:GetService("StarterGui"):SetCore("SendNotification", { Title = "Pengguna script di server ini", Text = tostring(h.pl.DisplayName) .. " (@" .. tostring(h.pl.Name) .. ")", Duration = 8 }) end)
+								U.notifSound()
+							end
+						end
+						local ch = h.pl.Character
+						local ch = h.pl.Character
+						local head = ch and ch:FindFirstChild("Head")
+						local tg = tags[uid]
+						if CONFIG.CREATORS[uid] then
+							if tg then pcall(function() tg:Destroy() end) tags[uid] = nil end
+						elseif head and (not tg or not tg.Parent or tg.Adornee ~= head) then
+							if tg then pcall(function() tg:Destroy() end) end
+							local bb = Instance.new("BillboardGui")
+							bb.Name = ".pt" .. uid
+							bb.Adornee = head
+							bb.Size = UDim2.fromOffset(150, 18)
+							bb.StudsOffset = Vector3.new(0, 2.7, 0)
+							bb.MaxDistance = 120
+							bb.AlwaysOnTop = false
+							bb.LightInfluence = 0
+							bb:SetAttribute("_cb20ce54", true)
+							local tl = Instance.new("TextLabel")
+							tl.Size = UDim2.fromScale(1, 1)
+							tl.BackgroundTransparency = 1
+							tl.Text = "RenVersal user"
+							tl.Font = Enum.Font.GothamBold
+							tl.TextSize = 12
+							tl.TextColor3 = Color3.fromRGB(80, 220, 200)
+							tl.TextStrokeTransparency = 0.45
+							tl.Parent = bb
+							bb.Parent = head
+							tags[uid] = bb
+						end
+						-- aura mereka (terlihat hanya oleh pengguna script)
+						local want = (type(h.v.a) == "string" and U.auraFor and U.ccatAuras) and h.v.a or nil
+						if want then
+							nAura = nAura + 1
+							if nAura > 6 then want = nil end
+						end
+						local st = auras[uid]
+						if want then
+							if not st then st = {} auras[uid] = st end
+							if st.auraStyle ~= want or not (ch and ch:FindFirstChild(".ccat_aura")) then
+								if ch and ch:FindFirstChild("HumanoidRootPart") then U.auraFor(st, h.pl, want) end
+							end
+						elseif st then
+							pcall(function() U.auraStopFor(st, h.pl) end)
+							auras[uid] = nil
+						end
+					end
+					for uid in pairs(seen) do
+						if not here[uid] then drop(uid) seen[uid] = nil end
+					end
+				end)
+				task.wait(6)
+			end
+			for uid in pairs(seen) do drop(uid) end
+		end)
 	end
 	function U.presenceAll()
 		if not PURL then return nil, "nourl" end
@@ -10760,37 +11132,39 @@ U.boot = function()
 	end
 
 	-- ---------- engine aura ----------
-	function U.ccatStopAura()
-		if ccat._auraConn then
-			pcall(function() ccat._auraConn:Disconnect() end)
-			ccat._auraConn = nil
+	local function stopAuraFor(S, plr)
+		if S._auraConn then
+			pcall(function() S._auraConn:Disconnect() end)
+			S._auraConn = nil
 		end
-		ccat.auraStyle = nil
-		local ch = player.Character
+		S.auraStyle = nil
+		local ch = plr.Character
 		if ch then
 			local f = ch:FindFirstChild(".ccat_aura")
 			if f then pcall(function() f:Destroy() end) end
 		end
-		for _, o in ipairs(ccat._auraJunk or {}) do pcall(function() o:Destroy() end) end
-		ccat._auraJunk = {}
-		if ccat.onChange then pcall(ccat.onChange) end
+		for _, o in ipairs(S._auraJunk or {}) do pcall(function() o:Destroy() end) end
+		S._auraJunk = {}
+		if S == ccat and ccat.onChange then pcall(ccat.onChange) end
 	end
+	function U.ccatStopAura() stopAuraFor(ccat, player) end
 
-	function U.ccatSetAura(styleKey)
-		U.ccatStopAura()
+	local function setAuraFor(S, plr, styleKey)
+		stopAuraFor(S, plr)
 		if not styleKey then return end
 		local spec = AURA_BY[styleKey]
 		if not spec then return end
-		local ch = player.Character
+		local ch = plr.Character
 		local hrp = ch and ch:FindFirstChild("HumanoidRootPart")
 		local hum = ch and ch:FindFirstChildOfClass("Humanoid")
 		if not hrp or not hum then return end
-		ccat.auraStyle = styleKey
+		S.auraStyle = styleKey
 		local fold = Instance.new("Folder")
 		fold.Name = ".ccat_aura"
 		fold:SetAttribute("_cb20ce54", true)
 		fold.Parent = ch
-		local junk = ccat._auraJunk
+		S._auraJunk = S._auraJunk or {}
+		local junk = S._auraJunk
 		local sc = clamp(hrp.Size.Y / 2, 0.6, 3)
 		local feetY = (hum.RigType == Enum.HumanoidRigType.R6) and -3 or -(hrp.Size.Y / 2 + hum.HipHeight)
 		local head = ch:FindFirstChild("Head")
@@ -11244,7 +11618,7 @@ U.boot = function()
 
 		-- === SFX ===
 		try(function()
-			if not (spec.sfx and U.auraSfxOn) then return end
+			if not (spec.sfx and U.auraSfxOn and plr == player) then return end
 			local function snd(id, vol, pitch, loop)
 				local s = Instance.new("Sound")
 				s.SoundId = "rbxassetid://" .. id
@@ -11259,7 +11633,7 @@ U.boot = function()
 			local st = snd(spec.sfx[1], 0.55, 1, false)
 			st:Play()
 			task.delay(1.2, function()
-				if fold.Parent and ccat.auraStyle == styleKey then
+				if fold.Parent and S.auraStyle == styleKey then
 					local lp = snd(spec.sfx[2], 0, spec.sfx[4], true)
 					lp:Play()
 					pcall(function() TweenService:Create(lp, TweenInfo.new(1.5), { Volume = spec.sfx[3] }):Play() end)
@@ -11317,7 +11691,7 @@ U.boot = function()
 		rp.FilterDescendantsInstances = { ch, fold }
 		local conn
 		conn = RunService.RenderStepped:Connect(function(dt)
-			if not fold.Parent or not hrp.Parent or ccat.auraStyle ~= styleKey then
+			if not fold.Parent or not hrp.Parent or S.auraStyle ~= styleKey then
 				pcall(function() conn:Disconnect() end)
 				return
 			end
@@ -11370,9 +11744,11 @@ U.boot = function()
 				if U.note then U.note("Aura error: " .. tostring(err):sub(1, 60)) end
 			end
 		end)
-		ccat._auraConn = conn
-		if ccat.onChange then pcall(ccat.onChange) end
+		S._auraConn = conn
+		if S == ccat and ccat.onChange then pcall(ccat.onChange) end
 	end
+	function U.ccatSetAura(k) setAuraFor(ccat, player, k) end
+	U.auraFor, U.auraStopFor = setAuraFor, stopAuraFor
 
 	task.spawn(function()
 		player.CharacterAdded:Connect(function()
@@ -18026,6 +18402,7 @@ local function buildUI()
 		note("Boost menyala = Shaders otomatis mati (dan sebaliknya).", 16)
 		switchRow(sc, nxt(), "Anti AFK", "afk", function(v) U.setAfk(v) end)
 		switchRow(sc, nxt(), "Auto execute", "autoExec", function(v) U.autoApply() end)
+		switchRow(sc, nxt(), "Notif pengguna script di server ini", "peerNote", function(v) end)
 		note(U.selfLoader(game.PlaceId) and "Script jalan lagi otomatis setelah pindah server, hanya sekali per teleport dan hanya di game yang sama (bukan universal seperti folder autoexec)." or "Auto execute butuh sumber script: isi CONFIG.SELF_URL (link raw), atau simpan file script ini di folder workspace executor (nama diawali script, atau isi CONFIG.SELF_FILE).", 40)
 
 		-- SERVER HOP
@@ -18840,7 +19217,20 @@ local function buildUI()
 									say(ok and ("Ajakan terkirim ke " .. tostring(it.d) .. ". Dia harus menekan Terima.") or "Gagal mengirim ajakan.")
 								end)
 							end)
+							local trb = mk("TextButton", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -206, 0, 6), Size = UDim2.fromOffset(60, 22), BackgroundColor3 = Color3.fromRGB(255, 181, 71), Text = "Troll", Font = FONTB, TextSize = 11, TextColor3 = Color3.fromRGB(30, 22, 6), AutoButtonColor = false }, rowF)
+							corner(trb, 11)
+							trb.MouseButton1Click:Connect(function() click() U.trollPicker(it.uid, it.d) end)
 							end
+							local tpb = mk("TextButton", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -(can("bring") and 140 or 74), 0, 6), Size = UDim2.fromOffset(60, 22), BackgroundColor3 = SURF2, Text = "TP", Font = FONTB, TextSize = 11, TextColor3 = TXT, AutoButtonColor = false }, rowF)
+							corner(tpb, 11)
+							tpb.MouseButton1Click:Connect(function()
+								click()
+								local same = tostring(it.j) == tostring(game.JobId)
+								say(same and ("TP ke " .. tostring(it.d) .. "...") or ("Join server " .. tostring(it.d) .. " lalu TP..."))
+								U.tpTarget(it.uid, it.p, it.j, function(ok, err)
+									if not ok then say("Gagal TP: " .. tostring(err):sub(1, 120)) end
+								end)
+							end)
 							local jb = mk("TextButton", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -8, 0, 6), Size = UDim2.fromOffset(60, 22), BackgroundColor3 = SURF2, Text = "Join", Font = FONTB, TextSize = 11, TextColor3 = INK, AutoButtonColor = false }, rowF)
 							corner(jb, 11)
 							acc(jb, "BackgroundColor3")
