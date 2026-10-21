@@ -140,7 +140,7 @@ scripts={{name="Script 1",code=""}},
 execIdx=1,
 hud=true,
 autoExec=true,peerNote=true,watch=true,joinNote=false,lookHist={},lookSaved={},lookSeen={},scanSpeed="",scanInstant=false,autoTr=true,scanCrossN="5",lastAnn=0,daytime=true,dayDate=false,clock12=true,hopSess={},
-antiFling=false,espIcon=false,flingMode="sky",thirdPerson=false,fpAsk=true,geoShare=false,cfgAuto="",cfgLast="",
+antiFling=false,flingPose={on=false,x=0,y=0,z=3,rx=0,ry=0,rz=0},espIcon=false,espHl=true,flingMode="sky",thirdPerson=false,fpAsk=true,geoShare=false,cfgAuto="",cfgLast="",
 perf=0,afk=true,hopMode=1,fly=false,flySpeed=60,noclip=false,moveOn=false,walk=16,jump=50,infJump=false,esp=false,espName=true,espDist=true,espHp=true,hopMax="",hopLow=false,hopRegion=1,
 fullbright=false,nofog=false,ctp=false,ctpMode=1,shader=false,shMode=1,
 wpAuto=false,wp={},
@@ -185,7 +185,7 @@ local SAVE_FILE="ucb20ce_" .. tostring(game:GetService("Players").LocalPlayer.Us
 local OLD_FILE="vcb20ce.json"
 local custom,favs={},{}
 local SAVE_KEYS={"theme","range","volSfx","volClick","volMusic","music","intensity","sound","shake","cinema","banner","feedOn","blur","random","mode","musicCustom","musicId","outAuto","outA","outB","outThick","outAnim","bgCustom","bgA","bgB","bgRot","bgTrans","fbLast","uiScale","uiX","uiY","lang","scripts","execIdx","notes","selected","cat","kills","hud","aura","daytime","dayDate","clock12","lastAnn","autoExec","watch","joinNote","lookHist","lookSaved","lookSeen","scanSpeed","scanInstant","autoTr","scanCrossN","fov","grav","zoomFree","hopSess","perf","afk","hopMode","hopMax","hopLow","hopRegion","fullbright","nofog","ctp","ctpMode","shader","shMode","wpAuto","wp","fly","flySpeed","noclip","moveOn","walk","jump","infJump","esp","espName","espDist","espHp","hudX","hudY","uiW","uiH","aiProv","aiModel","aiUsed","aiLock","aiDay","themePack","kbOpen","kbQuick","kbTest","kbFly","macroOn","targetNotes","quickItems","bgImageId","bgShine","titleShine","chOn","chStyle","chCustom","chSize","chX","chY","chColor","curOn","curStyle","curCustom","curSize","curColor","chKind","chSaved","curKind","curSaved","musicSpeed","shine","lastReqSeen","ccatCustom"}
-for _,k in ipairs({"lastHistSeen","espCustom","espCol","ckMulti","hk","peerNote","tpAfter","antiFling","espIcon","flingMode","thirdPerson","fpAsk","geoShare","cfgAuto","cfgLast"})do SAVE_KEYS[#SAVE_KEYS+1]=k end
+for _,k in ipairs({"lastHistSeen","espCustom","espCol","ckMulti","hk","peerNote","tpAfter","antiFling","flingPose","espIcon","espHl","flingMode","thirdPerson","fpAsk","geoShare","cfgAuto","cfgLast"})do SAVE_KEYS[#SAVE_KEYS+1]=k end
 local U
 local function cfgTable()
 local d={custom=custom,favs=favs}
@@ -925,12 +925,13 @@ do
 local uidC=tostring(game:GetService("Players").LocalPlayer.UserId)
 local CFGF="cfgscb20ce_" .. uidC .. ".json"
 local CFG_EXCL={scripts=true,notes=true,lookHist=true,lookSaved=true,lookSeen=true,targetNotes=true,kills=true,lastAnn=true,lastReqSeen=true,fbLast=true,cfgAuto=true,cfgLast=true,aiUsed=true,aiLock=true,aiDay=true,dayDate=true}
-U.cfgs={list={},dev=nil,seen=0}
+U.cfgs={list={},dev=nil,seen=0,del={}}
 pcall(function()
 if isfile and readfile and isfile(CFGF)then
 local d=HttpService:JSONDecode(readfile(CFGF))
 if type(d)=="table" then
 if type(d.list)=="table" then U.cfgs.list=d.list end
+if type(d.del)=="table" then U.cfgs.del=d.del end
 U.cfgs.dev,U.cfgs.seen=d.dev,tonumber(d.seen)or 0
 end
 end
@@ -955,6 +956,47 @@ end
 local function find(name)
 for i,e in ipairs(U.cfgs.list)do if e.name==name then return e,i end end
 end
+local function mergeList(cl,cdel)
+local ch=false
+if type(cdel)=="table" then
+for n,t in pairs(cdel)do
+if(tonumber(t)or 0)>(tonumber(U.cfgs.del[n])or 0)then U.cfgs.del[n]=tonumber(t)ch=true end
+end
+end
+if type(cl)=="table" then
+for _,e in ipairs(cl)do
+if type(e)=="table" and type(e.name)=="string" and type(e.d)=="string" then
+local dt=tonumber(U.cfgs.del[e.name])or 0
+local mine=find(e.name)
+if(tonumber(e.t)or 0)>dt then
+if not mine then U.cfgs.list[#U.cfgs.list+1]={name=e.name,d=e.d,t=tonumber(e.t)or 0}ch=true
+elseif(tonumber(e.t)or 0)>(tonumber(mine.t)or 0)then mine.d,mine.t=e.d,tonumber(e.t)ch=true end
+end
+end
+end
+end
+for i=#U.cfgs.list,1,-1 do
+local e=U.cfgs.list[i]
+if(tonumber(U.cfgs.del[e.name])or 0)>=(tonumber(e.t)or 0)then table.remove(U.cfgs.list,i)ch=true end
+end
+if ch then U.cfgsSave()end
+return ch
+end
+function U.cfgPull()
+if not(CONFIG.PRESENCE_URL and U.fb)then return false end
+local d,ok=U.fb("GET","cfgs/" .. uidC)
+if ok and type(d)=="table" then mergeList(d.list,d.del)end
+return ok,d
+end
+function U.cfgPushNow()
+if not(CONFIG.PRESENCE_URL and U.fb)then return end
+task.spawn(function()
+U.cfgPull()
+local okc,js=pcall(capture)
+local _,ok=U.fb("PUT","cfgs/" .. uidC,{t=os.time(),dev=U.cfgs.dev,n=game:GetService("Players").LocalPlayer.Name,list=U.cfgs.list,del=U.cfgs.del,auto=state.cfgAuto,last=okc and js or ""})
+if ok then U.cfgs.seen=os.time()U.cfgsSave()else U.note("Gagal sinkron config ke cloud (cek koneksi / request executor)")end
+end)
+end
 function U.cfgList()return U.cfgs.list end
 function U.cfgSaveAs(name)
 name=tostring(name or ""):gsub("^%s+",""):gsub("%s+$",""):sub(1,24)
@@ -963,8 +1005,9 @@ local e=find(name)
 if e then e.d,e.t=capture(),os.time()
 else U.cfgs.list[#U.cfgs.list+1]={name=name,d=capture(),t=os.time()}end
 state.cfgLast=name
+U.cfgs.del[name]=nil
 U.cfgsSave()
-if U.cfgPush then U.cfgPush()end
+U.cfgPushNow()
 return true
 end
 function U.cfgLoad(name)
@@ -979,9 +1022,10 @@ function U.cfgDelete(name)
 local _,i=find(name)
 if not i then return false end
 table.remove(U.cfgs.list,i)
+U.cfgs.del[name]=os.time()
 if state.cfgAuto==name then state.cfgAuto="" end
 U.cfgsSave()
-if U.cfgPush then U.cfgPush()end
+U.cfgPushNow()
 saveCfg()
 return true
 end
@@ -1014,22 +1058,23 @@ task.delay(8,function()
 if my~=pushTok then return end
 local ok,js=pcall(capture)
 if not ok then return end
-U.fb("PUT","cfgs/" .. uidC,{t=os.time(),dev=U.cfgs.dev,n=game:GetService("Players").LocalPlayer.Name,list=U.cfgs.list,auto=state.cfgAuto,last=js})
+U.fb("PUT","cfgs/" .. uidC,{t=os.time(),dev=U.cfgs.dev,n=game:GetService("Players").LocalPlayer.Name,list=U.cfgs.list,del=U.cfgs.del,auto=state.cfgAuto,last=js})
 U.cfgs.seen=os.time()
 U.cfgsSave()
 end)
 end
 function U.cfgOffer()
 task.spawn(function()
-local d,ok=nil,false
-if CONFIG.PRESENCE_URL and U.fb then d,ok=U.fb("GET","cfgs/" .. uidC)end
+local ok,d=false,nil
+for _=1,3 do
+ok,d=U.cfgPull()
+if ok then break end
+task.wait(3)
+end
 if ok and type(d)=="table" and type(d.last)=="string" and d.dev~=U.cfgs.dev and(tonumber(d.t)or 0)>(U.cfgs.seen or 0)then
 local when=os.date("%d/%m %H:%M",tonumber(d.t)or 0)
 local function done(accept)
 if accept and applyJs(d.last)then
-if type(d.list)=="table" then
-for _,e in ipairs(d.list)do if type(e)=="table" and e.name and not find(e.name)then U.cfgs.list[#U.cfgs.list+1]=e end end
-end
 saveCfg()
 if U.reapply then U.reapply()end
 U.quiet("Config dari device lain dipakai","ok")
@@ -8011,12 +8056,11 @@ if state.espIcon then
 o.bb.Size=UDim2.fromOffset(200,74)
 o.bb.I.Size,o.bb.I.Position,o.bb.I.AnchorPoint=UDim2.fromOffset(44,44),UDim2.new(0.5,0,0,0),Vector2.new(0.5,0)
 o.bb.L.Position,o.bb.L.Size=UDim2.fromOffset(0,46),UDim2.new(1,0,0,28)
-if o.hl then o.hl.Enabled=false end
 else
 o.bb.Size=UDim2.fromOffset(200,28)
 o.bb.L.Position,o.bb.L.Size=UDim2.new(),UDim2.new(1,0,0,28)
-if o.hl then o.hl.Enabled=true end
 end
+if o.hl then o.hl.Enabled=state.espHl~=false end
 o.bb.Enabled=true
 elseif o then
 pcall(function()o.hl:Destroy()o.bb:Destroy()end)
@@ -8577,11 +8621,28 @@ end
 hum.PlatformStand=true
 local t0=os.clock()
 local flip=1
+local FPz=state.flingPose
+local usePose=false
+local poseOff=usePose and Vector3.new(FPz.x or 0,FPz.y or 0,FPz.z or 0)or Vector3.zero
+local poseRot=usePose and CFrame.Angles(FPz.rx or 0,FPz.ry or 0,FPz.rz or 0)or CFrame.new()
+if poseOff.Magnitude<0.8 then usePose=usePose and(poseRot~=CFrame.new())end
 local c1=RunService.Heartbeat:Connect(function()
 if not(troot.Parent and hrp.Parent)then return end
 flip=-flip
+if usePose then
+local base=troot.CFrame*CFrame.new(poseOff)*poseRot
+local to=troot.Position - base.Position
+local dir=(to.Magnitude>0.5)and to.Unit or troot.CFrame.LookVector
+hrp.CFrame=base+dir*(0.3*flip)
+if poseOff.Magnitude>=0.8 then
+hrp.AssemblyLinearVelocity=dir*power+Vector3.new(power*flip*0.1,0,power*flip*0.1)
+else
+hrp.AssemblyLinearVelocity=Vector3.new(power*flip,power,power*flip)
+end
+else
 hrp.CFrame=troot.CFrame*CFrame.new(0,0,0.3*flip)
 hrp.AssemblyLinearVelocity=Vector3.new(power*flip,power,power*flip)
+end
 hrp.AssemblyAngularVelocity=Vector3.new(power,power,power)
 end)
 local c2=RunService.RenderStepped:Connect(function()
@@ -11008,6 +11069,7 @@ local fin=false
 pcall(function()fin=pages.IsFinished end)
 return okP and parsePage(page,catKey)or{},fin
 end
+U.ccatLive={open=liveOpen,nxt=liveNext,presets=CCAT_PRESETS}
 function U.ccatSearch(q,limit)
 q=tostring(q or ""):gsub("^%s+",""):gsub("%s+$","")
 if#q<2 then return{},"ketik minimal 2 huruf" end
@@ -12126,1248 +12188,6 @@ end
 if ccat.onChange then pcall(ccat.onChange)end
 end)
 end)
-function U.ccatOpen()
-if ccat.panel and ccat.panel.Parent then
-ccat.panel.Visible=not ccat.panel.Visible
-if ccat.panel.Visible then
-if ccat.onShow then pcall(ccat.onShow)end
-else
-if ccat.onHide then pcall(ccat.onHide)end
-end
-return
-end
-local guiRoot=ccatGuiRoot()
-if not guiRoot then
-if U.note then U.note("GUI belum siap — buka menu dulu")end
-return
-end
-local mobile=ccatIsMobile()
-local FONTB,FONT,FONTK=Enum.Font.GothamBold,Enum.Font.GothamMedium,Enum.Font.GothamBlack
-local BG0,BG1=rgb(13,15,20),rgb(20,23,30)
-local CARD,CARD2,LINE=rgb(29,33,42),rgb(40,45,57),rgb(56,62,77)
-local TXT,DIM,MUTE=rgb(238,241,247),rgb(148,157,176),rgb(102,110,128)
-local BLUE,GREEN,GOLD,TEAL,RED=rgb(58,124,255),rgb(34,197,128),rgb(255,196,66),rgb(46,214,190),rgb(226,76,76)
-local INK=rgb(8,12,18)
-local function corner(o,r)
-local c=Instance.new("UICorner")
-c.CornerRadius=UDim.new(0,r or 10)
-c.Parent=o
-return c
-end
-local function stroke(o,col,th,tr)
-local s=Instance.new("UIStroke")
-s.Color=col
-s.Thickness=th or 1
-s.Transparency=tr or 0
-s.ApplyStrokeMode=Enum.ApplyStrokeMode.Border
-s.Parent=o
-return s
-end
-local function grad(o,c0,c1,rot)
-if o:IsA("GuiObject")then o.BackgroundColor3=Color3.new(1,1,1)end
-if o:IsA("UIStroke")then o.Color=Color3.new(1,1,1)end
-local g=Instance.new("UIGradient")
-g.Color=ColorSequence.new(c0,c1)
-g.Rotation=rot or 90
-g.Parent=o
-return g
-end
-local function mk(class,props,parent)
-local o=Instance.new(class)
-for k,v in pairs(props or{})do o[k]=v end
-o.Parent=parent
-return o
-end
-local function tween(o,props,t)
-pcall(function()TweenService:Create(o,TweenInfo.new(t or 0.15,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),props):Play()end)
-end
-local function note(s)if U.note then U.note(s)end end
-local function drawX(parent,col,sz)
-for _,rot in ipairs({45,-45})do
-mk("Frame",{
-AnchorPoint=Vector2.new(0.5,0.5),Position=UD2(0.5,0,0.5,0),Size=UDim2.fromOffset(sz,2),
-Rotation=rot,BackgroundColor3=col,BorderSizePixel=0,ZIndex=parent.ZIndex+1,
-},parent)
-end
-end
-local function drawSearch(parent,col)
-local ring=mk("Frame",{
-Position=UDim2.fromOffset(0,0),Size=UDim2.fromOffset(11,11),BackgroundTransparency=1,ZIndex=parent.ZIndex+1,
-},parent)
-corner(ring,6)
-stroke(ring,col,2)
-mk("Frame",{
-Position=UDim2.fromOffset(9,12),Size=UDim2.fromOffset(6,2),Rotation=45,BackgroundColor3=col,
-BorderSizePixel=0,ZIndex=parent.ZIndex+1,
-},parent)
-end
-local cam=workspace.CurrentCamera
-local vps=cam and cam.ViewportSize or Vector2.new(1280,720)
-local W,H
-if mobile then
-W=math.max(300,vps.X - 16)
-H=math.max(360,math.min(vps.Y - 24,vps.Y*0.92))
-else
-W=clamp(vps.X - 80,520,900)
-H=clamp(vps.Y - 90,380,580)
-end
-local compact=mobile or W<640
-local SB=compact and 0 or 152
-local dock=(not compact)and W>=780
-local PVW=dock and 226 or math.min(300,W - 24)
-local HDR=compact and 90 or 56
-local CHIPS=compact and 40 or 0
-local MAINX=SB
-local MAINW=W - SB -(dock and PVW or 0)
-local MAINY=HDR+CHIPS
-local panel=mk("Frame",{
-AnchorPoint=Vector2.new(0.5,0.5),Position=UD2(0.5,0,0.5,0),Size=UDim2.fromOffset(W,H),
-BackgroundColor3=BG0,ClipsDescendants=true,ZIndex=200,Active=true,
-},guiRoot)
-corner(panel,16)
-grad(panel,rgb(23,28,38),rgb(11,13,18),90)
-local pst=stroke(panel,TEAL,1.6,0.35)
-local psg=grad(pst,TEAL,BLUE,30)
-ccat.panel=panel
-local curCat,sortKey,searchText,rarFilter="All","Popular","",0
-local view={token=0,items={},pages=nil,finished=true,loading=false,live=false,catKey="All"}
-local cards,gridAnims,pending={},{},{}
-local detail,sortMenu
-local pvCenter,pvSize
-local animConn
-local grid,gridLayout,statusL,sortBtn,sortLbl,rarRow,crumb
-local rebuildGrid,loadView,loadMore,refreshAll,openDetail,closeDetail,wlRebuild
-local header=mk("Frame",{Size=UDim2.new(1,0,0,HDR),BackgroundColor3=BG1,BorderSizePixel=0,ZIndex=201},panel)
-grad(header,rgb(26,31,42),rgb(18,21,28),90)
-mk("Frame",{AnchorPoint=Vector2.new(0,1),Position=UD2(0,0,1,0),Size=UDim2.new(1,0,0,1),BackgroundColor3=LINE,BackgroundTransparency=0.4,BorderSizePixel=0,ZIndex=202},header)
-local logo=mk("Frame",{Position=UDim2.fromOffset(14,compact and 8 or 13),Size=UDim2.fromOffset(30,30),BackgroundColor3=BLUE,ZIndex=202},header)
-corner(logo,9)
-grad(logo,rgb(92,156,255),rgb(34,92,220),90)
-mk("TextLabel",{Size=UD2(1,0,1,0),BackgroundTransparency=1,Text="🛍",TextSize=16,Font=FONTB,TextColor3=Color3.new(1,1,1),ZIndex=203},logo)
-mk("TextLabel",{
-Position=UDim2.fromOffset(52,compact and 4 or 9),Size=UDim2.fromOffset(120,22),BackgroundTransparency=1,Text="Catalog",
-Font=FONTK,TextSize=18,TextColor3=TXT,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=202,
-},header)
-local worn=mk("TextLabel",{
-Position=UDim2.fromOffset(52,compact and 24 or 29),Size=UDim2.fromOffset(120,14),BackgroundTransparency=1,Text="0 dipakai",
-Font=FONT,TextSize=11,TextColor3=DIM,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=202,
-},header)
-local function hbtn(txt,w,bg,fg,xRight,y,h)
-local b=mk("TextButton",{
-AnchorPoint=Vector2.new(1,0),Position=UDim2.new(1,-xRight,0,y),Size=UDim2.fromOffset(w,h),
-BackgroundColor3=bg,Text=txt,Font=FONTB,TextSize=12,TextColor3=fg,AutoButtonColor=false,ZIndex=203,
-},header)
-corner(b,10)
-return b
-end
-local bh=compact and 32 or 34
-local by=compact and 6 or 11
-local closeB=hbtn("",36,CARD2,TXT,12,by,bh)
-drawX(closeB,TXT,13)
-local resetB=hbtn("Reset",62,rgb(150,52,52),Color3.new(1,1,1),56,by,bh)
-local avB
-if not dock then
-avB=hbtn("👤",38,CARD2,TXT,124,by,bh)
-avB.TextSize=16
-end
-closeB.MouseButton1Click:Connect(function()
-panel.Visible=false
-if ccat.onHide then pcall(ccat.onHide)end
-end)
-local sX=compact and 12 or 186
-local sW=compact and(W - 24)or(W - 186 -(dock and 140 or 190))
-local sY=compact and 48 or 11
-local searchF=mk("Frame",{Position=UDim2.fromOffset(sX,sY),Size=UDim2.fromOffset(sW,compact and 34 or 34),BackgroundColor3=BG0,ZIndex=202},header)
-corner(searchF,17)
-local sst=stroke(searchF,LINE,1.2,0.2)
-local sico=mk("Frame",{Position=UDim2.fromOffset(14,10),Size=UDim2.fromOffset(16,16),BackgroundTransparency=1,ZIndex=203},searchF)
-drawSearch(sico,DIM)
-local searchBox=mk("TextBox",{
-Position=UDim2.fromOffset(38,0),Size=UDim2.new(1,-112,1,0),BackgroundTransparency=1,Text="",
-PlaceholderText="Cari item di catalog Roblox…",PlaceholderColor3=MUTE,ClearTextOnFocus=false,Font=FONT,TextSize=13,
-TextColor3=TXT,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=204,
-},searchF)
-local searchBtn=mk("TextButton",{
-AnchorPoint=Vector2.new(1,0.5),Position=UD2(1,-4,0.5,0),Size=UDim2.fromOffset(62,26),BackgroundColor3=BLUE,
-Text="Cari",Font=FONTB,TextSize=12,TextColor3=Color3.new(1,1,1),AutoButtonColor=false,ZIndex=204,
-},searchF)
-corner(searchBtn,13)
-searchBox.Focused:Connect(function()tween(sst,{Color=TEAL},0.15)end)
-searchBox.FocusLost:Connect(function()tween(sst,{Color=LINE},0.15)end)
-local CATS={
-{key="All",label="All Items",icon="🛍",grp="BROWSE"},
-{key="Head",label="Hats",icon="🎩"},
-{key="Hair",label="Hair",icon="💇"},
-{key="Face",label="Face",icon="🙂"},
-{key="Back",label="Back",icon="🎒"},
-{key="Shoulder",label="Shoulder",icon="🦜"},
-{key="Waist",label="Waist",icon="🧣"},
-{key="Clothes",label="Clothes",icon="👕"},
-{key="KillFx",label="Kill Effects",icon="💥",grp="EFFECTS"},
-{key="Aura",label="Auras",icon="✨"},
-{key="Custom",label="My Items",icon="📁",grp="LIBRARY"},
-{key="Search",label="Results",icon="🔎"},
-}
-local catBtns={}
-local function paintCats()
-for k,b in pairs(catBtns)do
-local on=(k==curCat)
-if b.rail then
-b.rail.Visible=on
-tween(b.btn,{BackgroundTransparency=on and 0 or 1},0.12)
-b.btn.BackgroundColor3=on and CARD or BG1
-b.lbl.TextColor3=on and TXT or DIM
-else
-b.btn.BackgroundColor3=on and TXT or CARD
-b.lbl.TextColor3=on and INK or DIM
-end
-end
-end
-local function selectCat(k)
-curCat=k
-closeDetail()
-paintCats()
-loadView()
-end
-if not compact then
-local sbF=mk("ScrollingFrame",{
-Position=UDim2.fromOffset(0,HDR),Size=UDim2.new(0,SB,1,-HDR),BackgroundColor3=BG1,BorderSizePixel=0,
-ScrollBarThickness=0,CanvasSize=UD2(),AutomaticCanvasSize=Enum.AutomaticSize.Y,ZIndex=201,
-},panel)
-mk("UIPadding",{PaddingTop=UDim.new(0,10),PaddingLeft=UDim.new(0,8),PaddingRight=UDim.new(0,8),PaddingBottom=UDim.new(0,10)},sbF)
-mk("UIListLayout",{Padding=UDim.new(0,3),SortOrder=Enum.SortOrder.LayoutOrder},sbF)
-mk("Frame",{AnchorPoint=Vector2.new(1,0),Position=UD2(1,0,0,HDR),Size=UDim2.new(0,1,1,-HDR),BackgroundColor3=LINE,BackgroundTransparency=0.5,BorderSizePixel=0,ZIndex=202},panel)
-local ord=0
-for _,c in ipairs(CATS)do
-if c.grp then
-ord=ord+1
-mk("TextLabel",{
-Size=UDim2.new(1,0,0,22),BackgroundTransparency=1,Text=c.grp,Font=FONTB,TextSize=10,TextColor3=MUTE,
-TextXAlignment=Enum.TextXAlignment.Left,LayoutOrder=ord,ZIndex=202,
-},sbF)
-end
-ord=ord+1
-local b=mk("TextButton",{
-Size=UDim2.new(1,0,0,34),BackgroundColor3=BG1,BackgroundTransparency=1,Text="",AutoButtonColor=false,
-LayoutOrder=ord,ZIndex=202,
-},sbF)
-corner(b,9)
-local rail=mk("Frame",{Position=UDim2.fromOffset(0,8),Size=UDim2.fromOffset(3,18),BackgroundColor3=TEAL,BorderSizePixel=0,Visible=false,ZIndex=204},b)
-corner(rail,2)
-mk("TextLabel",{Position=UDim2.fromOffset(12,0),Size=UDim2.fromOffset(22,34),BackgroundTransparency=1,Text=c.icon,TextSize=15,Font=FONT,TextColor3=TXT,ZIndex=203},b)
-local lbl=mk("TextLabel",{
-Position=UDim2.fromOffset(40,0),Size=UDim2.new(1,-44,1,0),BackgroundTransparency=1,Text=c.label,Font=FONTB,TextSize=13,
-TextColor3=DIM,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=203,
-},b)
-catBtns[c.key]={btn=b,rail=rail,lbl=lbl}
-local key=c.key
-b.MouseButton1Click:Connect(function()selectCat(key)end)
-b.MouseEnter:Connect(function()if curCat~=key then tween(b,{BackgroundTransparency=0.6,BackgroundColor3=CARD},0.1)end end)
-b.MouseLeave:Connect(function()if curCat~=key then tween(b,{BackgroundTransparency=1},0.1)end end)
-end
-else
-local chips=mk("ScrollingFrame",{
-Position=UDim2.fromOffset(0,HDR),Size=UDim2.new(1,0,0,CHIPS),BackgroundColor3=BG1,BorderSizePixel=0,ScrollBarThickness=0,
-ScrollingDirection=Enum.ScrollingDirection.X,CanvasSize=UD2(),AutomaticCanvasSize=Enum.AutomaticSize.X,ZIndex=201,
-},panel)
-mk("UIPadding",{PaddingLeft=UDim.new(0,12),PaddingRight=UDim.new(0,12),PaddingTop=UDim.new(0,6)},chips)
-mk("UIListLayout",{FillDirection=Enum.FillDirection.Horizontal,Padding=UDim.new(0,6),SortOrder=Enum.SortOrder.LayoutOrder},chips)
-for i,c in ipairs(CATS)do
-local b=mk("TextButton",{
-Size=UDim2.fromOffset(0,28),AutomaticSize=Enum.AutomaticSize.X,BackgroundColor3=CARD,Text="",AutoButtonColor=false,
-LayoutOrder=i,ZIndex=202,
-},chips)
-corner(b,14)
-mk("UIPadding",{PaddingLeft=UDim.new(0,12),PaddingRight=UDim.new(0,12)},b)
-local lbl=mk("TextLabel",{
-Size=UDim2.fromOffset(0,28),AutomaticSize=Enum.AutomaticSize.X,BackgroundTransparency=1,Text=c.icon .. " " .. c.label,
-Font=FONTB,TextSize=12,TextColor3=DIM,ZIndex=203,
-},b)
-catBtns[c.key]={btn=b,lbl=lbl}
-local key=c.key
-b.MouseButton1Click:Connect(function()selectCat(key)end)
-end
-end
-local main=mk("Frame",{
-Position=UDim2.fromOffset(MAINX,MAINY),Size=UDim2.fromOffset(MAINW,H - MAINY),BackgroundTransparency=1,ZIndex=201,
-},panel)
-local TB=42
-crumb=mk("TextLabel",{
-Position=UDim2.fromOffset(14,0),Size=UDim2.new(1,-170,0,TB),BackgroundTransparency=1,Text="",Font=FONTB,TextSize=13,
-TextColor3=TXT,TextXAlignment=Enum.TextXAlignment.Left,RichText=true,ZIndex=202,
-},main)
-sortBtn=mk("TextButton",{
-AnchorPoint=Vector2.new(1,0.5),Position=UD2(1,-12,0,TB/2),Size=UDim2.fromOffset(148,28),BackgroundColor3=CARD,
-Text="",AutoButtonColor=false,ZIndex=202,
-},main)
-corner(sortBtn,14)
-stroke(sortBtn,LINE,1,0.3)
-sortLbl=mk("TextLabel",{
-Size=UD2(1,-26,1,0),Position=UDim2.fromOffset(12,0),BackgroundTransparency=1,Text="",Font=FONTB,TextSize=11,
-TextColor3=TXT,TextXAlignment=Enum.TextXAlignment.Left,TextTruncate=Enum.TextTruncate.AtEnd,ZIndex=203,
-},sortBtn)
-mk("TextLabel",{AnchorPoint=Vector2.new(1,0.5),Position=UD2(1,-10,0.5,0),Size=UDim2.fromOffset(12,12),BackgroundTransparency=1,Text="▾",Font=FONTB,TextSize=12,TextColor3=DIM,ZIndex=203},sortBtn)
-rarRow=mk("ScrollingFrame",{
-AnchorPoint=Vector2.new(0,0.5),Position=UD2(0,14,0,TB/2),Size=UDim2.fromOffset(MAINW - 28,28),
-BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=0,ScrollingDirection=Enum.ScrollingDirection.X,
-CanvasSize=UD2(),AutomaticCanvasSize=Enum.AutomaticSize.X,Visible=false,ZIndex=202,
-},main)
-mk("UIListLayout",{FillDirection=Enum.FillDirection.Horizontal,Padding=UDim.new(0,5),SortOrder=Enum.SortOrder.LayoutOrder},rarRow)
-local rarBtns={}
-local function paintRar()
-for i,b in pairs(rarBtns)do
-local on=(i==rarFilter)
-local col=i==0 and TXT or RAR[i].col
-b.BackgroundColor3=on and col or CARD
-b.TextColor3=on and INK or(i==0 and DIM or col)
-end
-end
-for i=0,#RAR do
-local b=mk("TextButton",{
-Size=UDim2.fromOffset(0,26),AutomaticSize=Enum.AutomaticSize.X,BackgroundColor3=CARD,Text=i==0 and "All" or RAR[i].name,
-Font=FONTB,TextSize=10,TextColor3=DIM,AutoButtonColor=false,LayoutOrder=i,ZIndex=203,
-},rarRow)
-corner(b,13)
-mk("UIPadding",{PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)},b)
-rarBtns[i]=b
-b.MouseButton1Click:Connect(function()
-rarFilter=i
-paintRar()
-rebuildGrid()
-end)
-end
-statusL=mk("TextLabel",{
-Position=UDim2.fromOffset(14,TB - 6),Size=UDim2.new(1,-28,0,14),BackgroundTransparency=1,Text="",Font=FONT,TextSize=11,
-TextColor3=MUTE,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=202,
-},main)
-local GY=TB+12
-grid=mk("ScrollingFrame",{
-Position=UDim2.fromOffset(8,GY),Size=UDim2.new(1,-16,1,-(GY+8)),BackgroundTransparency=1,BorderSizePixel=0,
-ScrollBarThickness=3,ScrollBarImageColor3=LINE,CanvasSize=UD2(),AutomaticCanvasSize=Enum.AutomaticSize.Y,ZIndex=202,
-},main)
-mk("UIPadding",{PaddingLeft=UDim.new(0,4),PaddingRight=UDim.new(0,8),PaddingTop=UDim.new(0,4),PaddingBottom=UDim.new(0,12)},grid)
-gridLayout=mk("UIGridLayout",{CellSize=UDim2.fromOffset(120,180),CellPadding=UDim2.fromOffset(8,8),SortOrder=Enum.SortOrder.LayoutOrder},grid)
-local GRIDW=MAINW - 16 - 12
-local function colsFor(minCell)
-local cols=math.max(2,floor((GRIDW+8)/(minCell+8)))
-if compact then cols=math.max(2,math.min(cols,3))end
-return cols,floor((GRIDW - 8*(cols - 1))/cols)
-end
-local pv=mk("Frame",{
-AnchorPoint=Vector2.new(1,0),Position=UD2(1,dock and 0 or -8,0,HDR+(dock and 0 or 8)),
-Size=dock and UDim2.new(0,PVW,1,-HDR)or UDim2.new(0,PVW,1,-(HDR+16)),
-BackgroundColor3=BG1,Visible=dock,ZIndex=dock and 201 or 260,
-},panel)
-if dock then
-mk("Frame",{Position=UDim2.fromOffset(0,0),Size=UDim2.new(0,1,1,0),BackgroundColor3=LINE,BackgroundTransparency=0.5,BorderSizePixel=0,ZIndex=202},pv)
-else
-corner(pv,14)
-stroke(pv,TEAL,1.4,0.3)
-end
-mk("TextLabel",{
-Position=UDim2.fromOffset(14,10),Size=UDim2.new(1,-28,0,16),BackgroundTransparency=1,Text="AVATAR",Font=FONTB,TextSize=10,
-TextColor3=MUTE,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=pv.ZIndex+1,
-},pv)
-local VPH=clamp(floor(H*0.40),170,250)
-local vpBox=mk("Frame",{Position=UDim2.fromOffset(12,30),Size=UDim2.new(1,-24,0,VPH),BackgroundColor3=CARD,ClipsDescendants=true,ZIndex=pv.ZIndex+1},pv)
-corner(vpBox,12)
-grad(vpBox,rgb(44,56,76),rgb(20,24,33),90)
-stroke(vpBox,LINE,1,0.4)
-local vpf=mk("ViewportFrame",{
-Size=UD2(1,0,1,0),BackgroundTransparency=1,Ambient=rgb(160,164,180),LightColor=rgb(255,244,226),
-LightDirection=V3(-0.4,-0.6,-0.7),ZIndex=pv.ZIndex+2,
-},vpBox)
-local wm=Instance.new("WorldModel")
-wm.Parent=vpf
-local vcam=Instance.new("Camera")
-vcam.FieldOfView=30
-vcam.Parent=vpf
-vpf.CurrentCamera=vcam
-local wearLbl=mk("TextLabel",{
-Position=UDim2.fromOffset(14,30+VPH+10),Size=UDim2.new(1,-28,0,16),BackgroundTransparency=1,Text="WEARING",Font=FONTB,TextSize=10,
-TextColor3=MUTE,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=pv.ZIndex+1,
-},pv)
-local wlY=30+VPH+30
-local wl=mk("ScrollingFrame",{
-Position=UDim2.fromOffset(8,wlY),Size=UDim2.new(1,-16,1,-(wlY+58)),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=2,
-CanvasSize=UD2(),AutomaticCanvasSize=Enum.AutomaticSize.Y,ZIndex=pv.ZIndex+1,
-},pv)
-mk("UIListLayout",{Padding=UDim.new(0,4),SortOrder=Enum.SortOrder.LayoutOrder},wl)
-mk("UIPadding",{PaddingLeft=UDim.new(0,4),PaddingRight=UDim.new(0,4)},wl)
-local bar=mk("Frame",{AnchorPoint=Vector2.new(0,1),Position=UD2(0,10,1,-10),Size=UDim2.new(1,-20,0,38),BackgroundColor3=BG0,ZIndex=pv.ZIndex+1},pv)
-corner(bar,12)
-stroke(bar,LINE,1,0.3)
-local idBox=mk("TextBox",{
-Position=UDim2.fromOffset(12,0),Size=UDim2.new(1,-86,1,0),BackgroundTransparency=1,Text="",PlaceholderText="Asset ID custom…",
-PlaceholderColor3=MUTE,ClearTextOnFocus=false,Font=Enum.Font.Code,TextSize=12,TextColor3=TXT,
-TextXAlignment=Enum.TextXAlignment.Left,ZIndex=pv.ZIndex+2,
-},bar)
-local idBtn=mk("TextButton",{
-AnchorPoint=Vector2.new(1,0.5),Position=UD2(1,-5,0.5,0),Size=UDim2.fromOffset(62,28),BackgroundColor3=GREEN,Text="Pakai",
-Font=FONTB,TextSize=12,TextColor3=INK,AutoButtonColor=false,ZIndex=pv.ZIndex+2,
-},bar)
-corner(idBtn,14)
-local function thumbUrl(id,px)return "rbxthumb://type=Asset&id=" .. tostring(id).. "&w=" .. px .. "&h=" .. px end
-local function mkThumb(parent,id,px,z)
-local box=mk("Frame",{BackgroundColor3=rgb(64,72,92),ClipsDescendants=true,ZIndex=z},parent)
-local img=mk("ImageLabel",{
-Size=UD2(1,0,1,0),BackgroundTransparency=1,Image=thumbUrl(id,px),ImageTransparency=1,ScaleType=Enum.ScaleType.Fit,ZIndex=z+1,
-},box)
-local g=Instance.new("UIGradient")
-g.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,rgb(165,165,165)),ColorSequenceKeypoint.new(0.5,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,rgb(165,165,165))})
-g.Parent=box
-pending[#pending+1]={img=img,g=g,box=box,born=os.clock()}
-return box,img
-end
-local function animStep(dt)
-local t=os.clock()
-for i=#pending,1,-1 do
-local p=pending[i]
-if not p.img:IsDescendantOf(panel)then
-table.remove(pending,i)
-else
-p.g.Offset=Vector2.new(((t*0.9)%2)- 1,0)
-local loaded=false
-pcall(function()loaded=p.img.IsLoaded end)
-if loaded or t - p.born>12 then
-tween(p.img,{ImageTransparency=0},0.25)
-p.g:Destroy()
-p.box.BackgroundColor3=CARD2
-table.remove(pending,i)
-end
-end
-end
-for i=#gridAnims,1,-1 do
-local ok=pcall(gridAnims[i],t,dt)
-if not ok then table.remove(gridAnims,i)end
-end
-if pvCenter and vpf.Parent then
-local a=t*0.55
-local d=(pvSize and pvSize.Y or 5.5)*2.0+1
-vcam.CFrame=CFrame.lookAt(pvCenter+V3(sin(a)*d,(pvSize and pvSize.Y or 5)*0.06,cos(a)*d),pvCenter)
-end
-psg.Rotation=(t*20)%360
-end
-local function startAnim()
-if animConn then return end
-animConn=RunService.RenderStepped:Connect(animStep)
-end
-local function stopAnim()
-if animConn then animConn:Disconnect()animConn=nil end
-end
-local pvTok=0
-local function pvBuild()
-if not panel.Visible or not pv.Visible then return end
-wm:ClearAllChildren()
-pvCenter=nil
-local ch=player.Character
-if not ch then return end
-local was=ch.Archivable
-ch.Archivable=true
-local ok,cl=pcall(function()return ch:Clone()end)
-ch.Archivable=was
-if not ok or not cl then return end
-for _,d in ipairs(cl:GetDescendants())do
-if d:IsA("BaseScript")or d:IsA("Sound")or d:IsA("ParticleEmitter")or d:IsA("Beam")or d:IsA("Trail")or d:IsA("BillboardGui")
-or d:IsA("SurfaceGui")or d:IsA("Highlight")or d:IsA("Light")or d:IsA("Fire")or d:IsA("Smoke")then
-pcall(function()d:Destroy()end)
-end
-end
-local af=cl:FindFirstChild(".ccat_aura")
-if af then af:Destroy()end
-for _,d in ipairs(cl:GetDescendants())do
-if d:IsA("BasePart")then d.Anchored=true end
-end
-cl.Parent=wm
-pcall(function()cl:PivotTo(CFrame.new(0,0,0))end)
-local hum=cl:FindFirstChildOfClass("Humanoid")
-if hum then pcall(function()hum.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None end)end
-local okB,cf,sz=pcall(function()return cl:GetBoundingBox()end)
-if okB then
-pvCenter=cf.Position
-pvSize=sz
-end
-end
-local function pvSoon()
-pvTok=pvTok+1
-local tok=pvTok
-task.delay(0.6,function()
-if tok==pvTok then pcall(pvBuild)end
-end)
-end
-wlRebuild=function()
-for _,c in ipairs(wl:GetChildren())do
-if c:IsA("GuiObject")then c:Destroy()end
-end
-local n,order=0,0
-local function row(iconText,thumbId,title,sub,onRemove)
-n=n+1
-order=order+1
-local r=mk("Frame",{Size=UDim2.new(1,0,0,38),BackgroundColor3=CARD,LayoutOrder=order,ZIndex=pv.ZIndex+2},wl)
-corner(r,10)
-if thumbId then
-local tb=mkThumb(r,thumbId,60,pv.ZIndex+3)
-tb.Position=UDim2.fromOffset(5,5)
-tb.Size=UDim2.fromOffset(28,28)
-corner(tb,7)
-else
-local ib=mk("Frame",{Position=UDim2.fromOffset(5,5),Size=UDim2.fromOffset(28,28),BackgroundColor3=CARD2,ZIndex=pv.ZIndex+3},r)
-corner(ib,7)
-mk("TextLabel",{Size=UD2(1,0,1,0),BackgroundTransparency=1,Text=iconText,TextSize=14,Font=FONTB,TextColor3=TXT,ZIndex=pv.ZIndex+4},ib)
-end
-mk("TextLabel",{
-Position=UDim2.fromOffset(39,4),Size=UDim2.new(1,-78,0,16),BackgroundTransparency=1,Text=title,Font=FONTB,TextSize=11,
-TextColor3=TXT,TextXAlignment=Enum.TextXAlignment.Left,TextTruncate=Enum.TextTruncate.AtEnd,ZIndex=pv.ZIndex+3,
-},r)
-mk("TextLabel",{
-Position=UDim2.fromOffset(39,20),Size=UDim2.new(1,-78,0,13),BackgroundTransparency=1,Text=sub,Font=FONT,TextSize=10,
-TextColor3=MUTE,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=pv.ZIndex+3,
-},r)
-if onRemove then
-local x=mk("TextButton",{
-AnchorPoint=Vector2.new(1,0.5),Position=UD2(1,-6,0.5,0),Size=UDim2.fromOffset(24,24),BackgroundColor3=CARD2,Text="",
-AutoButtonColor=false,ZIndex=pv.ZIndex+3,
-},r)
-corner(x,12)
-drawX(x,DIM,9)
-x.MouseButton1Click:Connect(onRemove)
-end
-end
-if ccat.auraStyle and AURA_BY[ccat.auraStyle]then
-local a=AURA_BY[ccat.auraStyle]
-row("✨",nil,a.name,"Aura · " .. RAR[a.rar].name,function()U.ccatStopAura()end)
-end
-if state.selected then
-row("💥",nil,tostring(state.selected),"Kill effect",nil)
-end
-local arr={}
-for k,v in pairs(ccat.on)do arr[#arr+1]={k=k,v=v}end
-table.sort(arr,function(a,b)return tostring(a.v.name)<tostring(b.v.name)end)
-for _,e in ipairs(arr)do
-row("",e.v.id,tostring(e.v.name),e.v.fallback and "tag (preview)" or "Accessory",function()
-U.ccatUnequip(e.k)
-refreshAll()
-end)
-end
-local total=(ccat.auraStyle and 1 or 0)+#arr
-wearLbl.Text="WEARING (" .. total .. ")"
-worn.Text=total .. " dipakai"
-if n==0 then
-mk("TextLabel",{
-Size=UDim2.new(1,0,0,40),BackgroundTransparency=1,Text="Belum ada item.\nPilih dari catalog →",Font=FONT,TextSize=11,
-TextColor3=MUTE,LayoutOrder=1,ZIndex=pv.ZIndex+2,
-},wl)
-end
-end
-local function wearToggle(it,done)
-local k=tostring(it.id)
-if ccat.on[k]then
-U.ccatUnequip(k)
-note("Lepas: " .. tostring(it.name))
-refreshAll()
-if done then done()end
-return
-end
-task.spawn(function()
-local ok,err=U.ccatEquip(it.id,k,it.name)
-if ok then
-note((err and "Tag: " or "Pakai: ").. tostring(it.name))
-else
-note(tostring(err or "gagal"))
-end
-refreshAll()
-if done then done()end
-end)
-end
-local function rarGrad(i)
-local r=RAR[i]
-if i==8 then
-return ColorSequence.new({
-ColorSequenceKeypoint.new(0,r.col),ColorSequenceKeypoint.new(0.35,Color3.new(1,1,1)),
-ColorSequenceKeypoint.new(0.7,r.col2),ColorSequenceKeypoint.new(1,r.col),
-})
-end
-return ColorSequence.new(r.col,r.col2)
-end
-local function richPrice(label,kind)
-if kind=="paid" then return '<font color="#FFC442"><b>R$</b></font> <b>' .. label .. "</b>" end
-if kind=="free" then return '<font color="#4ADE80"><b>Free</b></font>' end
-if kind=="off" then return '<font color="#8A93A6">Off sale</font>' end
-return '<font color="#66708A">···</font>'
-end
-local function makeAssetCard(it,order,cellW)
-local ts=cellW - 16
-local cell=mk("TextButton",{BackgroundColor3=CARD,Text="",AutoButtonColor=false,LayoutOrder=order,ZIndex=203},grid)
-corner(cell,12)
-local st=stroke(cell,LINE,1,0.55)
-local tb=mkThumb(cell,it.id,150,204)
-tb.Position=UDim2.fromOffset(8,8)
-tb.Size=UDim2.fromOffset(ts,ts)
-corner(tb,9)
-local badgeW=mk("TextLabel",{
-Position=UDim2.fromOffset(14,14),Size=UDim2.fromOffset(58,16),BackgroundColor3=GREEN,Text="WEARING",Font=FONTB,TextSize=9,
-TextColor3=INK,Visible=false,ZIndex=208,
-},cell)
-corner(badgeW,8)
-local badgeL=mk("TextLabel",{
-AnchorPoint=Vector2.new(1,0),Position=UD2(1,-14,0,14),Size=UDim2.fromOffset(52,16),BackgroundColor3=rgb(24,20,10),Text="LIMITED",
-Font=FONTB,TextSize=9,TextColor3=GOLD,Visible=false,ZIndex=208,
-},cell)
-corner(badgeL,8)
-stroke(badgeL,GOLD,1,0.2)
-local nameL=mk("TextLabel",{
-Position=UDim2.fromOffset(10,ts+12),Size=UDim2.new(1,-20,0,30),BackgroundTransparency=1,Text=tostring(it.name),Font=FONTB,
-TextSize=compact and 11 or 12,TextColor3=TXT,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,
-TextYAlignment=Enum.TextYAlignment.Top,TextTruncate=Enum.TextTruncate.AtEnd,ZIndex=205,
-},cell)
-local priceL=mk("TextLabel",{
-Position=UDim2.fromOffset(10,ts+44),Size=UDim2.new(1,-52,0,22),BackgroundTransparency=1,Text="",Font=FONT,TextSize=12,
-TextColor3=TXT,TextXAlignment=Enum.TextXAlignment.Left,RichText=true,ZIndex=205,
-},cell)
-local quick=mk("TextButton",{
-AnchorPoint=Vector2.new(1,0),Position=UD2(1,-8,0,ts+43),Size=UDim2.fromOffset(26,24),BackgroundColor3=CARD2,Text="+",
-Font=FONTK,TextSize=16,TextColor3=TXT,AutoButtonColor=false,ZIndex=206,
-},cell)
-corner(quick,12)
-local info
-local function refreshPrice()
-local lbl,kind=priceLabel(it,info)
-priceL.Text=richPrice(lbl,kind)
-end
-local function upd()
-local on=ccat.on[tostring(it.id)]~=nil
-badgeW.Visible=on
-st.Color=on and GREEN or LINE
-st.Transparency=on and 0.1 or 0.55
-st.Thickness=on and 2 or 1
-quick.Text=on and "✓" or "+"
-quick.BackgroundColor3=on and GREEN or CARD2
-quick.TextColor3=on and INK or TXT
-end
-upd()
-refreshPrice()
-if not it.live or it.price==nil then
-getInfo(it.id,function(inf)
-info=inf
-if not cell.Parent then return end
-refreshPrice()
-if inf.IsLimited or inf.IsLimitedUnique then badgeL.Visible=true end
-if it.cat=="Custom" and tostring(it.name):find("^Custom ")and inf.Name then
-it.name=inf.Name
-nameL.Text=inf.Name
-if saveSoon then saveSoon()end
-end
-end)
-end
-cell.MouseEnter:Connect(function()tween(cell,{BackgroundColor3=CARD2},0.12)end)
-cell.MouseLeave:Connect(function()tween(cell,{BackgroundColor3=CARD},0.12)end)
-cell.MouseButton1Click:Connect(function()openDetail(it,"asset")end)
-quick.MouseButton1Click:Connect(function()
-quick.Text="…"
-wearToggle(it)
-end)
-cards[#cards+1]={upd=upd}
-end
-local function makeKillCard(e,order,cellW)
-local cell=mk("TextButton",{BackgroundColor3=CARD,Text="",AutoButtonColor=false,LayoutOrder=order,ZIndex=203},grid)
-corner(cell,12)
-local st=stroke(cell,LINE,1,0.55)
-local col=e.color or GOLD
-local sw=mk("Frame",{Position=UDim2.fromOffset(8,8),Size=UDim2.fromOffset(cellW - 16,cellW - 40),BackgroundColor3=col,ZIndex=204},cell)
-corner(sw,10)
-grad(sw,col:Lerp(Color3.new(1,1,1),0.25),col:Lerp(Color3.new(0,0,0),0.55),60)
-mk("TextLabel",{Size=UD2(1,0,1,0),BackgroundTransparency=1,Text=tostring(e.icon or "✦"),Font=FONTK,TextSize=compact and 28 or 30,TextColor3=Color3.new(1,1,1),ZIndex=205},sw)
-mk("TextLabel",{
-Position=UDim2.fromOffset(8,cellW - 28),Size=UDim2.new(1,-16,0,20),BackgroundTransparency=1,Text=e.name,Font=FONTB,TextSize=11,
-TextColor3=TXT,TextTruncate=Enum.TextTruncate.AtEnd,ZIndex=205,
-},cell)
-local tag=mk("TextLabel",{
-Position=UDim2.fromOffset(14,14),Size=UDim2.fromOffset(60,16),BackgroundColor3=GREEN,Text="SELECTED",Font=FONTB,TextSize=9,
-TextColor3=INK,Visible=false,ZIndex=208,
-},cell)
-corner(tag,8)
-local function upd()
-local on=state.selected==e.name
-tag.Visible=on
-st.Color=on and GREEN or LINE
-st.Transparency=on and 0.1 or 0.55
-st.Thickness=on and 2 or 1
-end
-upd()
-cell.MouseEnter:Connect(function()tween(cell,{BackgroundColor3=CARD2},0.12)end)
-cell.MouseLeave:Connect(function()tween(cell,{BackgroundColor3=CARD},0.12)end)
-cell.MouseButton1Click:Connect(function()
-state.selected=e.name
-if saveSoon then saveSoon()end
-note("Kill effect: " .. e.name)
-refreshAll()
-end)
-cards[#cards+1]={upd=upd}
-end
-local function makeAuraCard(a,order,cellW,cellH)
-local r=RAR[a.rar]
-local cell=mk("TextButton",{BackgroundColor3=BG1,Text="",AutoButtonColor=false,LayoutOrder=order,ZIndex=203,ClipsDescendants=true},grid)
-corner(cell,12)
-grad(cell,r.col:Lerp(BG0,0.82),BG0,120)
-local st=stroke(cell,r.col,1.2,0.45)
-local stg
-if false then
-st.Color=Color3.new(1,1,1)
-stg=Instance.new("UIGradient")
-stg.Color=rarGrad(a.rar)
-stg.Parent=st
-end
-local cx=cellW/2
-local g1=mk("Frame",{AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.fromOffset(cx,46),Size=UDim2.fromOffset(86,86),BackgroundColor3=a.c1,BackgroundTransparency=0.9,ZIndex=204},cell)
-corner(g1,43)
-local g2=mk("Frame",{AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.fromOffset(cx,46),Size=UDim2.fromOffset(64,64),BackgroundColor3=a.c1,BackgroundTransparency=0.8,ZIndex=204},cell)
-corner(g2,32)
-local orb=mk("Frame",{AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.fromOffset(cx,46),Size=UDim2.fromOffset(40,40),BackgroundColor3=a.c1,ZIndex=206},cell)
-corner(orb,20)
-local og=grad(orb,a.c2,a.c1,45)
-stroke(orb,Color3.new(1,1,1),1.5,0.35)
-local orbitF=mk("Frame",{AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.fromOffset(cx,46),Size=UDim2.fromOffset(78,78),BackgroundTransparency=1,ZIndex=207},cell)
-for i=0,2 do
-local ang=i/3*math.pi*2
-local dot=mk("Frame",{
-AnchorPoint=Vector2.new(0.5,0.5),Position=UD2(0.5+cos(ang)*0.5,0,0.5+sin(ang)*0.5,0),Size=UDim2.fromOffset(i==0 and 7 or 5,i==0 and 7 or 5),
-BackgroundColor3=a.c2,ZIndex=207,
-},orbitF)
-corner(dot,4)
-end
-mk("TextLabel",{
-Position=UDim2.fromOffset(6,90),Size=UDim2.new(1,-12,0,18),BackgroundTransparency=1,Text=a.name,Font=FONTK,TextSize=13,
-TextColor3=TXT,TextTruncate=Enum.TextTruncate.AtEnd,ZIndex=205,
-},cell)
-local rl=mk("TextLabel",{
-Position=UDim2.fromOffset(6,108),Size=UDim2.new(1,-12,0,14),BackgroundTransparency=1,Text=r.name:upper(),Font=FONTB,TextSize=10,
-TextColor3=Color3.new(1,1,1),ZIndex=205,
-},cell)
-local rg=Instance.new("UIGradient")
-rg.Color=rarGrad(a.rar)
-rg.Parent=rl
-local eq=mk("TextLabel",{
-Position=UDim2.fromOffset(6,cellH - 26),Size=UDim2.new(1,-12,0,20),BackgroundColor3=CARD2,Text="EQUIP",Font=FONTB,TextSize=10,
-TextColor3=TXT,ZIndex=205,
-},cell)
-corner(eq,10)
-local function upd()
-local on=ccat.auraStyle==a.key
-eq.Text=on and "EQUIPPED" or "EQUIP"
-eq.BackgroundColor3=on and GREEN or CARD2
-eq.TextColor3=on and INK or TXT
-if not stg then
-st.Color=on and Color3.new(1,1,1)or r.col
-st.Transparency=on and 0.05 or 0.45
-end
-end
-upd()
-local seed=order*0.7
-gridAnims[#gridAnims+1]=function(t)
-if not cell.Parent then error("gone")end
-orbitF.Rotation=(t*60+seed*40)%360
-local p=0.5+0.5*sin(t*2+seed)
-g1.BackgroundTransparency=0.88+0.06*p
-g2.BackgroundTransparency=0.76+0.08*p
-if false then
-og.Rotation=(t*80)%360
-if stg then stg.Rotation=(t*90)%360 end
-rg.Offset=Vector2.new(((t*0.4)%2)- 1,0)
-end
-end
-cell.MouseButton1Click:Connect(function()openDetail(a,"aura")end)
-cards[#cards+1]={upd=upd}
-end
-local function refreshStates()
-for _,c in ipairs(cards)do pcall(c.upd)end
-end
-refreshAll=function()
-refreshStates()
-wlRebuild()
-pvSoon()
-if detail and detail.upd then pcall(detail.upd)end
-end
-ccat.onChange=refreshAll
-local function clearGrid()
-for _,c in ipairs(grid:GetChildren())do
-if c:IsA("GuiObject")then c:Destroy()end
-end
-cards={}
-gridAnims={}
-grid.CanvasPosition=Vector2.new(0,0)
-end
-local function crumbText()
-local nameOf={All="All Items",Head="Hats",Hair="Hair",Face="Face",Back="Back",Shoulder="Shoulder",Waist="Waist",Clothes="Clothes",KillFx="Kill Effects",Aura="Auras",Custom="My Items",Search="Results"}
-local root=(curCat=="KillFx" or curCat=="Aura")and "Effects" or((curCat=="Custom" or curCat=="Search")and "Library" or "Accessories")
-local s='<font color="#66708A">Catalog  ›  ' .. root .. "  ›  </font>" ..(nameOf[curCat]or curCat)
-if curCat=="Search" and searchText~="" then s=s .. '  <font color="#66708A">"' .. searchText:gsub("[<>&]","").. '"</font>' end
-return s
-end
-local function setStatus(s)statusL.Text=s or "" end
-local function appendAssetCards(list)
-local cols,cw=colsFor(compact and 100 or 128)
-gridLayout.CellSize=UDim2.fromOffset(cw,cw+58)
-local base=#cards
-for i,it in ipairs(list)do makeAssetCard(it,base+i,cw)end
-end
-rebuildGrid=function()
-clearGrid()
-crumb.Text=crumbText()
-local isAcc=not(curCat=="KillFx" or curCat=="Aura" or curCat=="Custom")
-sortBtn.Visible=isAcc
-rarRow.Visible=(curCat=="Aura")
-crumb.Visible=curCat~="Aura"
-if curCat=="Aura" then
-local list={}
-for _,a in ipairs(AURAS)do
-if rarFilter==0 or a.rar==rarFilter then list[#list+1]=a end
-end
-setStatus(#list .. " aura  ·  makin tinggi rarity, makin detail efeknya")
-local cols,cw=colsFor(compact and 140 or 150)
-local chh=166
-gridLayout.CellSize=UDim2.fromOffset(cw,chh)
-for i,a in ipairs(list)do makeAuraCard(a,i,cw,chh)end
-return
-end
-if curCat=="KillFx" then
-setStatus(#EFFECTS .. " kill effect  ·  klik untuk memilih")
-local cols,cw=colsFor(compact and 100 or 120)
-gridLayout.CellSize=UDim2.fromOffset(cw,cw)
-for i,e in ipairs(EFFECTS)do makeKillCard(e,i,cw)end
-return
-end
-if view.loading and#view.items==0 then
-setStatus("Memuat catalog…")
-local cols,cw=colsFor(compact and 100 or 128)
-gridLayout.CellSize=UDim2.fromOffset(cw,cw+58)
-for i=1,cols*3 do
-local sk=mk("Frame",{BackgroundColor3=CARD2,LayoutOrder=i,ZIndex=203},grid)
-corner(sk,12)
-local g=Instance.new("UIGradient")
-g.Color=ColorSequence.new({ColorSequenceKeypoint.new(0,rgb(175,175,175)),ColorSequenceKeypoint.new(0.5,Color3.new(1,1,1)),ColorSequenceKeypoint.new(1,rgb(175,175,175))})
-g.Parent=sk
-gridAnims[#gridAnims+1]=function(t)
-if not sk.Parent then error("gone")end
-g.Offset=Vector2.new(((t*0.8+i*0.1)%2)- 1,0)
-end
-end
-return
-end
-local list=view.items
-if#list==0 then
-setStatus("")
-local msg=curCat=="Custom" and "Belum ada item custom.\nMasukkan Asset ID di panel kanan." or
-(curCat=="Search" and "Tidak ada hasil.\nCoba kata kunci lain." or "Tidak ada item.")
-mk("TextLabel",{Size=UDim2.fromOffset(300,80),BackgroundTransparency=1,Text=msg,Font=FONTB,TextSize=13,TextColor3=MUTE,ZIndex=203},grid)
-return
-end
-local live=view.live and "live catalog" or "daftar offline"
-setStatus(#list .. " item  ·  " .. live ..(view.finished and "" or "  ·  scroll untuk memuat lagi"))
-appendAssetCards(list)
-end
-local function sortLabel()
-for _,s in ipairs(SORTS)do
-if s.key==sortKey then return s.label end
-end
-return "Sort"
-end
-loadView=function()
-view.token=view.token+1
-local tok=view.token
-view.items,view.pages,view.finished,view.loading={},nil,true,false
-sortLbl.Text=sortLabel()
-if curCat=="KillFx" or curCat=="Aura" then
-rebuildGrid()
-return
-end
-if curCat=="Custom" then
-view.live=false
-if type(state.ccatCustom)=="table" then
-for _,it in ipairs(state.ccatCustom)do view.items[#view.items+1]=it end
-end
-rebuildGrid()
-return
-end
-local isSearch=curCat=="Search"
-local keyword=isSearch and searchText or ""
-local catKey=isSearch and "All" or curCat
-view.catKey=catKey
-if isSearch and#keyword<2 then
-view.live=false
-rebuildGrid()
-return
-end
-view.loading=true
-rebuildGrid()
-task.spawn(function()
-local pages,items=liveOpen(catKey,keyword,sortKey)
-if tok~=view.token then return end
-view.loading=false
-if pages and#items>0 then
-view.pages=pages
-view.items=items
-pcall(function()view.finished=pages.IsFinished end)
-view.live=true
-else
-view.live=false
-if isSearch then
-local its=U.ccatSearch(keyword,40)
-view.items=its or{}
-else
-for _,it in ipairs(CCAT_PRESETS)do
-if catKey=="All" or it.cat==catKey then view.items[#view.items+1]=it end
-end
-if type(state.ccatCustom)=="table" then
-for _,it in ipairs(state.ccatCustom)do
-if catKey=="All" or it.cat==catKey then view.items[#view.items+1]=it end
-end
-end
-end
-view.finished=true
-end
-rebuildGrid()
-end)
-end
-loadMore=function()
-if view.loading or view.finished or not view.pages then return end
-view.loading=true
-local tok=view.token
-task.spawn(function()
-local items,fin=liveNext(view.pages,view.catKey)
-if tok~=view.token then return end
-view.loading=false
-view.finished=fin
-local seen={}
-for _,it in ipairs(view.items)do seen[it.id]=true end
-local added={}
-for _,it in ipairs(items)do
-if not seen[it.id]then
-seen[it.id]=true
-added[#added+1]=it
-view.items[#view.items+1]=it
-end
-end
-if#added>0 and(curCat~="KillFx" and curCat~="Aura" and curCat~="Custom")then appendAssetCards(added)end
-setStatus(#view.items .. " item  ·  live catalog" ..(view.finished and "" or "  ·  scroll untuk memuat lagi"))
-end)
-end
-grid:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
-if view.live and not view.finished and not view.loading then
-if grid.CanvasPosition.Y+grid.AbsoluteWindowSize.Y>grid.AbsoluteCanvasSize.Y - 260 then loadMore()end
-end
-end)
-local function closeSort()
-if sortMenu then sortMenu:Destroy()sortMenu=nil end
-end
-sortBtn.MouseButton1Click:Connect(function()
-if sortMenu then closeSort()return end
-local shield=mk("TextButton",{Size=UD2(1,0,1,0),BackgroundTransparency=1,Text="",ZIndex=280},panel)
-sortMenu=shield
-shield.MouseButton1Click:Connect(closeSort)
-local ap=sortBtn.AbsolutePosition - panel.AbsolutePosition
-local m=mk("Frame",{
-Position=UDim2.fromOffset(math.max(8,ap.X+sortBtn.AbsoluteSize.X - 190),ap.Y+32),Size=UDim2.fromOffset(190,#SORTS*32+10),
-BackgroundColor3=CARD,ZIndex=281,Active=true,
-},shield)
-corner(m,12)
-stroke(m,LINE,1,0.2)
-for i,s in ipairs(SORTS)do
-local on=s.key==sortKey
-local o=mk("TextButton",{
-Position=UDim2.fromOffset(5,5+(i - 1)*32),Size=UDim2.new(1,-10,0,30),BackgroundColor3=on and CARD2 or CARD,Text=s.label,
-Font=on and FONTB or FONT,TextSize=12,TextColor3=on and TEAL or TXT,AutoButtonColor=false,ZIndex=282,
-},m)
-corner(o,8)
-o.MouseButton1Click:Connect(function()
-sortKey=s.key
-closeSort()
-loadView()
-end)
-end
-end)
-closeDetail=function()
-if detail and detail.ov then detail.ov:Destroy()end
-detail=nil
-end
-openDetail=function(it,kind)
-closeDetail()
-local ov=mk("TextButton",{Size=UD2(1,0,1,0),BackgroundColor3=Color3.new(0,0,0),BackgroundTransparency=1,Text="",AutoButtonColor=false,ZIndex=300},panel)
-tween(ov,{BackgroundTransparency=0.4},0.18)
-ov.MouseButton1Click:Connect(closeDetail)
-local dw=math.min(W - 24,580)
-local dh=compact and math.min(H - 24,560)or 340
-local card=mk("Frame",{
-AnchorPoint=Vector2.new(0.5,0.5),Position=UD2(0.5,0,0.5,14),Size=UDim2.fromOffset(dw,dh),BackgroundColor3=BG1,Active=true,
-ClipsDescendants=true,ZIndex=301,
-},ov)
-corner(card,16)
-stroke(card,kind=="aura" and RAR[it.rar].col or LINE,1.5,0.3)
-tween(card,{Position=UD2(0.5,0,0.5,0)},0.2)
-local cx=mk("TextButton",{AnchorPoint=Vector2.new(1,0),Position=UD2(1,-10,0,10),Size=UDim2.fromOffset(30,30),BackgroundColor3=CARD2,Text="",AutoButtonColor=false,ZIndex=310},card)
-corner(cx,15)
-drawX(cx,TXT,11)
-cx.MouseButton1Click:Connect(closeDetail)
-detail={ov=ov}
-local ts=compact and 150 or 240
-local rx=compact and 16 or(ts+36)
-local ry=compact and(ts+28)or 18
-local rw=dw - rx - 16
-if compact then rw=dw - 32 end
-if kind=="aura" then
-local a=it
-local r=RAR[a.rar]
-local art=mk("Frame",{Position=UDim2.fromOffset(16,16),Size=UDim2.fromOffset(ts,ts),BackgroundColor3=BG0,ClipsDescendants=true,ZIndex=302},card)
-corner(art,14)
-grad(art,r.col:Lerp(BG0,0.7),BG0,130)
-stroke(art,r.col,1.5,0.4)
-local cxx=ts/2
-for i,d in ipairs({{0.96,0.92},{0.74,0.86},{0.54,0.76}})do
-local gl=mk("Frame",{AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.fromOffset(cxx,cxx),Size=UDim2.fromOffset(ts*d[1],ts*d[1]),BackgroundColor3=a.c1,BackgroundTransparency=d[2],ZIndex=303},art)
-corner(gl,ts)
-gridAnims[#gridAnims+1]=function(t)
-if not gl.Parent then error("gone")end
-gl.BackgroundTransparency=d[2]- 0.05*sin(t*2+i)
-end
-end
-local orb=mk("Frame",{AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.fromOffset(cxx,cxx),Size=UDim2.fromOffset(ts*0.3,ts*0.3),BackgroundColor3=a.c1,ZIndex=305},art)
-corner(orb,ts)
-local og=grad(orb,a.c2,a.c1,45)
-stroke(orb,Color3.new(1,1,1),2,0.3)
-local ofr=mk("Frame",{AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.fromOffset(cxx,cxx),Size=UDim2.fromOffset(ts*0.8,ts*0.8),BackgroundTransparency=1,ZIndex=306},art)
-for i=0,5 do
-local ang=i/6*math.pi*2
-local dot=mk("Frame",{
-AnchorPoint=Vector2.new(0.5,0.5),Position=UD2(0.5+cos(ang)*0.5,0,0.5+sin(ang)*0.5,0),Size=UDim2.fromOffset(i%2==0 and 9 or 6,i%2==0 and 9 or 6),
-BackgroundColor3=(i%2==0)and a.c2 or a.c1,ZIndex=306,
-},ofr)
-corner(dot,5)
-end
-gridAnims[#gridAnims+1]=function(t)
-if not ofr.Parent then error("gone")end
-ofr.Rotation=(t*50)%360
-og.Rotation=(t*70)%360
-end
-local tl=mk("TextLabel",{
-Position=UDim2.fromOffset(rx,ry),Size=UDim2.fromOffset(rw - 40,14),BackgroundTransparency=1,Text=r.name:upper().. "  AURA",Font=FONTB,TextSize=11,
-TextColor3=Color3.new(1,1,1),TextXAlignment=Enum.TextXAlignment.Left,ZIndex=302,
-},card)
-local tg=Instance.new("UIGradient")
-tg.Color=rarGrad(a.rar)
-tg.Parent=tl
-mk("TextLabel",{
-Position=UDim2.fromOffset(rx,ry+16),Size=UDim2.fromOffset(rw - 40,32),BackgroundTransparency=1,Text=a.name,Font=FONTK,TextSize=26,
-TextColor3=TXT,TextXAlignment=Enum.TextXAlignment.Left,TextTruncate=Enum.TextTruncate.AtEnd,ZIndex=302,
-},card)
-mk("TextLabel",{
-Position=UDim2.fromOffset(rx,ry+76),Size=UDim2.fromOffset(rw,44),BackgroundTransparency=1,Text=a.tag,Font=FONT,TextSize=12,TextColor3=DIM,
-TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,TextYAlignment=Enum.TextYAlignment.Top,ZIndex=302,
-},card)
-local chipsF=mk("Frame",{Position=UDim2.fromOffset(rx,ry+124),Size=UDim2.fromOffset(rw,70),BackgroundTransparency=1,ZIndex=302},card)
-mk("UIListLayout",{FillDirection=Enum.FillDirection.Horizontal,Wraps=true,Padding=UDim.new(0,5),SortOrder=Enum.SortOrder.LayoutOrder},chipsF)
-for i,tgt in ipairs(auraTags(a))do
-local c=mk("TextLabel",{
-Size=UDim2.fromOffset(0,22),AutomaticSize=Enum.AutomaticSize.X,BackgroundColor3=CARD,Text=tgt,Font=FONTB,TextSize=10,TextColor3=r.col,
-LayoutOrder=i,ZIndex=303,
-},chipsF)
-corner(c,11)
-mk("UIPadding",{PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)},c)
-end
-local act=mk("TextButton",{
-AnchorPoint=Vector2.new(0,1),Position=UD2(0,rx,1,-16),Size=UDim2.fromOffset(math.min(rw,200),42),BackgroundColor3=BLUE,Text="",
-Font=FONTB,TextSize=14,TextColor3=Color3.new(1,1,1),AutoButtonColor=false,ZIndex=305,
-},card)
-corner(act,12)
-act.Text=""
-local function upd()
-local on=ccat.auraStyle==a.key
-act.Text=on and "Unequip Aura" or "Equip Aura"
-act.BackgroundColor3=on and CARD2 or BLUE
-act.TextColor3=on and TXT or Color3.new(1,1,1)
-end
-upd()
-detail.upd=upd
-act.MouseButton1Click:Connect(function()
-if ccat.auraStyle==a.key then
-U.ccatStopAura()
-note("Aura dimatikan")
-else
-U.ccatSetAura(a.key)
-note("Aura: " .. a.name)
-end
-refreshAll()
-end)
-return
-end
-local tb=mkThumb(card,it.id,420,302)
-tb.Position=UDim2.fromOffset(16,16)
-tb.Size=UDim2.fromOffset(ts,ts)
-corner(tb,14)
-stroke(tb,LINE,1,0.4)
-local catName=({Head="Hat",Hair="Hair",Face="Face",Back="Back",Shoulder="Shoulder",Waist="Waist",Clothes="Clothes",Custom="Custom",Search="Accessory"})[it.cat]or "Accessory"
-local pill=mk("TextLabel",{
-Position=UDim2.fromOffset(rx,ry),Size=UDim2.fromOffset(0,20),AutomaticSize=Enum.AutomaticSize.X,BackgroundColor3=CARD2,Text=catName:upper(),
-Font=FONTB,TextSize=10,TextColor3=TEAL,ZIndex=302,
-},card)
-corner(pill,10)
-mk("UIPadding",{PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)},pill)
-local lim=mk("TextLabel",{
-Position=UDim2.fromOffset(rx+90,ry),Size=UDim2.fromOffset(0,20),AutomaticSize=Enum.AutomaticSize.X,BackgroundColor3=rgb(24,20,10),Text="LIMITED",
-Font=FONTB,TextSize=10,TextColor3=GOLD,Visible=false,ZIndex=302,
-},card)
-corner(lim,10)
-stroke(lim,GOLD,1,0.2)
-mk("UIPadding",{PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)},lim)
-local nameL=mk("TextLabel",{
-Position=UDim2.fromOffset(rx,ry+26),Size=UDim2.fromOffset(rw - 36,52),BackgroundTransparency=1,Text=tostring(it.name),Font=FONTK,TextSize=20,
-TextColor3=TXT,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,TextYAlignment=Enum.TextYAlignment.Top,TextTruncate=Enum.TextTruncate.AtEnd,ZIndex=302,
-},card)
-local byL=mk("TextLabel",{
-Position=UDim2.fromOffset(rx,ry+80),Size=UDim2.fromOffset(rw,16),BackgroundTransparency=1,Text=it.creator and("By  <b>" .. tostring(it.creator).. "</b>")or "By  ···",
-RichText=true,Font=FONT,TextSize=12,TextColor3=DIM,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=302,
-},card)
-local priceL=mk("TextLabel",{
-Position=UDim2.fromOffset(rx,ry+102),Size=UDim2.fromOffset(rw,30),BackgroundTransparency=1,Text="",RichText=true,Font=FONT,TextSize=22,
-TextColor3=TXT,TextXAlignment=Enum.TextXAlignment.Left,ZIndex=302,
-},card)
-local descL=mk("TextLabel",{
-Position=UDim2.fromOffset(rx,ry+138),Size=UDim2.fromOffset(rw,compact and 70 or 64),BackgroundTransparency=1,Text="Memuat deskripsi…",Font=FONT,TextSize=11,
-TextColor3=MUTE,TextWrapped=true,TextXAlignment=Enum.TextXAlignment.Left,TextYAlignment=Enum.TextYAlignment.Top,TextTruncate=Enum.TextTruncate.AtEnd,ZIndex=302,
-},card)
-local info
-local function refreshPrice()
-local lbl,k=priceLabel(it,info)
-priceL.Text=richPrice(lbl,k)
-end
-refreshPrice()
-getInfo(it.id,function(inf)
-info=inf
-if not card.Parent then return end
-refreshPrice()
-if inf.Creator and inf.Creator.Name then byL.Text="By  <b>" .. tostring(inf.Creator.Name).. "</b>" end
-local d=tostring(inf.Description or "")
-descL.Text=d=="" and "Tidak ada deskripsi." or d
-if inf.IsLimited or inf.IsLimitedUnique then lim.Visible=true end
-if inf.Name and it.cat=="Custom" and tostring(it.name):find("^Custom ")then
-it.name=inf.Name
-nameL.Text=inf.Name
-end
-end)
-local wear=mk("TextButton",{
-AnchorPoint=Vector2.new(0,1),Position=UD2(0,rx,1,-16),Size=UDim2.fromOffset(compact and math.floor((rw - 8)*0.6)or 150,42),BackgroundColor3=GREEN,
-Text="",Font=FONTB,TextSize=14,TextColor3=INK,AutoButtonColor=false,ZIndex=305,
-},card)
-corner(wear,12)
-local copy=mk("TextButton",{
-AnchorPoint=Vector2.new(0,1),Position=UD2(0,rx+(compact and math.floor((rw - 8)*0.6)+8 or 158),1,-16),
-Size=UDim2.fromOffset(compact and math.floor((rw - 8)*0.4)or 100,42),BackgroundColor3=CARD2,Text="Copy ID",Font=FONTB,TextSize=12,
-TextColor3=TXT,AutoButtonColor=false,ZIndex=305,
-},card)
-corner(copy,12)
-local function upd()
-local on=ccat.on[tostring(it.id)]~=nil
-wear.Text=on and "Take Off" or "Wear"
-wear.BackgroundColor3=on and CARD2 or GREEN
-wear.TextColor3=on and TXT or INK
-end
-upd()
-detail.upd=upd
-wear.MouseButton1Click:Connect(function()
-wear.Text="…"
-wearToggle(it,upd)
-end)
-copy.MouseButton1Click:Connect(function()
-local ok=pcall(function()setclipboard(tostring(it.id))end)
-note(ok and("ID disalin: " .. it.id)or("ID: " .. it.id))
-end)
-end
-local function doSearch()
-local q=(searchBox.Text or ""):gsub("^%s+",""):gsub("%s+$","")
-if#q<2 then
-note("Ketik minimal 2 huruf")
-return
-end
-searchText=q
-selectCat("Search")
-end
-searchBtn.MouseButton1Click:Connect(doSearch)
-searchBox.FocusLost:Connect(function(enter)if enter then doSearch()end end)
-resetB.MouseButton1Click:Connect(function()
-U.ccatUnequipAll()
-refreshAll()
-note("Client catalog di-reset")
-end)
-idBtn.MouseButton1Click:Connect(function()
-local id=tonumber((idBox.Text or ""):match("%d+"))
-if not id then note("Isi Asset ID")return end
-state.ccatCustom=type(state.ccatCustom)=="table" and state.ccatCustom or{}
-local name="Custom " .. tostring(id)
-idBtn.Text="…"
-task.spawn(function()
-local ok,err=U.ccatEquip(id,tostring(id),name)
-idBtn.Text="Pakai"
-if ok then
-local have=false
-for _,it in ipairs(state.ccatCustom)do if it.id==id then have=true end end
-if not have then
-state.ccatCustom[#state.ccatCustom+1]={id=id,name=name,cat="Custom"}
-if saveSoon then saveSoon()end
-end
-idBox.Text=""
-note("Pakai ID " .. id)
-if curCat=="Custom" then loadView()end
-refreshAll()
-else
-note(tostring(err or "gagal"))
-end
-end)
-end)
-if avB then
-avB.MouseButton1Click:Connect(function()
-pv.Visible=not pv.Visible
-avB.BackgroundColor3=pv.Visible and BLUE or CARD2
-if pv.Visible then wlRebuild()pvBuild()end
-end)
-end
-local dragging,dragStart,startPos=false,nil,nil
-header.InputBegan:Connect(function(inp)
-if inp.UserInputType==Enum.UserInputType.MouseButton1 or inp.UserInputType==Enum.UserInputType.Touch then
-dragging=true
-dragStart=inp.Position
-startPos=panel.Position
-inp.Changed:Connect(function()
-if inp.UserInputState==Enum.UserInputState.End then dragging=false end
-end)
-end
-end)
-local dragConn=UserInputService.InputChanged:Connect(function(inp)
-if dragging and(inp.UserInputType==Enum.UserInputType.MouseMovement or inp.UserInputType==Enum.UserInputType.Touch)then
-local d=inp.Position - dragStart
-panel.Position=UD2(startPos.X.Scale,startPos.X.Offset+d.X,startPos.Y.Scale,startPos.Y.Offset+d.Y)
-end
-end)
-ccat.onShow=function()
-startAnim()
-refreshAll()
-end
-ccat.onHide=function()
-stopAnim()
-end
-panel.Destroying:Connect(function()
-stopAnim()
-pcall(function()dragConn:Disconnect()end)
-ccat.onChange=nil
-ccat.onShow=nil
-ccat.onHide=nil
-end)
-ccat.refresh=loadView
-paintCats()
-paintRar()
-startAnim()
-loadView()
-wlRebuild()
-pvSoon()
-note(mobile and "Catalog (mobile)" or "Client Catalog terbuka")
-end
 end
 function U.avatarItems(uid)
 local req=httpReq()
@@ -15794,7 +14614,7 @@ end)
 end
 local function __buildTools()
 pageTools=mk("Frame",{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,Visible=false},body)
-local TOOLS={"Kalkulator","Tic Tac Toe","Reaction","Memory","RPS","Guess Number","Simon","Executor","Search script","Catatan","Timer","Info","Pemain","Cepat","Detektor","AI","Translate","Audio","Fling","Animation","Macro","Client Catalog"}
+local TOOLS={"Kalkulator","Tic Tac Toe","Reaction","Memory","RPS","Guess Number","Simon","Executor","Search script","Catatan","Timer","Info","Pemain","Cepat","Detektor","AI","Translate","Audio","Fling","Animation","Macro","Visual"}
 local function say(t)if U.note then U.note(t)end end
 local tPages,tPills,tCur={},{},"Kalkulator"
 local function styleTools()
@@ -15804,7 +14624,7 @@ b.TextColor3=(n==tCur)and INK or DIM
 end
 end
 restyle[#restyle+1]=styleTools
-local TW={["Kalkulator"]=84,["Tic Tac Toe"]=82,["Executor"]=72,["Search script"]=100,["Catatan"]=70,["Timer"]=58,["Info"]=50,["Pemain"]=72,["Cepat"]=58,["Detektor"]=70,["AI"]=40,["Translate"]=70,["Audio"]=58,["Fling"]=58,["Animation"]=72,["Macro"]=58,["Theme"]=58,["Profil"]=58,["Reaction"]=72,["Memory"]=64,["RPS"]=48,["Guess Number"]=90,["Simon"]=58,["Client Catalog"]=110}
+local TW={["Kalkulator"]=84,["Tic Tac Toe"]=82,["Executor"]=72,["Search script"]=100,["Catatan"]=70,["Timer"]=58,["Info"]=50,["Pemain"]=72,["Cepat"]=58,["Detektor"]=70,["AI"]=40,["Translate"]=70,["Audio"]=58,["Fling"]=58,["Animation"]=72,["Macro"]=58,["Theme"]=58,["Profil"]=58,["Reaction"]=72,["Memory"]=64,["RPS"]=48,["Guess Number"]=90,["Simon"]=58,["Visual"]=62}
 local toolBar=mk("ScrollingFrame",{
 Size=UDim2.new(1,0,0,30),
 BackgroundTransparency=1,
@@ -16131,7 +14951,8 @@ local touchB=btn("TOUCH FLING: OFF",0,0.36,118,SURF2,TXT)
 local antiB=btn("ANTI FLING: " ..(state.antiFling and "ON" or "OFF"),0.36,0.36,118,state.antiFling and TEAL or SURF2,state.antiFling and INK or TXT)
 local orbB=btn("STOP ORBIT",0.72,0.28,118,SURF2,TXT)
 U.flingMode=(state.flingMode=="void")and "void" or "sky"
-local list=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,152),Size=UDim2.new(1,0,1,-152),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
+state.flingPose.on=false
+local list=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,154),Size=UDim2.new(1,0,1,-154),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
 mk("UIListLayout",{Padding=UDim.new(0,4),SortOrder=Enum.SortOrder.LayoutOrder},list)
 local hl=Instance.new("Highlight")
 hl.FillColor,hl.OutlineColor,hl.FillTransparency,hl.DepthMode=TEAL,WHITE,0.55,Enum.HighlightDepthMode.AlwaysOnTop
@@ -16221,9 +15042,11 @@ local isSel=(selPl==pl)
 local r=mk("Frame",{Size=UDim2.new(1,-6,0,36),BackgroundColor3=SURF,BorderSizePixel=0,LayoutOrder=i},list)
 corner(r,8)
 if isSel then mk("UIStroke",{Color=TEAL,Thickness=1.5},r)end
-local n=lab(r,pl.DisplayName,12,FONTB,TXT,UDim2.fromOffset(10,3),UDim2.new(1,-216,0,16))
+local av=mk("ImageLabel",{Position=UDim2.fromOffset(5,4),Size=UDim2.fromOffset(28,28),BackgroundColor3=SURF2,Image="rbxthumb://type=AvatarHeadShot&id=" .. pl.UserId .. "&w=100&h=100",BorderSizePixel=0},r)
+corner(av,14)
+local n=lab(r,pl.DisplayName,12,FONTB,TXT,UDim2.fromOffset(40,3),UDim2.new(1,-246,0,16))
 n.TextTruncate=Enum.TextTruncate.AtEnd
-lab(r,"@" .. pl.Name,10,FONT,DIM,UDim2.fromOffset(10,19),UDim2.new(1,-216,0,14)).TextTruncate=Enum.TextTruncate.AtEnd
+lab(r,"@" .. pl.Name,10,FONT,DIM,UDim2.fromOffset(40,19),UDim2.new(1,-246,0,14)).TextTruncate=Enum.TextTruncate.AtEnd
 local sb=mk("TextButton",{AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-66,0.5,0),Size=UDim2.fromOffset(60,24),BackgroundColor3=isSel and TEAL or SURF2,Text=isSel and "Dipilih" or "Pilih",Font=FONTB,TextSize=11,TextColor3=isSel and INK or TXT,AutoButtonColor=false},r)
 corner(sb,8)
 local fb=mk("TextButton",{AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-4,0.5,0),Size=UDim2.fromOffset(58,24),BackgroundColor3=AMB,Text="FLING",Font=FONTK,TextSize=11,TextColor3=C3(30,22,6),AutoButtonColor=false},r)
@@ -16425,36 +15248,71 @@ local stopOnMove,loopOn=true,true
 local STAR,STAR0="\u{2605}","\u{2606}"
 local GOLD=C3(255,200,60)
 local lastErr=""
+local function decodeBody(body)
+if type(body)~="string" then return nil end
+local i=body:find("[%[{]")
+if not i then return nil end
+local ok2,d=pcall(function()return HttpService:JSONDecode(body:sub(i))end)
+return ok2 and type(d)=="table" and d or nil
+end
 local function jget1(url)
-local body
 local rq=httpReq()
+local tries={
+{["User-Agent"]="Mozilla/5.0",["Accept"]="application/json"},
+false,
+}
 if rq then
-local ok,res=pcall(rq,{Url=url,Method="GET",Headers={["User-Agent"]="Mozilla/5.0",["Accept"]="application/json"}})
+for _,hd in ipairs(tries)do
+for att=1,2 do
+local ok,res=pcall(rq,{Url=url,Method="GET",Headers=hd or nil})
 if ok and type(res)=="table" then
-local code=tonumber(res.StatusCode or res.Status)
-if type(res.Body)=="string" and(not code or code==200)then body=res.Body else lastErr="HTTP " .. tostring(code)end
-else lastErr="request: " .. tostring(res):sub(1,40)end
+local code=tonumber(res.StatusCode or res.status_code or res.Status)
+if type(res.Body)=="string" and(not code or(code>=200 and code<300))then
+local d=decodeBody(res.Body)
+if d then return d end
+lastErr="JSON"
+else
+lastErr="HTTP " .. tostring(code)
+if code==429 then task.wait(1.5)else break end
 end
-if not body then
+else lastErr="request: " .. tostring(res):sub(1,40)break end
+end
+end
+end
 local ok,b=pcall(function()return game:HttpGet(url)end)
-if ok and type(b)=="string" then body=b elseif not rq then lastErr="HttpGet: " .. tostring(b):sub(1,40)end
-end
-if type(body)~="string" or body:sub(1,1)~="{" then return nil end
-local ok2,d=pcall(function()return HttpService:JSONDecode(body)end)
-return ok2 and d or nil
+if ok then
+local d=decodeBody(b)
+if d then return d end
+lastErr="HttpGet JSON"
+elseif not rq then lastErr="HttpGet: " .. tostring(b):sub(1,40)end
+return nil
 end
 local function jget(url)
 local d=jget1(url)
 if d then return d end
-local alt=url:gsub("^https://catalog%.roblox%.com","https://catalog.roproxy.com")
-if alt~=url then return jget1(alt)end
+for _,host in ipairs({"catalog.roproxy.com","catalog.rprxy.xyz"})do
+local alt=url:gsub("^https://catalog%.roblox%.com","https://" .. host)
+if alt~=url then
+local d2=jget1(alt)
+if d2 then return d2 end
+end
+end
 end
 local pills=mk("Frame",{Size=UDim2.new(1,0,0,26),BackgroundTransparency=1},pg)
 local stL=lab(pg,"",10,FONT,DIM,UDim2.fromOffset(0,28),UDim2.new(1,0,0,16))
+local qbar=mk("Frame",{Position=UDim2.fromOffset(0,46),Size=UDim2.new(1,0,0,28),BackgroundColor3=SURF,BorderSizePixel=0},pg)
+corner(qbar,9)
+local qnow=lab(qbar,"Belum ada animasi dipakai",10,FONTB,TXT,UDim2.fromOffset(10,0),UDim2.new(1,-170,1,0))
+qnow.TextTruncate=Enum.TextTruncate.AtEnd
+local function setNow(t)qnow.Text=t end
+local qStop=mk("TextButton",{AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-80,0.5,0),Size=UDim2.fromOffset(60,22),BackgroundColor3=SURF2,Text="STOP",Font=FONTB,TextSize=10,TextColor3=TXT,AutoButtonColor=false},qbar)
+corner(qStop,7)
+local qRst=mk("TextButton",{AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-4,0.5,0),Size=UDim2.fromOffset(72,22),BackgroundColor3=SURF2,Text="DEFAULT",Font=FONTB,TextSize=10,TextColor3=TXT,AutoButtonColor=false},qbar)
+corner(qRst,7)
 stL.TextTruncate=Enum.TextTruncate.AtEnd
 local function say(t)stL.Text=t end
 local function newPage()
-local s=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,48),Size=UDim2.new(1,0,1,-48),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
+local s=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,78),Size=UDim2.new(1,0,1,-78),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
 mk("UIListLayout",{Padding=UDim.new(0,5),SortOrder=Enum.SortOrder.LayoutOrder},s)
 return s
 end
@@ -16598,7 +15456,14 @@ if not d or type(d.data)~="table" then
 moreB.Text="Gagal memuat (" .. tostring(lastErr).. "). Ketuk untuk coba lagi"
 return
 end
-for _,it in ipairs(d.data)do if it.id then addCard(it)end end
+local cn2=0
+for _,it in ipairs(d.data)do
+if it.id then
+addCard(it)
+cn2+=1
+if cn2%6==0 then task.wait()if not grid.Parent then return end end
+end
+end
 cursor=d.nextPageCursor
 if shown==0 then moreB.Text="Tidak ada hasil" moreB.Visible=true
 elseif cursor then moreB.Text="Muat lebih" moreB.Visible=true
@@ -16632,6 +15497,47 @@ local mvB=btn(rOpt,0.5,1,"Stop saat jalan: ON")
 local secDef={head(sfE,nE,"EMOTE BAWAAN ROBLOX")}
 local defF=mk("Frame",{Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1,LayoutOrder=nE()},sfE)
 mk("UIGridLayout",{CellSize=UDim2.new(0.25,-4,0,26),CellPadding=UDim2.fromOffset(4,4),SortOrder=Enum.SortOrder.LayoutOrder},defF)
+local playIdFwd
+local playOpt
+local ENERGIZE={r6={
+{"HeadThrow",35154961,.1,1,1,true},{"FloatingHead",121572214,.1,1,1,false},{"Crouch",182724289,.1,1,1,false},
+{"FloorCrawl",282574440,.1,1,1,false},{"DinoWalk",204328711,.1,1,1,false},{"JumpingJacks",429681631,.1,1,1,false},
+{"LoopHead",35154961,.5,1,1e6,true},{"HeroJump",184574340,.1,1,1,true},{"Faint",181526230,.1,1,1,false},
+{"FloorFaint",181525546,.1,1,2,true},{"SuperFaint",181525546,.1,.5,40,true},{"Levitate",313762630,.1,1,1,false},
+{"Dab",183412246,.1,1,1,true},{"Spinner",188632011,.1,1,2,true},{"FloatSit",179224234,.1,1,1,false},
+{"MovingDance",429703734,.1,1,1,true},{"WeirdMove",215384594,.1,1,1,false},{"CloneIllusion",215384594,.5,1,1e7,false},
+{"GlitchLevitate",313762630,.5,1,1e7,false},{"SpinDance",429730430,.1,1,1,true},{"MoonDance",45834924,.1,1,1,true},
+{"FullPunch",204062532,.1,1,1,true},{"SpinDance2",186934910,.1,1,1,true},{"BowDown",204292303,.1,1,3,true},
+{"SwordSlam",204295235,.1,1,1,true},{"LoopSlam",204295235,.1,1,1e4,true},{"MegaInsane",184574340,.1,.5,40,true},
+{"SuperPunch",126753849,.1,1,3,true},{"FullSwing",218504594,.1,1,1,true},{"ArmTurbine",259438880,.1,1,1e3,false},
+{"BarrelRoll",136801964,.1,1,1,true},{"Scared",180612465,.1,1,1,true},{"Insane",33796059,.1,1,1e8,false},
+{"ArmDetach",33169583,.1,1,1e6,true},{"SwordSlice",35978879,.1,1,1,false},{"InsaneArms",27432691,.1,1,1e4,true},
+},r15={
+{"CrazySlash",674871189,.1,1,1,true},{"Open",582855105,.1,1,1,true},{"R15Spinner",754658275,.1,1,1,true},
+{"ArmsOut",582384156,.1,1,1,true},{"FloatSlash",717879555,.1,1,1,true},{"WeirdZombie",708553116,.1,1,1,true},
+{"DownSlash",746398327,.1,1,1,true},{"Pull",675025795,.1,1,1,true},{"CircleArm",698251653,.1,1,1,true},
+{"Bend",696096087,.1,1,1,true},{"RotateSlash",675025570,.1,1,1,true},{"FlingArms",754656200,.1,1,10,true},
+}}
+local secE={head(sfE,nE,"EMOTE ENERGIZE (speed & loop sesuai aslinya)")}
+local eF={}
+local loopBFwd
+for rg,lst in pairs(ENERGIZE)do
+local f=mk("Frame",{Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1,LayoutOrder=nE(),Visible=false},sfE)
+mk("UIGridLayout",{CellSize=UDim2.new(0.3333,-4,0,28),CellPadding=UDim2.fromOffset(4,4),SortOrder=Enum.SortOrder.LayoutOrder},f)
+eF[rg]=f
+for i,e in ipairs(lst)do
+local b=mk("TextButton",{LayoutOrder=i,BackgroundColor3=SURF2,Text=e[1],Font=FONTB,TextSize=10,TextColor3=TXT,AutoButtonColor=false},f)
+corner(b,8)
+b.MouseButton1Click:Connect(function()
+click()
+nmBox.Text,idBox.Text,spdBox.Text=e[1],tostring(e[2]),string.format("%g",e[5])
+loopOn=e[6]
+if loopBFwd then loopBFwd.Text=loopOn and "Loop: ON" or "Loop: OFF" end
+playOpt={fade=e[3],weight=e[4]}
+task.spawn(playIdFwd,tostring(e[2]))
+end)
+end
+end
 local secR6={head(sfE,nE,"DAFTAR R6 OPEN SOURCE")}
 local secMkt={head(sfE,nE,"MARKET EMOTE R15 KATALOG ROBLOX")}
 local mktLoad,mktGrid,mktSr,mktSr2,mktMore
@@ -16644,6 +15550,7 @@ end
 local animCache={}
 local function getAnim(id)
 if animCache[id]then return animCache[id]:Clone()end
+task.wait()
 local anim
 pcall(function()
 local ok1,objs=pcall(game.GetObjects,game,"rbxassetid://" .. id)
@@ -16699,14 +15606,19 @@ if not ok or not track then say("Gagal memuat animasi (aset tidak boleh dipakai 
 track.Priority=Enum.AnimationPriority.Action4
 track.Looped=loopOn
 cur=track
-track:Play(0.15)
+local po=playOpt
+playOpt=nil
+track:Play(po and po.fade or 0.15,po and po.weight or 1)
 pcall(function()track:AdjustSpeed(tonumber(spdBox.Text)or 1)end)
 playSong()
 task.delay(0.6,function()
 if cur==track and track.Length==0 then say("Animasi kosong: ID salah / tidak bisa dipakai. Rig kamu: " .. rigNow():upper())end
 end)
 say("Memutar " .. sid .. " (" .. rigNow():upper().. ")")
+setNow("Emote: " ..((nmBox.Text~="" and nmBox.Text)or sid))
 end
+playIdFwd=playId
+loopBFwd=loopB
 local function pick(name,id,song)
 nmBox.Text=tostring(name):sub(1,24)
 idBox.Text=tostring(id)
@@ -16746,6 +15658,7 @@ local r15=(mode=="r15")
 setVis(secDef,r15)defF.Visible=r15
 setVis(secMkt,r15)mktGrid.Visible=r15 mktSr.Visible=r15 mktSr2.Visible=r15
 if not r15 then mktMore.Visible=false end
+eF.r15.Visible,eF.r6.Visible=r15,not r15
 setVis(secR6,false)
 for _,c in ipairs(sfE:GetChildren())do
 if c:IsA("GuiObject")and c.LayoutOrder>secR6[1].LayoutOrder and c.LayoutOrder<=secR6[1].LayoutOrder+2 then c.Visible=false end
@@ -16766,6 +15679,7 @@ b.MouseButton1Click:Connect(function()click()task.spawn(playId,nil,n)end)
 end
 playB.MouseButton1Click:Connect(function()click()task.spawn(playId,idBox.Text)end)
 stopB.MouseButton1Click:Connect(function()click()stopEmote()say("Berhenti.")end)
+qStop.MouseButton1Click:Connect(function()click()stopEmote()setNow("Emote dihentikan")end)
 saveB.MouseButton1Click:Connect(function()
 click()
 local sid=tostring(idBox.Text):match("%d+")
@@ -16873,6 +15787,7 @@ for _,bi in ipairs(pk.items)do
 local cat=ASSET_CAT[tonumber(bi.assetType)]
 if cat and bi.id then
 pending+=1
+task.wait(0.04)
 task.spawn(function()
 local ok,objs=pcall(game.GetObjects,game,"rbxassetid://" .. tostring(bi.id))
 if not(ok and type(objs)=="table" and#objs>0)then ok,objs=pcall(game.GetObjects,game,"http://www.roblox.com/asset/?id=" .. tostring(bi.id))end
@@ -16944,17 +15859,23 @@ if selPack==pk then packSummary()end
 say("Unduh selesai: " .. pk.name)
 end)
 end)
+local usingPk
+local function quickUse(pk)
+if usingPk then return end
+usingPk=true
+task.spawn(function()
+if not packCache[pk.id]then say("Mengunduh " .. pk.name .. "...")setNow("Mengunduh " .. pk.name .. "...")download(pk)if selPack==pk then packSummary()end end
+local ok=applyPack(pk,enabledCats())
+setNow(ok and("Pack: " .. pk.name)or "Pack gagal dipakai")
+usingPk=false
+end)
+end
 useB.MouseButton1Click:Connect(function()
 click()
 if not selPack then return end
-local pk=selPack
-task.spawn(function()
-if not packCache[pk.id]then say("Mengunduh " .. pk.name .. "...")download(pk)packSummary()end
-applyPack(pk,enabledCats())
+quickUse(selPack)
 end)
-end)
-rstB.MouseButton1Click:Connect(function()
-click()
+local function resetPack()
 task.spawn(function()
 local ch=player.Character
 local an=ch and ch:FindFirstChild("Animate")
@@ -16964,8 +15885,11 @@ local h=hum()
 if h then for _,tr in ipairs(h:GetPlayingAnimationTracks())do pcall(function()tr:Stop(0)end)end end
 if an then an.Disabled=true task.wait(0.05)an.Disabled=false end
 say("Animasi dikembalikan ke default.")
+setNow("Animasi default")
 end)
-end)
+end
+rstB.MouseButton1Click:Connect(function()click()resetPack()end)
+qRst.MouseButton1Click:Connect(function()click()resetPack()end)
 autoB.MouseButton1Click:Connect(function()click()autoRe=not autoRe autoB.Text="Pakai ulang otomatis saat respawn: " ..(autoRe and "ON" or "OFF")end)
 spStar.MouseButton1Click:Connect(function()
 click()
@@ -16979,14 +15903,14 @@ ph="Cari pack (ninja, zombie...)",subcat=38,thumb="BundleThumbnail",
 kw=function(t)return(packRig=="r6")and("R6 " .. t)or t end,
 fav=function()return state.emotes.packs end,
 mkFav=function(it)return{name=tostring(it.name),id=tostring(it.id),items=it.bundledItems or{}}end,
-onPick=selectPack,
+onPick=function(it)selectPack(it)if selPack then quickUse(selPack)end end,
 refresh=function()if U.animRenderPacks then U.animRenderPacks()end end,
 })
 packReload=packReload0
 head(sfP,nP,"FAVORIT PACK")
 local renderPacks=listView(sfP,nP,function()
 local out={}
-for _,e in ipairs(state.emotes.packs)do out[#out+1]={name=e.name,id=e.id,items=e.items,__play=function(x)selectPack({id=x.id,name=x.name,bundledItems=x.items})end}end
+for _,e in ipairs(state.emotes.packs)do out[#out+1]={name=e.name,id=e.id,items=e.items,__play=function(x)selectPack({id=x.id,name=x.name,bundledItems=x.items})if selPack then quickUse(selPack)end end}end
 return out
 end,"Pilih",function(e)favToggle(state.emotes.packs,{name=e.name,id=e.id,items=e.items})end,function()return true end)
 U.animRenderPacks=renderPacks
@@ -17663,32 +16587,222 @@ for _,c in ipairs(sf:GetChildren())do if c:IsA("TextLabel")and c.LayoutOrder==or
 end
 end
 do
-local pg=tPages["Client Catalog"]
-if pg then
-lab(pg,"Client Catalog",14,FONTK,TXT,UDim2.fromOffset(0,0),UDim2.new(1,0,0,22))
-lab(pg,"Catalog ala Roblox (live): sidebar kategori, harga, detail item, preview avatar, + 16 Aura bertier rarity di tab Effects. Hanya visual di client kamu; orang lain tidak melihat.",11,FONT,DIM,UDim2.fromOffset(0,26),UDim2.new(1,0,0,48)).TextWrapped=true
-local openBtn=acc(mk("TextButton",{
-Position=UDim2.fromOffset(0,86),Size=UDim2.new(1,0,0,44),
-Text="BUKA CLIENT CATALOG",Font=FONTK,TextSize=14,TextColor3=INK,
-AutoButtonColor=false,
-},pg))
-corner(openBtn,12)
-openBtn.MouseButton1Click:Connect(function()
-click()
-if U.ccatOpen then U.ccatOpen()else U.note("Catalog belum siap")end
-end)
-local rst=mk("TextButton",{
-Position=UDim2.fromOffset(0,140),Size=UDim2.new(1,0,0,36),
-BackgroundColor3=SURF,Text="Reset semua item catalog",Font=FONTB,TextSize=12,
-TextColor3=TXT,AutoButtonColor=false,
+local pg=tPages["Visual"]
+local CL=U.ccatLive
+if pg and CL then
+local C3n=Color3.fromRGB
+local CATS={"All","Head","Hair","Face","Back","Shoulder","Waist","Clothes"}
+local CATL={All="Semua",Head="Kepala",Hair="Rambut",Face="Wajah",Back="Punggung",Shoulder="Bahu",Waist="Pinggang",Clothes="Baju"}
+local st={cat="All",mode="preset",q="",pages=nil,busy=false,gen=0}
+lab(pg,"Visual",14,FONTK,TXT,UDim2.fromOffset(0,0),UDim2.new(0.5,0,0,22))
+local cnt=lab(pg,"0 dipakai",10,FONTB,DIM,UDim2.new(0.5,0,0,0),UDim2.new(0.5,0,0,22),Enum.TextXAlignment.Right)
+local box=mk("TextBox",{
+Position=UDim2.fromOffset(0,26),Size=UDim2.new(1,-92,0,30),BackgroundColor3=SURF,
+Text="",PlaceholderText="cari item catalog / Asset ID",PlaceholderColor3=MUTE or DIM,
+Font=FONT,TextSize=12,TextColor3=TXT,ClearTextOnFocus=false,TextXAlignment=Enum.TextXAlignment.Left,
 },pg)
-corner(rst,10)
-rst.MouseButton1Click:Connect(function()
+corner(box,9)
+mk("UIPadding",{PaddingLeft=UDim.new(0,10)},box)
+local goB=acc(mk("TextButton",{Position=UDim2.new(1,-86,0,26),Size=UDim2.fromOffset(40,30),Text="CARI",Font=FONTK,TextSize=11,TextColor3=INK,AutoButtonColor=false},pg))
+corner(goB,9)
+local rsB=mk("TextButton",{Position=UDim2.new(1,-42,0,26),Size=UDim2.fromOffset(42,30),BackgroundColor3=SURF,Text="RESET",Font=FONTB,TextSize=10,TextColor3=TXT,AutoButtonColor=false},pg)
+corner(rsB,9)
+local chipBar=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,62),Size=UDim2.new(1,0,0,26),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=0,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.X,ScrollingDirection=Enum.ScrollingDirection.X},pg)
+mk("UIListLayout",{FillDirection=Enum.FillDirection.Horizontal,Padding=UDim.new(0,6),SortOrder=Enum.SortOrder.LayoutOrder},chipBar)
+local chips={}
+local function styleChips()
+for k,b in pairs(chips)do
+local on=(k==st.cat)or(k=="@aura" and st.mode=="aura")
+b.BackgroundColor3=on and TXT or SURF
+b.TextColor3=on and INK or DIM
+end
+end
+local grid=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,94),Size=UDim2.new(1,0,1,-94),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
+local gl=mk("UIGridLayout",{CellSize=UDim2.new(0.333,-6,0,132),CellPadding=UDim2.fromOffset(8,8),SortOrder=Enum.SortOrder.LayoutOrder},grid)
+mk("UIPadding",{PaddingBottom=UDim.new(0,40)},grid)
+local status=lab(grid,"",11,FONT,DIM,nil,UDim2.new(1,0,0,40),Enum.TextXAlignment.Center)
+status.TextWrapped=true
+status.LayoutOrder=1e6+1
+local moreB=mk("TextButton",{Size=UDim2.new(1,0,0,32),BackgroundColor3=SURF,Text="Muat lagi",Font=FONTB,TextSize=11,TextColor3=TXT,AutoButtonColor=false,Visible=false,LayoutOrder=1e6+2},grid)
+corner(moreB,9)
+local cards,nOrd={},0
+local function refreshCount()
+local n=0
+for _ in pairs(U.ccat.on or{})do n=n+1 end
+cnt.Text=n .. " dipakai"
+cnt.Text=U.loc and U.loc(cnt.Text)or cnt.Text
+end
+local function paintCards()
+for key,c in pairs(cards)do
+local on=U.ccat.on and U.ccat.on[key]~=nil
+c.stroke.Color=on and C3n(90,230,170)or C3n(40,46,60)
+c.stroke.Thickness=on and 2 or 1
+c.tag.Visible=on
+end
+refreshCount()
+end
+local function clearGrid()
+for _,c in pairs(cards)do pcall(function()c.f:Destroy()end)end
+cards,nOrd={},0
+end
+local function addCard(it)
+local key=tostring(it.id)
+if cards[key]then return end
+nOrd=nOrd+1
+local f=mk("TextButton",{BackgroundColor3=SURF,Text="",AutoButtonColor=false,LayoutOrder=nOrd},grid)
+corner(f,11)
+local sk=mk("UIStroke",{Color=C3n(40,46,60),Thickness=1,ApplyStrokeMode=Enum.ApplyStrokeMode.Border},f)
+local img=mk("ImageLabel",{BackgroundColor3=C3n(22,26,36),Position=UDim2.fromOffset(6,6),Size=UDim2.new(1,-12,0,84),Image="rbxthumb://type=Asset&id=" .. it.id .. "&w=150&h=150",ScaleType=Enum.ScaleType.Fit},f)
+corner(img,8)
+lab(f,it.name or("Item " .. it.id),10,FONTB,TXT,UDim2.fromOffset(6,92),UDim2.new(1,-12,0,14)).TextTruncate=Enum.TextTruncate.AtEnd
+local pr=it.price and(it.price>0 and("R$ " .. it.price)or "Free")or(it.creator and tostring(it.creator))or(it.cat or "")
+lab(f,tostring(pr),9,FONT,DIM,UDim2.fromOffset(6,108),UDim2.new(1,-12,0,14)).TextTruncate=Enum.TextTruncate.AtEnd
+local tag=mk("TextLabel",{BackgroundColor3=C3n(90,230,170),Position=UDim2.new(1,-30,0,8),Size=UDim2.fromOffset(22,16),Text="ON",Font=FONTK,TextSize=9,TextColor3=INK,Visible=false,ZIndex=3},f)
+corner(tag,6)
+cards[key]={f=f,stroke=sk,tag=tag}
+f.MouseButton1Click:Connect(function()
+click()
+task.spawn(function()
+local ok,err=U.ccatToggle(it.id,key,it.name)
+if ok==false and err then U.note("Gagal: " .. tostring(err))end
+paintCards()
+end)
+end)
+end
+local function setStatus(t)status.Text=t or "" end
+local function loadPreset()
+clearGrid()
+st.pages=nil
+moreB.Visible=false
+local qq=st.q:lower()
+for _,it in ipairs(CL.presets)do
+if(st.cat=="All" or it.cat==st.cat)and(qq=="" or it.name:lower():find(qq,1,true))then addCard(it)end
+end
+if type(state.ccatCustom)=="table" then
+for _,it in ipairs(state.ccatCustom)do if st.cat=="All" or it.cat==st.cat then addCard(it)end end
+end
+setStatus(nOrd==0 and "Kosong. Ketik kata kunci lalu tekan CARI untuk cari di catalog Roblox." or "")
+paintCards()
+end
+local function loadLive(more)
+if st.busy then return end
+st.busy=true
+st.gen=st.gen+1
+local g=st.gen
+task.spawn(function()
+local items,fin
+if more and st.pages then
+items,fin=CL.nxt(st.pages,st.cat)
+else
+clearGrid()
+setStatus("Mencari…")
+local pages,first=CL.open(st.cat,st.q,"Relevance")
+if pages then st.pages=pages items,fin=first,false
+else
+st.pages=nil
+local its,e=U.ccatSearch(st.q,40)
+items,fin=its or{},true
+if#items==0 then setStatus("Tidak ada hasil / catalog diblokir (" .. tostring(e or first).. ")")end
+end
+end
+if g~=st.gen then st.busy=false return end
+for _,it in ipairs(items or{})do addCard(it)end
+if nOrd>0 then setStatus("")end
+moreB.Visible=st.pages~=nil and not fin
+paintCards()
+st.busy=false
+end)
+end
+local function loadAura()
+clearGrid()
+moreB.Visible=false
+setStatus("")
+local A=U.ccatAuras or{}
+local cur=U.ccat.auraStyle
+local function mark()
+for k,c in pairs(cards)do
+local on=(cur==k)
+c.stroke.Color=on and C3n(90,230,170)or C3n(40,46,60)
+c.stroke.Thickness=on and 2 or 1
+c.tag.Visible=on
+end
+end
+for _,a in ipairs(A)do
+nOrd=nOrd+1
+local f=mk("TextButton",{BackgroundColor3=SURF,Text="",AutoButtonColor=false,LayoutOrder=nOrd},grid)
+corner(f,11)
+local sk=mk("UIStroke",{Color=C3n(40,46,60),Thickness=1,ApplyStrokeMode=Enum.ApplyStrokeMode.Border},f)
+local orb=mk("Frame",{Position=UDim2.new(0.5,-22,0,14),Size=UDim2.fromOffset(44,44),BackgroundColor3=a.c1 or C3n(255,255,255)},f)
+corner(orb,22)
+mk("UIGradient",{Color=ColorSequence.new(a.c1 or C3n(255,255,255),a.c2 or a.c1 or C3n(255,255,255)),Rotation=45},orb)
+lab(f,a.name,11,FONTB,TXT,UDim2.fromOffset(6,68),UDim2.new(1,-12,0,16),Enum.TextXAlignment.Center).TextTruncate=Enum.TextTruncate.AtEnd
+lab(f,string.rep("★",a.rar or 1),11,FONT,a.c2 or DIM,UDim2.fromOffset(6,86),UDim2.new(1,-12,0,14),Enum.TextXAlignment.Center)
+local tag=mk("TextLabel",{BackgroundColor3=C3n(90,230,170),Position=UDim2.new(1,-30,0,8),Size=UDim2.fromOffset(22,16),Text="ON",Font=FONTK,TextSize=9,TextColor3=INK,Visible=false},f)
+corner(tag,6)
+cards[a.key]={f=f,stroke=sk,tag=tag}
+f.MouseButton1Click:Connect(function()
+click()
+if cur==a.key then cur=nil U.ccatStopAura()U.ccat.auraStyle=nil
+else cur=a.key if U.ccatSetAura then U.ccatSetAura(a.key)end end
+mark()
+end)
+end
+mark()
+end
+local function reload()
+styleChips()
+if st.mode=="aura" then loadAura()
+elseif st.mode=="live" then loadLive(false)
+else loadPreset()end
+end
+local function addChip(key,text,order)
+local b=mk("TextButton",{Size=UDim2.fromOffset(18+#text*6.5,26),BackgroundColor3=SURF,Text=text,Font=FONTB,TextSize=11,TextColor3=DIM,AutoButtonColor=false,LayoutOrder=order},chipBar)
+corner(b,13)
+chips[key]=b
+return b
+end
+for i,k in ipairs(CATS)do
+addChip(k,CATL[k],i).MouseButton1Click:Connect(function()
+click()
+st.cat=k
+if st.mode=="aura" then st.mode=(st.q~="" and "live" or "preset")end
+reload()
+end)
+end
+addChip("@aura","Aura",99).MouseButton1Click:Connect(function()click()st.mode="aura" reload()end)
+local function doSearch()
+click()
+local q=box.Text:gsub("^%s+",""):gsub("%s+$","")
+st.q=q
+local id=tonumber(q)
+if id and#q>=4 then
+st.mode="preset"
+clearGrid()
+local nm="ID " .. q
+pcall(function()nm=game:GetService("MarketplaceService"):GetProductInfo(id).Name end)
+addCard({id=id,name=nm,cat="Custom"})
+setStatus("")
+paintCards()
+return
+end
+st.mode=(q~="")and "live" or "preset"
+reload()
+end
+goB.MouseButton1Click:Connect(doSearch)
+box.FocusLost:Connect(function(enter)if enter then doSearch()end end)
+moreB.MouseButton1Click:Connect(function()click()loadLive(true)end)
+rsB.MouseButton1Click:Connect(function()
 click()
 if U.ccatUnequipAll then U.ccatUnequipAll()end
-U.quiet("Client catalog di-reset")
+U.quiet("Visual di-reset")
+if st.mode=="aura" then loadAura()else paintCards()end
 end)
-lab(pg,"Tips: klik kartu item untuk detail, tombol + untuk pakai cepat. Asset ID custom ada di panel Avatar (kanan). Aura ada di Effects > Auras.",10,FONT,DIM,UDim2.fromOffset(0,188),UDim2.new(1,0,0,40)).TextWrapped=true
+U.ccat.onChange=function()if st.mode~="aura" then pcall(paintCards)end end
+local first=true
+pg:GetPropertyChangedSignal("Visible"):Connect(function()
+if pg.Visible and first then first=false reload()end
+end)
+if pg.Visible then first=false reload()end
 end
 end
 do
@@ -20400,7 +19514,8 @@ switchRow(sc,nxt(),"Lompat tanpa batas","infJump",function(v)U.setInfJump(v)end)
 switchRow(sc,nxt(),"3rd person (bisa zoom keluar; first person tetap bisa)","thirdPerson",function(v)U.setThirdPerson(v)end)
 switchRow(sc,nxt(),"Tanya 3rd person di game first person","fpAsk",function()end)
 switchRow(sc,nxt(),"ESP pemain","esp",function(v)U.setEsp(v)end)
-switchRow(sc,nxt(),"ESP: ikon profil (tanpa garis / highlight; nama, jarak, HP tetap tampil)","espIcon",function()end)
+switchRow(sc,nxt(),"ESP: ikon profil (headshot di atas kepala)","espIcon",function()end)
+switchRow(sc,nxt(),"ESP: highlight (garis & isi warna)","espHl",function()end)
 switchRow(sc,nxt(),"ESP: tampilkan nama","espName",function()end)
 switchRow(sc,nxt(),"ESP: tampilkan jarak","espDist",function()end)
 switchRow(sc,nxt(),"ESP: tampilkan darah/HP (n/n berwarna)","espHp",function()end)
