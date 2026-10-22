@@ -140,7 +140,7 @@ scripts={{name="Script 1",code=""}},
 execIdx=1,
 hud=true,
 autoExec=true,peerNote=true,watch=true,joinNote=false,lookHist={},lookSaved={},lookSeen={},scanSpeed="",scanInstant=false,autoTr=true,scanCrossN="5",lastAnn=0,daytime=true,dayDate=false,clock12=true,hopSess={},
-antiFling=false,flingPose={on=false,x=0,y=0,z=3,rx=0,ry=0,rz=0},espIcon=false,espHl=true,flingMode="sky",thirdPerson=false,fpAsk=true,geoShare=false,cfgAuto="",cfgLast="",
+antiFling=false,flingPose={on=false,x=0,y=0,z=3,rx=0,ry=0,rz=0},espIcon=false,espHl=true,animSaved={},flingMode="sky",thirdPerson=false,fpAsk=true,geoShare=false,cfgAuto="",cfgLast="",
 perf=0,afk=true,hopMode=1,fly=false,flySpeed=60,noclip=false,moveOn=false,walk=16,jump=50,infJump=false,esp=false,espName=true,espDist=true,espHp=true,hopMax="",hopLow=false,hopRegion=1,
 fullbright=false,nofog=false,ctp=false,ctpMode=1,shader=false,shMode=1,
 wpAuto=false,wp={},
@@ -185,7 +185,7 @@ local SAVE_FILE="ucb20ce_" .. tostring(game:GetService("Players").LocalPlayer.Us
 local OLD_FILE="vcb20ce.json"
 local custom,favs={},{}
 local SAVE_KEYS={"theme","range","volSfx","volClick","volMusic","music","intensity","sound","shake","cinema","banner","feedOn","blur","random","mode","musicCustom","musicId","outAuto","outA","outB","outThick","outAnim","bgCustom","bgA","bgB","bgRot","bgTrans","fbLast","uiScale","uiX","uiY","lang","scripts","execIdx","notes","selected","cat","kills","hud","aura","daytime","dayDate","clock12","lastAnn","autoExec","watch","joinNote","lookHist","lookSaved","lookSeen","scanSpeed","scanInstant","autoTr","scanCrossN","fov","grav","zoomFree","hopSess","perf","afk","hopMode","hopMax","hopLow","hopRegion","fullbright","nofog","ctp","ctpMode","shader","shMode","wpAuto","wp","fly","flySpeed","noclip","moveOn","walk","jump","infJump","esp","espName","espDist","espHp","hudX","hudY","uiW","uiH","aiProv","aiModel","aiUsed","aiLock","aiDay","themePack","kbOpen","kbQuick","kbTest","kbFly","macroOn","targetNotes","quickItems","bgImageId","bgShine","titleShine","chOn","chStyle","chCustom","chSize","chX","chY","chColor","curOn","curStyle","curCustom","curSize","curColor","chKind","chSaved","curKind","curSaved","musicSpeed","shine","lastReqSeen","ccatCustom"}
-for _,k in ipairs({"lastHistSeen","espCustom","espCol","ckMulti","hk","peerNote","tpAfter","antiFling","flingPose","espIcon","espHl","flingMode","thirdPerson","fpAsk","geoShare","cfgAuto","cfgLast"})do SAVE_KEYS[#SAVE_KEYS+1]=k end
+for _,k in ipairs({"lastHistSeen","espCustom","espCol","ckMulti","hk","peerNote","tpAfter","antiFling","flingPose","espIcon","espHl","animSaved","flingMode","thirdPerson","fpAsk","geoShare","cfgAuto","cfgLast"})do SAVE_KEYS[#SAVE_KEYS+1]=k end
 local U
 local function cfgTable()
 local d={custom=custom,favs=favs}
@@ -422,12 +422,13 @@ s.Ended:Connect(function()s:Destroy()end)
 Debris:AddItem(s,8)
 end)
 end
-local cursorHold,cursorBound={},false
+local cursorHold,cursorBound,cursorPrev={},false,nil
 function U.cursorFree(key,on)
 cursorHold[key]=on and true or nil
 local any=next(cursorHold)~=nil
 if any and not cursorBound then
 cursorBound=true
+cursorPrev={UserInputService.MouseBehavior,UserInputService.MouseIconEnabled}
 pcall(function()
 RunService:BindToRenderStep("ukfx_cursor",Enum.RenderPriority.Camera.Value+5,function()
 UserInputService.MouseBehavior=Enum.MouseBehavior.Default
@@ -437,6 +438,14 @@ end)
 elseif not any and cursorBound then
 cursorBound=false
 pcall(function()RunService:UnbindFromRenderStep("ukfx_cursor")end)
+if cursorPrev then
+local pv=cursorPrev
+cursorPrev=nil
+pcall(function()
+if pv[1]~=Enum.MouseBehavior.Default then UserInputService.MouseBehavior=pv[1]end
+if not state.curOn then UserInputService.MouseIconEnabled=pv[2]end
+end)
+end
 end
 end
 local SFX_MG={
@@ -11242,9 +11251,60 @@ halo={size=4,n=3},ring={style="rune",size=16,spin=0.35},pillar={w=8,h=60},glow={
 wings={n=8,span=3.4},bolts={n=6,r=2.6,rate=0.05,w=0.1},
 em={{tex="spark",c={rgb(255,255,255),rgb(255,230,150)},rate=34,life={1.4,2.4},speed={0.4,1.8},size={0.5,0.6,0},accel=V3(0,1.4,0),vol="wide",light=1}},
 light={rgb(255,245,200),2.4,20}},
+{key="glitchcore",name="Glitch Core",rar=5,tag="Kode rusak: kilatan ungu-hijau, api merah muda, halftone.",
+c1=rgb(233,35,99),c2=rgb(87,182,56),
+ring={style="rune",size=11,spin=0.9},glow={fill=0.9},bolts={n=4,r=4,rate=0.08,w=0.12},
+em={
+{texId=105789591577641,c={rgb(233,35,99)},rate=16,life={0.15,0.3},speed={0,0.6},size={1.2,1.9,0.4},vol="body",light=0.3,t0=0,rs={-30,30}},
+{texId=133824968140672,c={rgb(87,182,56),rgb(179,0,229)},rate=10,life={0.25,0.4},speed={0,0.6},size={1.1,1.7,0.3},vol="body",light=1,t0=0},
+{texId=120642338828822,c={rgb(227,33,174)},rate=12,life={0.4,0.8},speed={0.5,2},size={1.2,2.4,2.8},vol="wide",light=1,t0=0.5,rs={-120,120}},
+{texId=13724982927,c={rgb(241,128,241),rgb(150,40,200)},rate=18,life={0.9,1.4},speed={0.3,1},size={0.8,1.6,0},accel=V3(0,2.2,0),vol="body",light=0.6,t0=0.1},
+},
+light={rgb(220,50,160),1.8,14}},
+{key="voidstar",name="Voidstar",rar=5,tag="Bintang hampa berputar, goresan kosmik menyayat udara.",
+c1=rgb(255,90,247),c2=rgb(171,146,181),
+ring={style="rune",size=13,spin=-0.6},halo={size=3.4,n=2},glow={fill=0.88},pillar={w=4,h=40},
+em={
+{texId=92361888182962,c={rgb(255,90,247)},rate=6,life={1,1.4},speed={0,0.4},size={2.4,3.4,1},vol="body",light=1,t0=0.3,rs={100,360}},
+{texId=84251750889260,c={rgb(255,90,247)},rate=8,life={1,1.4},speed={0,0.4},size={2,3,0.8},vol="body",light=1,t0=0.2,rs={100,360}},
+{texId=130617249307568,c={rgb(255,120,250),rgb(171,146,181)},rate=8,life={0.4,0.6},speed={0,1},size={1.2,2.2,0.4},vol="wide",light=1,t0=0,rs={400,900}},
+{texId=137710412554130,c={rgb(255,90,247)},rate=3,life={1.2,1.8},speed={0,0.3},size={1,2,0.5},vol="body",light=1,t0=0.2,rs={-90,90}},
+{texId=14050492427,c={rgb(167,126,255),rgb(60,20,120)},rate=5,life={2,3},speed={0.2,0.8},size={2,3.6,4.4},accel=V3(0,0.8,0),vol="ground",light=0.3,t0=0.55},
+},
+light={rgb(200,90,255),2,15}},
+{key="nightshade",name="Nightshade",rar=5,tag="Tinta hitam menetes, bara ungu menyala dalam gelap.",
+c1=rgb(158,39,255),c2=rgb(30,0,50),
+ring={style="rune",size=10,spin=0.4},glow={fill=0.93},trail={body=true,life=0.8},
+em={
+{texId=92203067866304,c={rgb(0,0,0)},rate=12,life={1,1.6},speed={0.2,0.8},size={1.6,2.6,1.2},vol="body",light=0,t0=0.1,rs={-40,40}},
+{texId=78822754594445,c={rgb(0,0,0)},rate=7,life={1,1.4},speed={0.4,1},size={1.2,1.8,0.6},accel=V3(0,-1.5,0),vol="body",light=0,t0=0.1},
+{texId=138934162187813,c={rgb(10,0,20)},rate=10,life={1.2,1.8},speed={0.1,0.5},size={2.2,3.8,2},vol="ground",light=0,t0=0.2},
+{texId=122268206410205,c={rgb(158,39,255),rgb(90,10,160)},rate=22,life={0.8,1.4},speed={0.5,3},size={1,1.8,0},accel=V3(0,2.4,0),vol="body",light=1,t0=0.1,rs={-90,90}},
+{texId=134399639839028,c={rgb(187,52,255)},rate=3,life={1.5,2.2},speed={0,0.3},size={1,1.6,0.6},vol="body",light=1,t0=0.2,rs={-180,180}},
+},
+light={rgb(150,50,255),1.6,13}},
+{key="crimsonwings",name="Crimson Wings",rar=1,tag="Sayap dan jubah merah, bara menyala di seluruh tubuh.",
+c1=rgb(255,20,20),c2=rgb(135,0,0),
+ring={style="rune",size=11,spin=0.5},wings={n=6,span=3},glow={fill=0.9},trail={body=true,hands=true,life=0.7},
+em={
+{texId=122356223802475,c={rgb(180,0,0),rgb(60,0,0)},rate=24,life={0.8,1.2},speed={0.5,1.5},size={1.4,2.6,0},accel=V3(0,2.4,0),vol="body",light=0.4,t0=0.2,rs={-50,50}},
+{texId=76407227385210,c={rgb(255,0,0)},rate=12,life={0.8,1.2},speed={2,3},size={1.6,2.8,0.5},vol="wide",light=0.6,t0=0.3},
+{texId=18856103258,c={rgb(255,40,30),rgb(255,150,60)},rate=40,life={0.8,1.4},speed={0.5,3},size={0.2,0.3,0},accel=V3(0,3,0),vol="body",light=1,t0=0},
+{texId=251657030,c={rgb(255,0,0)},rate=10,life={1,1.2},speed={1,3},size={1.6,2.4,0.8},vol="body",light=1,t0=0.6},
+{texId=121865172303641,c={rgb(255,0,0)},rate=1,life={4,6},speed={0,0.2},size={3,4.6,3},vol="ground",light=1,t0=0.5,rs={5,5}},
+},
+light={rgb(255,40,30),2,14}},
 }
 local AURA_BY={}
 for _,a in ipairs(AURAS)do AURA_BY[a.key]=a end
+local function addEm(k,e)local a=AURA_BY[k]if a then a.em=a.em or{}table.insert(a.em,e)end end
+addEm("reaper",{texId=92203067866304,c={rgb(0,0,0)},rate=10,life={1,1.6},speed={0.2,0.8},size={1.8,3,1.4},vol="body",light=0,t0=0.1,rs={-40,40}})
+addEm("reaper",{texId=122268206410205,c={rgb(158,39,255),rgb(90,10,160)},rate=16,life={0.8,1.4},speed={0.5,3},size={1,1.8,0},accel=V3(0,2.4,0),vol="body",light=1,t0=0.1})
+addEm("cyberpulse",{texId=105789591577641,c={rgb(0,240,255)},rate=14,life={0.15,0.3},speed={0,0.6},size={1.2,1.9,0.4},vol="body",light=0.3,t0=0})
+addEm("cyberpulse",{texId=120642338828822,c={rgb(255,50,200)},rate=10,life={0.4,0.8},speed={0.5,2},size={1.2,2.4,2.8},vol="wide",light=1,t0=0.5,rs={-120,120}})
+addEm("crimsonmoon",{texId=122356223802475,c={rgb(180,0,0),rgb(60,0,0)},rate=16,life={0.8,1.2},speed={0.5,1.5},size={1.4,2.4,0},accel=V3(0,2.2,0),vol="body",light=0.4,t0=0.2,rs={-50,50}})
+addEm("seraph",{texId=92361888182962,c={rgb(255,240,180)},rate=5,life={1,1.4},speed={0,0.4},size={2.4,3.6,1},vol="body",light=1,t0=0.3,rs={60,200}})
+addEm("glacier",{texId=137710412554130,c={rgb(200,240,255)},rate=3,life={1.2,1.8},speed={0,0.3},size={1,2,0.5},vol="body",light=1,t0=0.2,rs={-90,90}})
 U.ccatAuras,U.ccatRar=AURAS,RAR
 if U.auraSfxOn==nil then U.auraSfxOn=true end
 local EXTRA={
@@ -11597,7 +11657,7 @@ try(function()
 for _,e in ipairs(spec.em or{})do
 local p=volPart(e.vol or "body")
 local pe=Instance.new("ParticleEmitter")
-pe.Texture=(e.tex=="fire" and TEX_FIRE)or(e.tex=="smoke" and TEX_SMOKE)or TEX_SPARK
+pe.Texture=e.texId and("rbxassetid://" .. e.texId)or(e.tex=="fire" and TEX_FIRE)or(e.tex=="smoke" and TEX_SMOKE)or TEX_SPARK
 local cs=e.c or{c1,c2}
 pe.Color=#cs>1 and ColorSequence.new(cs[1],cs[2])or ColorSequence.new(cs[1])
 pe.Rate=e.rate or 12
@@ -11610,7 +11670,7 @@ pe.Acceleration=e.accel or V3(0,0,0)
 pe.LightEmission=e.light or 0.8
 pe.SpreadAngle=Vector2.new(e.spread or 180,e.spread or 180)
 pe.Rotation=NumberRange.new(0,360)
-pe.RotSpeed=NumberRange.new(-60,60)
+pe.RotSpeed=e.rs and NumberRange.new(e.rs[1],e.rs[2])or NumberRange.new(-60,60)
 pe.LockedToPart=false
 pe.Parent=p
 if e.light~=0 then RS(pe,"Color")end
@@ -14614,7 +14674,7 @@ end)
 end
 local function __buildTools()
 pageTools=mk("Frame",{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,Visible=false},body)
-local TOOLS={"Kalkulator","Tic Tac Toe","Reaction","Memory","RPS","Guess Number","Simon","Executor","Search script","Catatan","Timer","Info","Pemain","Cepat","Detektor","AI","Translate","Audio","Fling","Animation","Macro","Visual"}
+local TOOLS={"Kalkulator","Tic Tac Toe","Reaction","Memory","RPS","Guess Number","Simon","Executor","Search script","Catatan","Timer","Info","Pemain","Cepat","Detektor","AI","Translate","Audio","Fling","Animation","Macro","Visual","Part ESP"}
 local function say(t)if U.note then U.note(t)end end
 local tPages,tPills,tCur={},{},"Kalkulator"
 local function styleTools()
@@ -14624,7 +14684,7 @@ b.TextColor3=(n==tCur)and INK or DIM
 end
 end
 restyle[#restyle+1]=styleTools
-local TW={["Kalkulator"]=84,["Tic Tac Toe"]=82,["Executor"]=72,["Search script"]=100,["Catatan"]=70,["Timer"]=58,["Info"]=50,["Pemain"]=72,["Cepat"]=58,["Detektor"]=70,["AI"]=40,["Translate"]=70,["Audio"]=58,["Fling"]=58,["Animation"]=72,["Macro"]=58,["Theme"]=58,["Profil"]=58,["Reaction"]=72,["Memory"]=64,["RPS"]=48,["Guess Number"]=90,["Simon"]=58,["Visual"]=62}
+local TW={["Kalkulator"]=84,["Tic Tac Toe"]=82,["Executor"]=72,["Search script"]=100,["Catatan"]=70,["Timer"]=58,["Info"]=50,["Pemain"]=72,["Cepat"]=58,["Detektor"]=70,["AI"]=40,["Translate"]=70,["Audio"]=58,["Fling"]=58,["Animation"]=72,["Macro"]=58,["Theme"]=58,["Profil"]=58,["Reaction"]=72,["Memory"]=64,["RPS"]=48,["Guess Number"]=90,["Simon"]=58,["Visual"]=62,["Part ESP"]=70}
 local toolBar=mk("ScrollingFrame",{
 Size=UDim2.new(1,0,0,30),
 BackgroundTransparency=1,
@@ -14785,16 +14845,42 @@ markRow(id,true)
 npInfo.Text=string.format("playing \u{B7} %d:%02d",math.floor(s.TimeLength/60),math.floor(s.TimeLength%60))
 end)
 end
-local list=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,138),Size=UDim2.new(1,0,1,-138),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
+local list=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,186),Size=UDim2.new(1,0,1,-186),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
 mk("UIListLayout",{Padding=UDim.new(0,4),SortOrder=Enum.SortOrder.LayoutOrder},list)
-local status=lab(pg,"",11,FONT,DIM,UDim2.fromOffset(0,140),UDim2.new(1,0,0,18))
+local status=lab(pg,"",11,FONT,DIM,UDim2.fromOffset(0,166),UDim2.new(1,0,0,18))
+local typeF="all"
+local searchFwd
+local chipBar=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,136),Size=UDim2.new(1,0,0,26),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=0,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.X,ScrollingDirection=Enum.ScrollingDirection.X},pg)
+mk("UIListLayout",{FillDirection=Enum.FillDirection.Horizontal,Padding=UDim.new(0,5),SortOrder=Enum.SortOrder.LayoutOrder},chipBar)
+local tChips={}
+local function styleT()
+for k,b in pairs(tChips)do b.BackgroundColor3=(k==typeF)and TXT or SURF2 b.TextColor3=(k==typeF)and INK or TXT end
+end
+local function addChipA(txt,order,w)
+local b=mk("TextButton",{Size=UDim2.fromOffset(w or(16+#txt*6.5),26),BackgroundColor3=SURF2,Text=txt,Font=FONTB,TextSize=11,TextColor3=TXT,AutoButtonColor=false,LayoutOrder=order},chipBar)
+corner(b,13)
+return b
+end
+for i,t in ipairs({{"all","Semua"},{"song","Lagu"},{"sfx","SFX"}})do
+local b=addChipA(t[2],i,60)
+tChips[t[1]]=b
+b.MouseButton1Click:Connect(function()click()typeF=t[1]styleT()if searchFwd then searchFwd(box.Text~="" and box.Text or nil)end end)
+end
+styleT()
+local SUGG={"phonk","lofi","meme","jumpscare","bass boost","anime","sad","vine boom","explosion","rain","remix","tiktok","funny","scream"}
+for i,w in ipairs(SUGG)do
+addChipA(w,10+i).MouseButton1Click:Connect(function()click()box.Text=w if searchFwd then searchFwd(w)end end)
+end
 local function addRow(i,it)
-local r=mk("Frame",{Size=UDim2.new(1,-6,0,40),BackgroundColor3=SURF,BorderSizePixel=0,LayoutOrder=i},list)
+local r=mk("Frame",{Size=UDim2.new(1,-6,0,(it.desc and it.desc~="")and 52 or 40),BackgroundColor3=SURF,BorderSizePixel=0,LayoutOrder=i},list)
 corner(r,8)
 local n=lab(r,it.name,12,FONTB,TXT,UDim2.fromOffset(10,4),UDim2.new(1,-110,0,16))
 n.TextTruncate=Enum.TextTruncate.AtEnd
-local info=tostring(it.id)..(it.kind and("  \u{B7}  " .. tostring(it.kind))or "")..(it.dur and string.format("  \u{B7}  %d:%02d",math.floor(it.dur/60),math.floor(it.dur%60))or "")..(it.by and("  \u{B7}  " .. it.by)or "")
+local info=tostring(it.id)..(it.tag and("  \u{B7}  " ..(it.tag=="sfx" and "SFX" or "Lagu"))or(it.kind and("  \u{B7}  " .. tostring(it.kind))or ""))..(it.dur and string.format("  \u{B7}  %d:%02d",math.floor(it.dur/60),math.floor(it.dur%60))or "")..(it.by and("  \u{B7}  " .. it.by)or "")
 lab(r,info,10,FONT,DIM,UDim2.fromOffset(10,21),UDim2.new(1,-110,0,14)).TextTruncate=Enum.TextTruncate.AtEnd
+if it.desc and it.desc~="" then
+lab(r,(tostring(it.desc):gsub("%s+"," ")),9,FONT,MUTE or DIM,UDim2.fromOffset(10,36),UDim2.new(1,-110,0,12)).TextTruncate=Enum.TextTruncate.AtEnd
+end
 local pb=acc(mk("TextButton",{AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-46,0.5,0),Size=UDim2.fromOffset(32,28),Text=">",Font=FONTB,TextSize=13,TextColor3=INK,AutoButtonColor=false},r))
 corner(pb,8)
 local cb=mk("TextButton",{AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-6,0.5,0),Size=UDim2.fromOffset(34,28),BackgroundColor3=SURF2,Text="ID",Font=FONTB,TextSize=11,TextColor3=TXT,AutoButtonColor=false},r)
@@ -14817,8 +14903,8 @@ local ok2,d=pcall(function()return HttpService:JSONDecode(body)end)
 return ok2 and d or nil
 end
 local busy=false
-local function search()
-local q=box.Text:gsub("^%s+",""):gsub("%s+$","")
+local function search(qq)
+local q=tostring(qq or box.Text):gsub("^%s+",""):gsub("%s+$","")
 if q=="" then return end
 if q:match("^%d+$")then
 list:ClearAllChildren()
@@ -14856,7 +14942,7 @@ local a=x.asset or x
 if a and a.id then
 local ad=a.audioDetails or x.audioDetails
 if type(ad)~="table" then ad={}end
-byId[tostring(a.id)]={name=a.name,by=x.creator and x.creator.name,dur=tonumber(ad.durationSeconds or ad.duration or a.duration),kind=ad.audioType or ad.type}
+byId[tostring(a.id)]={name=a.name,desc=a.description or x.description,by=x.creator and x.creator.name,dur=tonumber(ad.durationSeconds or ad.duration or a.duration),kind=ad.audioType or ad.type}
 end
 end
 end
@@ -14877,12 +14963,21 @@ end
 local all,good={},0
 for k,id in ipairs(ids)do
 local m=byId[id]or{}
-local it={id=id,name=m.name or("Audio " .. id),by=m.by,dur=m.dur,kind=m.kind,sc=score(m.name),ord=k}
+local it={id=id,name=m.name or("Audio " .. id),by=m.by,dur=m.dur,kind=m.kind,desc=m.desc,sc=score(m.name),ord=k}
 all[#all+1]=it
 if it.sc>0 then good+=1 end
 end
+local function kindOf(it)
+local k=tostring(it.kind or ""):lower()
+if k:find("effect")or k:find("sfx")then return "sfx" end
+if k:find("music")or k:find("song")then return "song" end
+if it.dur then return(it.dur<=20)and "sfx" or "song" end
+return nil
+end
+U.audKindOf=kindOf
 for _,it in ipairs(all)do
-if good<3 or it.sc>0 then items[#items+1]=it end
+it.tag=kindOf(it)
+if(good<3 or it.sc>0)and(typeF=="all" or it.tag==nil or it.tag==typeF)then items[#items+1]=it end
 end
 table.sort(items,function(x,y)if x.sc~=y.sc then return x.sc>y.sc end return x.ord<y.ord end)
 end
@@ -14897,8 +14992,8 @@ end
 for k=#items,41,-1 do items[k]=nil end
 status.Text=#items .. " hasil \u{B7} mengecek mana yang bisa diputar\u{2026}"
 for i,it in ipairs(items)do addRow(i,it)end
-list.Position=UDim2.fromOffset(0,158)
-list.Size=UDim2.new(1,0,1,-158)
+list.Position=UDim2.fromOffset(0,186)
+list.Size=UDim2.new(1,0,1,-186)
 local pending,okN=#items,0
 local nextI,running=1,0
 local function pump()
@@ -14920,9 +15015,14 @@ end
 pump()
 end)
 end
+searchFwd=search
 goB.MouseButton1Click:Connect(function()click()search()end)
 box.FocusLost:Connect(function(enter)if enter then search()end end)
-pg:GetPropertyChangedSignal("Visible"):Connect(function()end)
+local first=true
+pg:GetPropertyChangedSignal("Visible"):Connect(function()
+if pg.Visible and first then first=false box.Text="phonk" search("phonk")end
+end)
+if pg.Visible then first=false search("phonk")end
 end
 end
 do
@@ -14952,7 +15052,10 @@ local antiB=btn("ANTI FLING: " ..(state.antiFling and "ON" or "OFF"),0.36,0.36,1
 local orbB=btn("STOP ORBIT",0.72,0.28,118,SURF2,TXT)
 U.flingMode=(state.flingMode=="void")and "void" or "sky"
 state.flingPose.on=false
-local list=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,154),Size=UDim2.new(1,0,1,-154),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
+local sBox=mk("TextBox",{Position=UDim2.fromOffset(0,152),Size=UDim2.new(1,-4,0,26),BackgroundColor3=SURF,Text="",PlaceholderText="Cari pemain (display / username)...",PlaceholderColor3=DIM,Font=FONT,TextSize=11,TextColor3=TXT,ClearTextOnFocus=false,TextXAlignment=Enum.TextXAlignment.Left},pg)
+corner(sBox,8)
+mk("UIPadding",{PaddingLeft=UDim.new(0,8)},sBox)
+local list=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,182),Size=UDim2.new(1,0,1,-182),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
 mk("UIListLayout",{Padding=UDim.new(0,4),SortOrder=Enum.SortOrder.LayoutOrder},list)
 local hl=Instance.new("Highlight")
 hl.FillColor,hl.OutlineColor,hl.FillTransparency,hl.DepthMode=TEAL,WHITE,0.55,Enum.HighlightDepthMode.AlwaysOnTop
@@ -15029,10 +15132,11 @@ end)
 local sig=""
 local function refresh()
 local arr,names={},{}
+local fq=sBox.Text:lower()
 for _,pl in ipairs(Players:GetPlayers())do
-if pl~=player then arr[#arr+1]=pl names[#names+1]=pl.UserId end
+if pl~=player and(fq=="" or pl.DisplayName:lower():find(fq,1,true)or pl.Name:lower():find(fq,1,true))then arr[#arr+1]=pl names[#names+1]=pl.UserId end
 end
-local s=table.concat(names,",").. "|" ..(selPl and selPl.UserId or 0)
+local s=table.concat(names,",").. "|" ..(selPl and selPl.UserId or 0).. "|" .. fq
 if s==sig then return end
 sig=s
 for _,c in ipairs(list:GetChildren())do if c:IsA("Frame")then c:Destroy()end end
@@ -15072,6 +15176,7 @@ doFling(pl)
 end)
 end
 end
+sBox:GetPropertyChangedSignal("Text"):Connect(function()sig="" pcall(refresh)end)
 task.spawn(function()
 while alive()and not killed do
 if pg.Visible then pcall(refresh)end
@@ -15233,6 +15338,10 @@ local R6LIST={
 {"Insane","33796059"},{"Mega Insane","184574340"},{"Sword Slice","35978879"},{"Head Throw","35154961"},{"Floor Crawl","282574440"},{"Dino Walk","204328711"},
 {"Weird Move Back","215384594"},{"Moon Dance","45834924"},{"Full Punch","204062532"},{"Full Swing","218504594"},{"Arm Turbine","259438880"},{"Barrel Roll","136801964"},
 {"Arm Detach","33169583"},{"Insane Arms","27432691"},{"Sit","178130996"},{"Tool Slash","129967390"},{"Tool Lunge","129967478"},
+{"Azure Slash","54584713"},{"Azure Darken","77329203"},{"Soul Rise","4698259767"},{"Cyber Slash","63718551"},{"Cyber Summon","268569955"},{"Cyber Right Slash","54611484"},{"Cyber Slash 2","54432537"},
+{"Forsaken Idle","131082534135875"},{"Forsaken Walk","108018357044094"},{"Forsaken Run","136252471123500"},{"Forsaken Crouch","74530436512522"},{"Forsaken Crouch Walk","94721495253171"},
+{"Forsaken Quick Attack","123569615350667"},{"Forsaken Attack 2","119850211147676"},{"Forsaken Attack 3","74858281441140"},{"Forsaken Attack 4","80582403450485"},
+{"Jumstyle","75631958792776"},{"Emote Slot 2","78960964491931"},{"Emote Slot 3","82209980008479"},{"Emote Slot 4","103846887522259"},{"Emote Slot 5","92864241258894"},{"Emote Slot 6","118626077235621"},
 }
 local function hum()
 local c=player.Character
@@ -15316,7 +15425,7 @@ local s=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,78),Size=UDim2.new(1,0,
 mk("UIListLayout",{Padding=UDim.new(0,5),SortOrder=Enum.SortOrder.LayoutOrder},s)
 return s
 end
-local sfE,sfP,sfD=newPage(),newPage(),newPage()
+local sfE,sfP,sfD,sfS=newPage(),newPage(),newPage(),newPage()
 local function counter(sf)
 local o=0
 return function()o+=1 return o end
@@ -15349,10 +15458,11 @@ end
 sfE.Visible=(sub=="emote")
 sfP.Visible=(sub=="pack")
 sfD.Visible=(sub=="det")
+sfS.Visible=(sub=="sync")
 end
 restyle[#restyle+1]=styleSub
-for i,d in ipairs({{"emote","Emote"},{"pack","Animation Pack"},{"det","Detektor ID"}})do
-local b=btn(pills,(i - 1)/3,i/3,d[2])
+for i,d in ipairs({{"emote","Emote"},{"pack","Pack"},{"sync","Sync"},{"det","Detektor"}})do
+local b=btn(pills,(i - 1)/4,i/4,d[2])
 subB[d[1]]=b
 b.MouseButton1Click:Connect(function()click()sub=d[1]styleSub()end)
 end
@@ -15397,6 +15507,165 @@ end
 box:GetPropertyChangedSignal("Text"):Connect(render)
 return render
 end
+local STATIC_PACKS=[[
+2623795|adidas Community|126354114956642,106810508343012,124765145869332,115715495289805,93993406355955,123695349157584,106537993816942
+356|Rthro|2510235063,2510242378,2510238627,2510236649,2510233257,2510230574,2510240941
+57393899235237|Angel Float|138791542100078,98178584535094,120880326870608,140709061221147,98791635084597,132683235998205,133193009842625
+115540548213210|Jolly|121468276202179,83096586914276,71971990553119,86777047181866,83063007119941,73563861115457,71637541197973
+63|Wizard|754637456,754636298,754635032,754637084,754636589,754639239,754638471
+122746952391276|Cute Kawaii|87378581612013,134893286312907,114496981964667,78753669029804,78668034869322,114544880037945,77472834006636
+151819968930057|Victoria Model|103718214826066,116254697237169,123079125703048,91133124065771,74672131231886,72034200995655,121980654863805
+80|Zombie|619535834,619537468,619536621,619536283,619535616,619535091,619537096
+69389044614368|R6 Modern|102756216550758,113225182914210,140387434393875,112796623197053,97882063072926,101572845244149,93587938155801
+30057108863841|Ninja Pack|76313576842804,111142612694357,103016147312701,103614270376699,72701781400782,76384439515135,99359550134879
+43|Toy|973771666,973767371,973766674,973770652,973768058,973773170,973772659
+667|Old School|5319922112,5319909330,5319900634,5319917561,5319914476,5319931619,5319927054
+56|Cartoony|837011741,837010234,837009922,837011171,837010685,837013990,837012509
+101626628473103|Survivor|117955497432173,84228988694177,74391569199700,77213702560699,117303527707873,90727684391435,125001214042734
+1189398|Popular Villain|101839542383818,133304526526319,136276875045281,130373407996664,83937116921114,135810009801094,128475661806875
+427999|adidas Sports|18538150608,18538146480,18538133604,18538153691,18538164337,18538170170,18538158932
+48|Elder|892268340,892267099,892265784,892267917,892267521,892269341,892268710
+252956282943885|Leon S Kennedy|72647906969737,90119062949205,112017391840714,137096577747058,103128141950974,109170917854915,104776241739815
+75|Ninja (Classic)|658832408,658831143,658830056,658832070,658831500,658833139,658832807
+39|Bubbly|1018553897,1018549681,1018548665,1018553240,1018552770,1018554668,1018554245
+4164795|Amazon Unboxed|82219139681769,128339543796138,114998633936467,110418911914024,125108870423182,117011755848398,137392271797713
+1601900|Glam Catwalk e.l.f.|101279640971758,103190462987721,75036746190467,138641066989023,72706690305027,104741822987331,112231179705221
+262038429509024|Arthur Morgan Cowboy|94258855046293,75232469983824,133746243266080,104667696564052,132478517568361,114487645136693,105668108218778
+133504485751706|Vampire (New)|106667050596146,134374742162409,91706242971995,139741675687028,85703450673912,84472791069771,73237659553020
+199987906344255|Beerus God Aura DBZ|90881708681876,102294299908527,95816764013039,98979030912270,97549966706133,101744043062582,74492045476918
+117734412711622|Survivor R6|79575948465396,127283838990258,132471521372294,137934973717401,107615688046955,111862482779638,138445851536606
+230489958657639|Glitch Monster|76120074208104,81306389151349,107571969396360,131345119232682,86364944842625,112558163511936,85210479403447
+83|Stylish|619511648,619512767,619512153,619511974,619511417,619509955,619512450
+82|Robot|619521748,619522849,619522386,619522088,619521521,619521311,619522642
+331856|Bold e.l.f.|16744209868,16744219182,16744214662,16744212581,16744207822,16744204409,16744217055
+81|Superhero|619528125,619529601,619528716,619528412,619527817,619527470,619529095
+79|Levitation|619542203,619544080,619543231,619542888,619541867,619541458,619543721
+32|Werewolf|1113752682,1113751657,1113750642,1113752285,1113751889,1113754738,1113752975
+34|Astronaut|1090133099,1090131576,1090130630,1090132507,1090132063,1090134016,1090133583
+68|Knight|734327140,734326330,734325948,734326930,734326679,734329002,734327363
+55|Pirate|837024662,837023892,837023444,837024350,837024147,837025325,837025054
+5134295|Billie Eilish|82009039247070,74056522836252,107895705891639,114806832298003,132771121298158,95937554524959,78340083978503
+4974195|KATSEYE|125286451593779,105967194765350,140179859838109,121868657321572,84737112249504,130399277423748,87465102258861
+171430088634553|R6 Modern 2|104406060298008,124988819613327,99901926147031,116343198036897,129580654694779,110907985002120,99928806802401
+102048798144595|Cool Emo Aura|127580418054168,91102198537347,77210591876650,123882301747791,95117093930538,131813760681065,95685828345272
+107449487713343|R6 Angel Wings|79466032234245,138299319826930,122722513478504,123793358507075,75098379256118,96350191100381,100038070580099
+4725295|Light Movement|72213510878866,124733969277188,91745899537026,126137138096765,76868289213402,122281742555667,78813763153341
+4294795|adidas Aura|73137983344853,75183215343859,123973978164540,129527230938281,99457463463495,140398319728398,119007025452432
+4899847411546|Endless Floating Aura|75638427965557,131290152729043,77610456891399,74451563346167,74203422263286,116293937663140,110044773049875
+254632800573246|Flying Aura|73989458214808,92930058986667,101026325251832,91252889953188,132303258335826,108889451290135,74308699327957
+]]
+local STATIC_EMOTES=[[
+3360689775|Salute
+3360692915|Tilt
+5915779043|Applaud
+3576968026|Stray
+3360686498|Stadium
+3576686446|Hello
+4646306583|Curtsy
+4849499887|Happy
+3823158750|Godlike
+4689362868|Sleep
+3576717965|Shy
+5917570207|Floss Dance
+5104377791|Hero Landing
+7466046574|Quiet Wave
+5230661597|Bored
+5915776835|High Wave
+4272484885|Baby Dance
+3994127840|Celebrate
+4849502101|Sad
+4102315500|Haha
+3762654854|Greatest
+3716636630|Monkey
+4049646104|Line Dance
+4940592718|Confused
+15679955281|Festive Dance
+3762641826|Side to Side
+5230615437|Bacon
+4272351660|Fast Hands
+5938365243|Dolphin Dance
+15506503658|Victory Dance
+4940602656|Jumping Wave
+5915773992|Break Dance
+3934986896|Dizzy
+3716633898|Spin
+4940597758|Shrink
+5938394742|Old Town Road
+7202898984|Show Dem Wrists
+14353423348|Baby Queen Bouncy Twirl
+14353425085|Baby Queen Strut
+12507097350|Lotus Pose
+76361248833307|Godly Aura Fly Pose
+101573394483995|Easy Aura Pose
+132384701706046|MM2 Fake Death
+104131847054135|Jamal Brazil Groove
+10214418283|V Pose
+16553249658|Piano Hands
+106708015414624|Endless Floating Aura
+139021427684680|KATSEYE Touch
+15698511500|Cuco Float
+98603994713783|Mouse Dance
+93511411593120|/e fly
+104142334418357|Gangnam Style
+105381637724646|Pumpkin King
+79017619155911|Wall Stage Glitch
+111378664166805|Moon Walk
+15554010118|Head Bop
+88425531063616|Stylish Float
+120642514156293|Secret Handshake Dance
+74716792202343|Hornet Spider Dance
+80963950541052|Hip Sway
+115203580644128|Armstrong Punch Loop
+95325218641213|Psycho Teddy
+130371895389423|Invisible
+107282826166809|Basketball Head
+125328720114284|Nerve Dance
+113702736944973|Yuji Jump Edit
+78224683906191|Cute Kick
+97164262994588|Floating in Love
+82727664018494|Lush Life
+16572756230|HIPMOTION
+127764273000599|Fall Kick
+108635834286627|Spiderman Hang
+136648387080677|DARE Gorillaz
+137234266130963|PYT
+111426928948833|Float Above Clouds
+120904242187887|Anime Goofy Flap Fly
+17746270218|Strong Dance
+139058906415119|Floating
+75911227509248|Ghost Float
+129149402922241|Grill
+94292601332790|Make Me Invisible
+94064805002669|Kawaii Cast
+79127989560307|Moon Walking
+]]
+local function staticList(kind,q)
+q=(q or ""):lower()
+local out={}
+local function pass(nm)return q=="" or nm:lower():find(q,1,true)~=nil end
+for pass2=1,2 do
+if kind==38 then
+for line in STATIC_PACKS:gmatch("[^\n]+")do
+local id,nm,ids=line:match("^(%d+)|([^|]+)|(.+)$")
+if id and(pass2==2 or pass(nm))then
+local bl,k={},0
+for sid in ids:gmatch("%d+")do
+k+=1
+bl[#bl+1]={id=tonumber(sid),assetType=({"IdleAnimation","WalkAnimation","RunAnimation","JumpAnimation","FallAnimation","ClimbAnimation","SwimAnimation"})[k],name=nm}
+end
+out[#out+1]={id=tonumber(id),name=nm,creatorName="Roblox",bundledItems=bl}
+end
+end
+else
+for line in STATIC_EMOTES:gmatch("[^\n]+")do
+local id,nm=line:match("^(%d+)|(.+)$")
+if id and(pass2==2 or pass(nm))then out[#out+1]={id=tonumber(id),name=nm,creatorName="Roblox"}end
+end
+end
+if#out>0 then break end
+end
+return out
+end
 local function market(sf,nx,cfg)
 local sr=mkRow(sf,nx,28)
 local kwBox=tbox(sr,0,0.4,cfg.ph,"")
@@ -15411,6 +15680,43 @@ corner(moreB,8)
 local sortT,sortI={0,1,3},1
 local sortN={"Relevan","Terfavorit","Terbaru"}
 local cursor,busy,shown=nil,false,0
+local curPages,aesBroken,staticMode=nil,false,false
+local AESvc
+pcall(function()AESvc=game:GetService("AvatarEditorService")end)
+local SORTENUM={"Relevance","MostFavorited","RecentlyCreated"}
+local function aesFetch(reset)
+if not AESvc or aesBroken then return nil end
+local items
+local ok=pcall(function()
+local pages
+if not reset and curPages then
+pages=curPages
+pages:AdvanceToNextPageAsync()
+else
+local p=CatalogSearchParams.new()
+p.SearchKeyword=cfg.kw and cfg.kw(kwBox.Text)or kwBox.Text
+if cfg.subcat==39 then p.AssetTypes={Enum.AvatarAssetType.EmoteAnimation}
+else p.BundleTypes={Enum.BundleType.Animations}end
+pcall(function()p.SortType=Enum.CatalogSortType[SORTENUM[sortI]]end)
+pcall(function()p.IncludeOffSale=false end)
+pages=AESvc:SearchCatalog(p)
+end
+curPages=pages
+items={}
+local cn=crBox.Text:gsub("^%s+",""):gsub("%s+$",""):lower()
+for _,it in ipairs(pages:GetCurrentPage())do
+if cn=="" or tostring(it.CreatorName or ""):lower():find(cn,1,true)then
+local bl={}
+for _,b in ipairs(it.BundledItems or{})do
+if b.Type=="Asset" or b.Type==nil then bl[#bl+1]={id=b.Id,assetType=b.AssetType,name=b.Name}end
+end
+items[#items+1]={id=it.Id,name=it.Name,creatorName=it.CreatorName,bundledItems=bl}
+end
+end
+end)
+if not ok then return nil end
+return items,(curPages and curPages.IsFinished)and true or false
+end
 local function addCard(it)
 shown+=1
 local cd=mk("Frame",{BackgroundColor3=SURF,LayoutOrder=shown},grid)
@@ -15439,12 +15745,32 @@ local function load(reset)
 if busy then return end
 busy=true
 if reset then
-cursor,shown=nil,0
+staticMode=false
+cursor,shown,curPages=nil,0,nil
 for _,c in ipairs(grid:GetChildren())do if c:IsA("GuiObject")then c:Destroy()end end
 end
 moreB.Text="Memuat..."
 moreB.Visible=true
 task.spawn(function()
+local aItems,aFin=aesFetch(reset)
+if aItems then
+busy=false
+if not grid.Parent then return end
+local cn3=0
+for _,it in ipairs(aItems)do
+addCard(it)
+cn3+=1
+if cn3%6==0 then task.wait()if not grid.Parent then return end end
+end
+cursor=(not aFin)and "aes" or nil
+if shown==0 and not aFin then
+moreB.Text="Muat lebih" moreB.Visible=true
+elseif shown==0 then moreB.Text="Tidak ada hasil" moreB.Visible=true
+elseif not aFin then moreB.Text="Muat lebih" moreB.Visible=true
+else moreB.Visible=false end
+return
+end
+if cursor=="aes" then cursor=nil end
 local url="https://catalog.roblox.com/v1/search/items/details?Category=12&Subcategory=" .. cfg.subcat .. "&Limit=30&SortType=" .. sortT[sortI].. "&Keyword=" .. HttpService:UrlEncode(cfg.kw and cfg.kw(kwBox.Text)or kwBox.Text)
 local cn=crBox.Text:gsub("^%s+",""):gsub("%s+$","")
 if cn~="" then url=url .. "&CreatorName=" .. HttpService:UrlEncode(cn)end
@@ -15453,6 +15779,17 @@ local d=jget(url)
 busy=false
 if not grid.Parent then return end
 if not d or type(d.data)~="table" then
+local st=staticList(cfg.subcat,cfg.kw and cfg.kw(kwBox.Text)or kwBox.Text)
+if#st>0 then
+staticMode=true
+for i,it in ipairs(st)do
+addCard(it)
+if i%6==0 then task.wait()if not grid.Parent then return end end
+end
+moreB.Text="Daftar bawaan (" ..#st .. ") - online gagal: " .. tostring(lastErr).. ". Ketuk untuk coba lagi"
+moreB.Visible=true
+return
+end
 moreB.Text="Gagal memuat (" .. tostring(lastErr).. "). Ketuk untuk coba lagi"
 return
 end
@@ -15473,7 +15810,7 @@ end
 goB.MouseButton1Click:Connect(function()click()load(true)end)
 kwBox.FocusLost:Connect(function(e)if e then load(true)end end)
 crBox.FocusLost:Connect(function(e)if e then load(true)end end)
-moreB.MouseButton1Click:Connect(function()click()load(shown==0 and not cursor)end)
+moreB.MouseButton1Click:Connect(function()click()load(staticMode or(shown==0 and not cursor and not curPages))end)
 sortB.MouseButton1Click:Connect(function()click()sortI=sortI%#sortT+1 sortB.Text="Urut: " .. sortN[sortI]load(true)end)
 return function()if shown==0 and not busy then load(true)end end,grid,sr,sr2,moreB,function()load(true)end
 end
@@ -15530,7 +15867,7 @@ local b=mk("TextButton",{LayoutOrder=i,BackgroundColor3=SURF2,Text=e[1],Font=FON
 corner(b,8)
 b.MouseButton1Click:Connect(function()
 click()
-nmBox.Text,idBox.Text,spdBox.Text=e[1],tostring(e[2]),string.format("%g",e[5])
+nmBox.Text,idBox.Text,spdBox.Text=e[1],tostring(e[2]),string.format("%g",math.min(e[5],100))
 loopOn=e[6]
 if loopBFwd then loopBFwd.Text=loopOn and "Loop: ON" or "Loop: OFF" end
 playOpt={fade=e[3],weight=e[4]}
@@ -15585,7 +15922,7 @@ s.Parent=SoundService
 curSnd=s
 pcall(function()s:Play()end)
 end
-local function playId(id,nameForDefault)
+local function playId(id,nameForDefault,viaObjects)
 stopEmote()
 local h=hum()
 if not h then say("Karakter belum ada.")return end
@@ -15597,25 +15934,48 @@ return
 end
 local sid=tostring(id):match("%d+")
 if not sid then say("Isi ID (angka) dulu.")return end
-local animator=h:FindFirstChildOfClass("Animator")
-if not animator then animator=Instance.new("Animator")animator.Parent=h end
-local anim=getAnim(sid)
-curAnim=anim
-local ok,track=pcall(function()return animator:LoadAnimation(anim)end)
-if not ok or not track then say("Gagal memuat animasi (aset tidak boleh dipakai di game ini).")return end
-track.Priority=Enum.AnimationPriority.Action4
-track.Looped=loopOn
-cur=track
 local po=playOpt
 playOpt=nil
-track:Play(po and po.fade or 0.15,po and po.weight or 1)
-pcall(function()track:AdjustSpeed(tonumber(spdBox.Text)or 1)end)
+local spd=math.clamp(tonumber(spdBox.Text)or 1,0.01,100)
+local function start(anim)
+local okL,tr=pcall(function()return h:LoadAnimation(anim)end)
+if not(okL and tr)then
+local animator=h:FindFirstChildOfClass("Animator")
+if not animator then animator=Instance.new("Animator")animator.Parent=h end
+okL,tr=pcall(function()return animator:LoadAnimation(anim)end)
+end
+if not(okL and tr)then return nil end
+pcall(function()tr.Priority=Enum.AnimationPriority.Action4 end)
+tr.Looped=loopOn
+cur=tr
+curAnim=anim
+tr:Play(po and po.fade or 0.15,po and po.weight or 1)
+pcall(function()tr:AdjustSpeed(spd)end)
+return tr
+end
+local anim,track
+if viaObjects then
+anim=getAnim(sid)
+track=start(anim)
+else
+anim=Instance.new("Animation")
+anim.AnimationId="rbxassetid://" .. sid
+track=start(anim)
+end
+if not track then say("Gagal memuat animasi (aset tidak boleh dipakai di game ini).")setNow("Gagal: " .. sid)return end
 playSong()
-task.delay(0.6,function()
-if cur==track and track.Length==0 then say("Animasi kosong: ID salah / tidak bisa dipakai. Rig kamu: " .. rigNow():upper())end
-end)
-say("Memutar " .. sid .. " (" .. rigNow():upper().. ")")
+say("Memutar " .. sid .. " (" .. rigNow():upper().. ") x" .. string.format("%g",spd))
 setNow("Emote: " ..((nmBox.Text~="" and nmBox.Text)or sid))
+task.delay(0.9,function()
+if cur~=track or track.Length>0 then return end
+if not viaObjects then
+local a2=getAnim(sid)
+pcall(function()track:Stop(0)end)
+local t2=start(a2)
+if t2 and t2.Length>0 then return end
+end
+if cur and cur.Length==0 then say("Animasi kosong: ID salah / tidak bisa dipakai. Rig kamu: " .. rigNow():upper())end
+end)
 end
 playIdFwd=playId
 loopBFwd=loopB
@@ -15637,7 +15997,7 @@ mktLoad,mktGrid,mktSr,mktSr2,mktMore=market(sfE,nE,{
 ph="Cari emote (dance, wave...)",subcat=39,thumb="Asset",
 fav=function()return state.emotes.r15 end,
 mkFav=function(it)return{name=tostring(it.name):sub(1,24),id=tostring(it.id),song=""}end,
-onPick=function(it)pick(it.name,it.id)playId(it.id)end,
+onPick=function(it)pick(it.name,it.id)playId(it.id,nil,true)end,
 refresh=function()if U.animRenderFav then U.animRenderFav()end end,
 })
 local renderFav=listView(sfE,nE,function()
@@ -15679,6 +16039,7 @@ b.MouseButton1Click:Connect(function()click()task.spawn(playId,nil,n)end)
 end
 playB.MouseButton1Click:Connect(function()click()task.spawn(playId,idBox.Text)end)
 stopB.MouseButton1Click:Connect(function()click()stopEmote()say("Berhenti.")end)
+spdBox.FocusLost:Connect(function()local v=math.clamp(tonumber(spdBox.Text)or 1,0.01,100)spdBox.Text=string.format("%g",v)if cur then pcall(function()cur:AdjustSpeed(v)end)end end)
 qStop.MouseButton1Click:Connect(function()click()stopEmote()setNow("Emote dihentikan")end)
 saveB.MouseButton1Click:Connect(function()
 click()
@@ -15736,7 +16097,8 @@ local rstB=btn(spRow2,0.5,1,"RESET DEFAULT")
 local autoB=mk("TextButton",{Size=UDim2.new(1,0,0,24),BackgroundColor3=SURF2,Text="Pakai ulang otomatis saat respawn: ON",Font=FONTB,TextSize=10,TextColor3=TXT,AutoButtonColor=false,LayoutOrder=6},selPanel)
 corner(autoB,8)
 local CATS={"idle","walk","run","jump","fall","climb","swim"}
-local ASSET_CAT={[51]="idle",[55]="walk",[53]="run",[52]="jump",[50]="fall",[48]="climb",[54]="swim"}
+local ASSET_CAT={[51]="idle",[55]="walk",[53]="run",[52]="jump",[50]="fall",[48]="climb",[54]="swim",
+IdleAnimation="idle",WalkAnimation="walk",RunAnimation="run",JumpAnimation="jump",FallAnimation="fall",ClimbAnimation="climb",SwimAnimation="swim"}
 local selPack,packCache,chosen=nil,{},{all=true}
 local backup,lastApply,autoRe={},nil,true
 local chips={}
@@ -15784,7 +16146,7 @@ local function download(pk)
 if packCache[pk.id]then return packCache[pk.id]end
 local res,pending={},0
 for _,bi in ipairs(pk.items)do
-local cat=ASSET_CAT[tonumber(bi.assetType)]
+local cat=ASSET_CAT[tonumber(bi.assetType)or bi.assetType]
 if cat and bi.id then
 pending+=1
 task.wait(0.04)
@@ -15934,6 +16296,213 @@ if pg.Visible and sub=="pack" and not pl then pl=true packLoad()end
 end)
 for k,b in pairs(subB)do b.MouseButton1Click:Connect(function()if k=="pack" and not pl then pl=true packLoad()end end)end
 do
+local nS=counter(sfS)
+local tgt,gen,packAuto=nil,0,false
+local mine,myAnims={},{}
+local syncMode=nil
+local function clearMine()
+for k,t in pairs(mine)do pcall(function()t:Stop(0.1)end)end
+for _,a in pairs(myAnims)do pcall(function()a:Destroy()end)end
+mine,myAnims={},{}
+end
+local function humOf(p)
+local c=p and p.Character
+return c and c:FindFirstChildOfClass("Humanoid")
+end
+local function stopSync(msg)
+gen+=1
+syncMode=nil
+clearMine()
+if msg then say(msg)setNow(msg)end
+end
+local stRow=mkRow(sfS,nS,34)
+local stLab=lab(stRow,"Belum ada target",11,FONTB,TXT,UDim2.fromOffset(2,0),UDim2.new(1,-86,1,0))
+stLab.TextTruncate=Enum.TextTruncate.AtEnd
+local stopB=mk("TextButton",{AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-2,0.5,0),Size=UDim2.fromOffset(78,26),BackgroundColor3=SURF2,Text="STOP SYNC",Font=FONTB,TextSize=10,TextColor3=TXT,AutoButtonColor=false},stRow)
+corner(stopB,8)
+local function setTarget(p)
+tgt=p
+stLab.Text=p and("Target: " .. p.DisplayName .. " (@" .. p.Name .. ")")or "Belum ada target"
+end
+local function startEmote(p)
+stopSync()
+setTarget(p)
+syncMode="emote"
+local my=gen
+local h0=hum()
+local th0=humOf(p)
+if h0 and th0 and h0.RigType~=th0.RigType then
+say("Rig beda (kamu " ..(h0.RigType==Enum.HumanoidRigType.R6 and "R6" or "R15").. ", dia " ..(th0.RigType==Enum.HumanoidRigType.R6 and "R6" or "R15").. ") - gerakan bisa tidak cocok.")
+else
+say("Sync emote: " .. p.DisplayName)
+end
+setNow("Sync emote: " .. p.DisplayName)
+task.spawn(function()
+while alive()and not killed and gen==my do
+local h,th=hum(),humOf(p)
+if h and th and p.Parent then
+local want={}
+local okp,tracks=pcall(function()return th:GetPlayingAnimationTracks()end)
+if okp then
+for _,tr in ipairs(tracks)do
+local ok2,id,pr=pcall(function()return tr.Animation and tr.Animation.AnimationId,tr.Priority end)
+if ok2 and id and id~="" and pr and pr.Value>=Enum.AnimationPriority.Action.Value then
+want[id]=tr
+end
+end
+end
+for id,tr in pairs(want)do
+local m=mine[id]
+if not m then
+local a=Instance.new("Animation")
+a.AnimationId=id
+local okL,nt=pcall(function()return h:LoadAnimation(a)end)
+if okL and nt then
+myAnims[id]=a
+nt.Priority=Enum.AnimationPriority.Action4
+pcall(function()nt.Looped=tr.Looped end)
+nt:Play(0.1,1,tr.Speed)
+pcall(function()nt.TimePosition=tr.TimePosition end)
+mine[id]=nt
+else a:Destroy()end
+else
+pcall(function()
+if not m.IsPlaying then m:Play(0.1,1,tr.Speed)end
+if m.Speed~=tr.Speed then m:AdjustSpeed(tr.Speed)end
+local len=tr.Length
+local d=math.abs(m.TimePosition - tr.TimePosition)
+if len and len>0 then d=math.min(d,len - d)end
+if d>0.25 then m.TimePosition=tr.TimePosition end
+end)
+end
+end
+for id,m in pairs(mine)do
+if not want[id]then
+pcall(function()m:Stop(0.15)end)
+mine[id]=nil
+if myAnims[id]then pcall(function()myAnims[id]:Destroy()end)myAnims[id]=nil end
+end
+end
+end
+task.wait(0.1)
+end
+end)
+end
+local function copyPack(p)
+local c1,c2=player.Character,p.Character
+local an,tan=c1 and c1:FindFirstChild("Animate"),c2 and c2:FindFirstChild("Animate")
+if not an or not tan then return 0 end
+local n=0
+for _,f in ipairs(tan:GetChildren())do
+local mf=an:FindFirstChild(f.Name)
+if mf then
+for _,a in ipairs(f:GetChildren())do
+if a:IsA("Animation")then
+local ma=mf:FindFirstChild(a.Name)
+if ma and ma:IsA("Animation")and ma.AnimationId~=a.AnimationId then
+if backup[ma]==nil then backup[ma]=ma.AnimationId end
+ma.AnimationId=a.AnimationId
+n+=1
+end
+end
+end
+end
+end
+if n>0 then
+local h=hum()
+if h then for _,tr in ipairs(h:GetPlayingAnimationTracks())do pcall(function()tr:Stop(0)end)end end
+an.Disabled=true
+task.wait(0.05)
+an.Disabled=false
+end
+return n
+end
+local function startPack(p,auto)
+stopSync()
+setTarget(p)
+local h0,th0=hum(),humOf(p)
+if h0 and th0 and h0.RigType~=th0.RigType then
+say("Rig beda - pack tidak bisa disalin (R6 <-> R15).")
+return
+end
+local n=copyPack(p)
+say(n>0 and("Pack disalin dari " .. p.DisplayName .. " (" .. n .. " animasi)")or("Pack " .. p.DisplayName .. " sama / tidak ditemukan"))
+setNow("Pack: " .. p.DisplayName)
+if auto then
+syncMode="pack"
+local my=gen
+task.spawn(function()
+while alive()and not killed and gen==my and p.Parent do
+task.wait(1.5)
+if gen~=my then break end
+pcall(copyPack,p)
+end
+end)
+end
+end
+stopB.MouseButton1Click:Connect(function()click()stopSync("Sync berhenti")end)
+qStop.MouseButton1Click:Connect(function()if syncMode then stopSync()end end)
+bind(player.CharacterAdded,function()
+if syncMode=="emote" and tgt then
+local p=tgt
+task.delay(1.5,function()if syncMode=="emote" and tgt==p then startEmote(p)end end)
+else clearMine()end
+end)
+local sBoxS=mk("TextBox",{Size=UDim2.new(1,0,0,28),BackgroundColor3=SURF,Text="",PlaceholderText="Cari nama / username...",PlaceholderColor3=DIM,Font=FONTB,TextSize=11,TextColor3=TXT,ClearTextOnFocus=false,TextXAlignment=Enum.TextXAlignment.Left,LayoutOrder=nS()},sfS)
+corner(sBoxS,8)
+mk("UIPadding",{PaddingLeft=UDim.new(0,8)},sBoxS)
+local autoRow=mkRow(sfS,nS,28)
+local autoPB=btn(autoRow,0,1,"Pack: salin terus-menerus (auto): OFF")
+autoPB.MouseButton1Click:Connect(function()
+click()
+packAuto=not packAuto
+autoPB.Text="Pack: salin terus-menerus (auto): " ..(packAuto and "ON" or "OFF")
+end)
+local holderS=mk("Frame",{Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1,LayoutOrder=nS()},sfS)
+mk("UIListLayout",{Padding=UDim.new(0,4),SortOrder=Enum.SortOrder.LayoutOrder},holderS)
+local lastSig=""
+local function renderPl()
+local q=sBoxS.Text:lower()
+local list={}
+for _,p in ipairs(Players:GetPlayers())do
+if p~=player and(q=="" or p.Name:lower():find(q,1,true)or p.DisplayName:lower():find(q,1,true))then list[#list+1]=p end
+end
+table.sort(list,function(a,b)return a.DisplayName:lower()<b.DisplayName:lower()end)
+local sg=q .. "|"
+for _,p in ipairs(list)do sg=sg .. p.UserId .. "," end
+if sg==lastSig then return end
+lastSig=sg
+for _,c in ipairs(holderS:GetChildren())do if c:IsA("GuiObject")then c:Destroy()end end
+for i,p in ipairs(list)do
+if i>60 then break end
+local r=mk("Frame",{Size=UDim2.new(1,0,0,42),BackgroundColor3=SURF,LayoutOrder=i},holderS)
+corner(r,9)
+local im=mk("ImageLabel",{Position=UDim2.fromOffset(6,7),Size=UDim2.fromOffset(28,28),BackgroundColor3=SURF2,Image="rbxthumb://type=AvatarHeadShot&id=" .. p.UserId .. "&w=100&h=100"},r)
+corner(im,14)
+lab(r,p.DisplayName,11,FONTB,TXT,UDim2.fromOffset(40,4),UDim2.new(1,-150,0,16)).TextTruncate=Enum.TextTruncate.AtEnd
+lab(r,"@" .. p.Name,9,FONT,DIM,UDim2.fromOffset(40,21),UDim2.new(1,-150,0,14)).TextTruncate=Enum.TextTruncate.AtEnd
+local eb=mk("TextButton",{AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-66,0.5,0),Size=UDim2.fromOffset(58,26),BackgroundColor3=SURF2,Text="EMOTE",Font=FONTB,TextSize=10,TextColor3=TXT,AutoButtonColor=false},r)
+corner(eb,8)
+acc(eb)eb.TextColor3=INK
+local pb=mk("TextButton",{AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-4,0.5,0),Size=UDim2.fromOffset(58,26),BackgroundColor3=SURF2,Text="PACK",Font=FONTB,TextSize=10,TextColor3=TXT,AutoButtonColor=false},r)
+corner(pb,8)
+eb.MouseButton1Click:Connect(function()click()startEmote(p)end)
+pb.MouseButton1Click:Connect(function()click()task.spawn(startPack,p,packAuto)end)
+end
+if#list==0 then
+local e=lab(holderS,"Tidak ada pemain lain.",11,FONT,DIM,nil,UDim2.new(1,0,0,30),Enum.TextXAlignment.Center)
+e.LayoutOrder=1
+end
+end
+sBoxS:GetPropertyChangedSignal("Text"):Connect(function()lastSig="" renderPl()end)
+bind(Players.PlayerAdded,function()renderPl()end)
+bind(Players.PlayerRemoving,function(p)
+if tgt==p then stopSync("Target keluar, sync berhenti")end
+task.defer(function()lastSig="" renderPl()end)
+end)
+renderPl()
+end
+do
 local nD=counter(sfD)
 local dRow=mkRow(sfD,nD,28)
 local allB=btn(dRow,0,0.34,"Hanya aku")
@@ -15942,6 +16511,12 @@ local clrB=btn(dRow,0.67,1,"Bersihkan")
 local dRow2=mkRow(sfD,nD,28)
 local notB=btn(dRow2,0,0.5,"Notif: ON")
 local cpAll=btn(dRow2,0.5,1,"Salin semua ID")
+local dRow3=mkRow(sfD,nD,28)
+local dLoop=btn(dRow3,0,0.34,loopOn and "Loop: ON" or "Loop: OFF")
+local dSpd=tbox(dRow3,0.34,0.67,"Speed (1)",string.format("%g",tonumber(spdBox.Text)or 1))
+local dStop=btn(dRow3,0.67,1,"STOP")
+local dRow4=mkRow(sfD,nD,28)
+local dQ=tbox(dRow4,0,1,"Cari nama / ID / pemain...","")
 local dn=lab(sfD,"Otomatis menangkap animation ID yang dijalankan di karakter (emote, pack, script). Rig R6/R15 dideteksi dari karakternya.",9,FONT,DIM,nil,UDim2.new(1,0,0,26))
 dn.TextWrapped=true dn.LayoutOrder=nD()
 local dHold=mk("Frame",{Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1,LayoutOrder=nD()},sfD)
@@ -15962,13 +16537,17 @@ local function renderDet()
 renderTok+=1
 for _,c in ipairs(dHold:GetChildren())do if c:IsA("GuiObject")then c:Destroy()end end
 if#found==0 then lab(dHold,"(belum ada animasi terdeteksi)",10,FONT,DIM,nil,UDim2.new(1,0,0,18))end
+local dq=(dQ.Text or ""):lower()
+local shown=0
 for i,e in ipairs(found)do
-if i>60 then break end
+if dq~="" and not(tostring(e.name):lower():find(dq,1,true)or tostring(e.id):find(dq,1,true)or tostring(e.who):lower():find(dq,1,true))then continue end
+shown+=1
+if shown>60 then break end
 local r=mk("Frame",{Size=UDim2.new(1,0,0,34),BackgroundColor3=SURF,LayoutOrder=i},dHold)
 corner(r,8)
-local nm=lab(r,tostring(e.name).. "  \u{2022}  " .. e.rig:upper(),11,FONTB,TXT,UDim2.fromOffset(8,2),UDim2.new(1,-150,0,14))
+local nm=lab(r,tostring(e.name).. "  \u{2022}  " .. e.rig:upper(),11,FONTB,TXT,UDim2.fromOffset(8,2),UDim2.new(1,-214,0,14))
 nm.TextTruncate=Enum.TextTruncate.AtEnd
-lab(r,"#" .. e.id .. "  \u{2022}  " .. tostring(e.who).. "  \u{2022}  " .. string.format("%.1fs",e.len or 0).. "  x" .. e.count,9,FONT,DIM,UDim2.fromOffset(8,18),UDim2.new(1,-150,0,14))
+lab(r,"#" .. e.id .. "  \u{2022}  oleh " .. tostring(e.who).. "  \u{2022}  " .. string.format("%.1fs",e.len or 0),9,FONT,DIM,UDim2.fromOffset(8,18),UDim2.new(1,-150,0,14))
 local function sb(x,w,text,cb)
 local b=mk("TextButton",{AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,x,0.5,0),Size=UDim2.fromOffset(w,24),BackgroundColor3=SURF2,Text=text,Font=FONTB,TextSize=10,TextColor3=TXT,AutoButtonColor=false},r)
 corner(b,7)
@@ -15983,10 +16562,63 @@ if U.animRenderFav then U.animRenderFav()end
 if U.animRenderR6 then U.animRenderR6()end
 say("Favorit tersimpan (" .. e.rig:upper().. "): " .. e.id)
 end)
-sb(-36,46,"PLAY",function()task.spawn(playId,e.id)end)
-sb(-86,56,"SALIN",function()if copyText(e.id)then say("ID tersalin: " .. e.id)else say("Clipboard tidak didukung. ID: " .. e.id)end end)
+sb(-36,46,"PLAY",function()spdBox.Text=string.format("%g",math.clamp(tonumber(dSpd.Text)or 1,0.01,100))task.spawn(playId,e.id)end)
+sb(-86,56,"SIMPAN",function()
+for _,x in ipairs(state.animSaved)do if tostring(x.id)==tostring(e.id)then say("Sudah tersimpan: " .. e.id)return end end
+table.insert(state.animSaved,{name=tostring(e.name):sub(1,24),id=tostring(e.id),rig=e.rig,spd=tonumber(dSpd.Text)or 1,loop=loopOn})
+saveSoon()
+if U.animSavedRender then U.animSavedRender()end
+say("Animasi tersimpan: " .. e.id)
+end)
+sb(-146,56,"SALIN",function()if copyText(e.id)then say("ID tersalin: " .. e.id)else say("Clipboard tidak didukung. ID: " .. e.id)end end)
 end
 end
+local svHead=lab(sfD,"TERSIMPAN",10,FONTK,DIM,nil,UDim2.new(1,0,0,16))
+svHead.LayoutOrder=nD()
+local svHold=mk("Frame",{Size=UDim2.new(1,0,0,0),AutomaticSize=Enum.AutomaticSize.Y,BackgroundTransparency=1,LayoutOrder=nD()},sfD)
+mk("UIListLayout",{Padding=UDim.new(0,3),SortOrder=Enum.SortOrder.LayoutOrder},svHold)
+local function renderSaved()
+for _,c in ipairs(svHold:GetChildren())do if c:IsA("GuiObject")then c:Destroy()end end
+if#state.animSaved==0 then lab(svHold,"(belum ada yang disimpan; tekan SIMPAN di animasi terdeteksi)",10,FONT,DIM,nil,UDim2.new(1,0,0,18))end
+for i,e in ipairs(state.animSaved)do
+local r2=mk("Frame",{Size=UDim2.new(1,0,0,34),BackgroundColor3=SURF,LayoutOrder=i},svHold)
+corner(r2,8)
+lab(r2,tostring(e.name).. "  \u{2022}  " .. tostring(e.rig or "r15"):upper(),11,FONTB,TXT,UDim2.fromOffset(8,2),UDim2.new(1,-120,0,14)).TextTruncate=Enum.TextTruncate.AtEnd
+lab(r2,"#" .. tostring(e.id).. "  \u{2022}  x" .. string.format("%g",e.spd or 1)..(e.loop and "  \u{2022}  loop" or ""),9,FONT,DIM,UDim2.fromOffset(8,18),UDim2.new(1,-120,0,14))
+local function sb2(x,w,text,cb)
+local b=mk("TextButton",{AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,x,0.5,0),Size=UDim2.fromOffset(w,24),BackgroundColor3=SURF2,Text=text,Font=FONTB,TextSize=10,TextColor3=TXT,AutoButtonColor=false},r2)
+corner(b,7)
+b.MouseButton1Click:Connect(function()click()cb()end)
+end
+sb2(-4,28,"X",function()table.remove(state.animSaved,i)saveSoon()renderSaved()end)
+sb2(-36,46,"PLAY",function()
+loopOn=e.loop and true or false
+loopB.Text=loopOn and "Loop: ON" or "Loop: OFF"
+dLoop.Text=loopB.Text
+spdBox.Text=string.format("%g",e.spd or 1)
+dSpd.Text=spdBox.Text
+task.spawn(playId,e.id)
+end)
+end
+end
+U.animSavedRender=renderSaved
+renderSaved()
+dLoop.MouseButton1Click:Connect(function()
+click()
+loopOn=not loopOn
+loopB.Text=loopOn and "Loop: ON" or "Loop: OFF"
+dLoop.Text=loopB.Text
+if cur then cur.Looped=loopOn end
+end)
+loopB.MouseButton1Click:Connect(function()dLoop.Text=loopOn and "Loop: ON" or "Loop: OFF" end)
+dSpd.FocusLost:Connect(function()
+local v=math.clamp(tonumber(dSpd.Text)or 1,0.01,100)
+dSpd.Text=string.format("%g",v)
+spdBox.Text=dSpd.Text
+if cur then pcall(function()cur:AdjustSpeed(v)end)end
+end)
+dStop.MouseButton1Click:Connect(function()click()stopEmote()setNow("Emote dihentikan")end)
+dQ:GetPropertyChangedSignal("Text"):Connect(renderDet)
 U.animDetRender=renderDet
 allB.MouseButton1Click:Connect(function()click()onlyMe=not onlyMe allB.Text=onlyMe and "Hanya aku" or "Semua pemain" end)
 defB.MouseButton1Click:Connect(function()click()hideDef=not hideDef defB.Text="Sembunyikan default: " ..(hideDef and "ON" or "OFF")end)
@@ -16010,14 +16642,18 @@ if hideDef and defaultIds[id]then return end
 local key=id .. "|" .. rig
 local e=byKey[key]
 if e then
-e.count+=1
-e.last=os.clock()
-table.remove(found,table.find(found,e))
-table.insert(found,1,e)
+return
 else
-e={id=id,rig=rig,name=(track.Name~="" and track.Name~="Animation")and track.Name or(anim.Name~="" and anim.Name or "Animasi"),who=pl.DisplayName,len=track.Length,count=1,last=os.clock()}
+e={id=id,rig=rig,name=(track.Name~="" and track.Name~="Animation")and track.Name or(anim.Name~="" and anim.Name or "Animasi"),who=(pl.DisplayName==pl.Name)and pl.Name or(pl.DisplayName .. " (@" .. pl.Name .. ")"),len=track.Length}
 byKey[key]=e
 table.insert(found,1,e)
+task.spawn(function()
+local okI,inf=pcall(function()return game:GetService("MarketplaceService"):GetProductInfo(tonumber(id))end)
+if okI and type(inf)=="table" and inf.Name and inf.Name~="" then
+e.name=tostring(inf.Name):sub(1,40)
+if sfD.Visible then renderDet()end
+end
+end)
 if notif then U.quiet("Animasi terdeteksi: " .. id .. " (" .. rig:upper().. ")")end
 end
 if sfD.Visible then renderDet()end
@@ -16584,6 +17220,339 @@ szPlus.MouseButton1Click:Connect(function()click()rescale(0.15)end)
 U.vkOpen=function(m)mode=m or "full" buildVk()end
 lab(sf,"Catatan: pengiriman key pakai VirtualInputManager; sebagian game/executor bisa membatasi. Keyboard virtual: tahan tombol = tahan key.",9,FONT,DIM,nil,UDim2.new(1,0,0,36)).LayoutOrder=nx()
 for _,c in ipairs(sf:GetChildren())do if c:IsA("TextLabel")and c.LayoutOrder==ord then c.TextWrapped=true end end
+end
+end
+do
+local pg=tPages["Part ESP"]
+if pg then
+local WS=game:GetService("Workspace")
+local RS=game:GetService("RunService")
+local C3n=Color3.fromRGB
+local groups={}
+local partG=setmetatable({},{__mode="k"})
+local inter=setmetatable({},{__mode="k"})
+local opt={inter=false,all=false,dist=true,tracer=false}
+local q,selG,selP="",nil,nil
+local expanded={}
+local scanned,scanning,dirty=false,false,true
+local marks,tlist={},{}
+local function hrpPos()
+local c=player.Character
+local r=c and c:FindFirstChild("HumanoidRootPart")
+return r and r.Position
+end
+local function isInter(p)
+if p:FindFirstChildWhichIsA("ClickDetector")or p:FindFirstChildWhichIsA("ProximityPrompt")then return true end
+local par=p.Parent
+if par and par~=WS then
+if par:IsA("Tool")then return true end
+if par:FindFirstChildWhichIsA("ClickDetector")or par:FindFirstChildWhichIsA("ProximityPrompt")then return true end
+end
+return false
+end
+local function addPart(p)
+if partG[p]or not p:IsA("BasePart")or p:IsA("Terrain")then return end
+local m=p:FindFirstAncestorOfClass("Model")
+if m and Players:GetPlayerFromCharacter(m)then return end
+local k=p.Name:lower()
+local g=groups[k]
+if not g then g={name=p.Name,set={},n=0}groups[k]=g end
+g.set[p]=true
+g.n+=1
+partG[p]=g
+if isInter(p)then inter[p]=true end
+dirty=true
+end
+local function removePart(p)
+local g=partG[p]
+if not g then return end
+g.set[p]=nil
+g.n -=1
+partG[p]=nil
+inter[p]=nil
+if selP==p then selP=nil end
+if g.n<=0 then
+groups[g.name:lower()]=nil
+if selG==g then selG=nil end
+end
+dirty=true
+end
+local function scan()
+if scanning then return end
+scanning=true
+for _,g in pairs(groups)do g.set={}g.n=0 end
+groups={}
+partG=setmetatable({},{__mode="k"})
+inter=setmetatable({},{__mode="k"})
+selG,selP=nil,nil
+local ds=WS:GetDescendants()
+for i,d in ipairs(ds)do
+if d:IsA("BasePart")then addPart(d)end
+if i%1500==0 then task.wait()end
+end
+scanned,scanning,dirty=true,false,true
+end
+bind(WS.DescendantAdded,function(d)
+if not scanned then return end
+if d:IsA("BasePart")then addPart(d)
+elseif d:IsA("ClickDetector")or d:IsA("ProximityPrompt")then
+local par=d.Parent
+if par and par:IsA("BasePart")then inter[par]=true dirty=true end
+end
+end)
+bind(WS.DescendantRemoving,function(d)
+if scanned and d:IsA("BasePart")then removePart(d)end
+end)
+lab(pg,"Part ESP",14,FONTK,TXT,UDim2.fromOffset(0,0),UDim2.new(0.5,0,0,22))
+local cnt=lab(pg,"0 nama",10,FONTB,DIM,UDim2.new(0.5,0,0,0),UDim2.new(0.5,0,0,22),Enum.TextXAlignment.Right)
+local box=mk("TextBox",{Position=UDim2.fromOffset(0,26),Size=UDim2.new(1,-52,0,30),BackgroundColor3=SURF,Text="",PlaceholderText="cari nama part / item...",PlaceholderColor3=DIM,Font=FONT,TextSize=12,TextColor3=TXT,ClearTextOnFocus=false,TextXAlignment=Enum.TextXAlignment.Left},pg)
+corner(box,9)
+mk("UIPadding",{PaddingLeft=UDim.new(0,10)},box)
+local scB=acc(mk("TextButton",{AnchorPoint=Vector2.new(1,0),Position=UDim2.new(1,0,0,26),Size=UDim2.fromOffset(46,30),Text="SCAN",Font=FONTK,TextSize=11,TextColor3=INK,AutoButtonColor=false},pg))
+corner(scB,9)
+local function tb(x0,x1,y,text,on)
+local b=mk("TextButton",{Position=UDim2.new(x0,0,0,y),Size=UDim2.new(x1 - x0,-4,0,26),BackgroundColor3=SURF2,Text=text,Font=FONTB,TextSize=10,TextColor3=TXT,AutoButtonColor=false},pg)
+corner(b,8)
+return b
+end
+local bDist,bTr,bInt,bAll=tb(0,0.25,62,"Jarak"),tb(0.25,0.5,62,"Tracer"),tb(0.5,0.75,62,"Interaktif"),tb(0.75,1,62,"ESP Semua")
+local bTp,bNear,bClr=tb(0,0.34,92,"TELEPORT"),tb(0.34,0.67,92,"TERDEKAT"),tb(0.67,1,92,"BERSIHKAN")
+local selL=lab(pg,"Dipilih: -",10,FONTB,DIM,UDim2.fromOffset(2,122),UDim2.new(1,-4,0,16))
+selL.TextTruncate=Enum.TextTruncate.AtEnd
+local list=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,142),Size=UDim2.new(1,0,1,-142),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
+mk("UIListLayout",{Padding=UDim.new(0,3),SortOrder=Enum.SortOrder.LayoutOrder},list)
+local function styleT()
+for b,on in pairs({[bDist]=opt.dist,[bTr]=opt.tracer,[bInt]=opt.inter,[bAll]=opt.all})do
+b.BackgroundColor3=on and TXT or SURF2
+b.TextColor3=on and INK or TXT
+end
+local s="Dipilih: -"
+if selP then s="Dipilih: " .. selP.Name .. " (1 objek)" elseif selG then s="Dipilih: " .. selG.name .. " (x" .. selG.n .. ")" end
+selL.Text=s
+end
+restyle[#restyle+1]=styleT
+styleT()
+local function matchQ(g)
+return q=="" or g.name:lower():find(q,1,true)~=nil
+end
+local function groupParts(g,interOnly)
+local out={}
+for p in pairs(g.set)do
+if p.Parent and(not interOnly or inter[p])then out[#out+1]=p end
+end
+return out
+end
+local function sortNear(arr)
+local o=hrpPos()
+if not o then return arr end
+local d={}
+for _,p in ipairs(arr)do d[p]=(p.Position - o).Magnitude end
+table.sort(arr,function(a,b)return d[a]<d[b]end)
+return arr
+end
+local function nearestOf(g)
+local o=hrpPos()
+local best,bd
+for p in pairs(g.set)do
+if p.Parent and(not opt.inter or inter[p])then
+local dd=o and(p.Position - o).Magnitude or 0
+if not bd or dd<bd then best,bd=p,dd end
+end
+end
+return best,bd
+end
+local function tpTo(p)
+local c=player.Character
+local r=c and c:FindFirstChild("HumanoidRootPart")
+if r and p and p.Parent then
+r.CFrame=CFrame.new(p.Position+Vector3.new(0,4,0))
+say("Teleport ke " .. p.Name)
+end
+end
+local lastSig=""
+local function render(force)
+local arr={}
+for _,g in pairs(groups)do
+if matchQ(g)then
+local n=g.n
+if opt.inter then
+n=0
+for p in pairs(g.set)do if inter[p]then n+=1 end end
+end
+if n>0 then arr[#arr+1]={g=g,n=n}end
+end
+end
+table.sort(arr,function(a,b)return a.g.name:lower()<b.g.name:lower()end)
+cnt.Text=#arr .. " nama"
+local sg=q ..(opt.inter and "i" or "o")..#arr .. tostring(selG).. tostring(selP)
+for k in pairs(expanded)do sg=sg .. "|" .. k end
+for i=1,math.min(#arr,150)do sg=sg .. arr[i].g.name .. arr[i].n end
+if sg==lastSig and not force then return end
+lastSig=sg
+for _,c in ipairs(list:GetChildren())do if c:IsA("GuiObject")then c:Destroy()end end
+local ord=0
+for i=1,math.min(#arr,150)do
+local g,n=arr[i].g,arr[i].n
+ord+=1
+local on=(selG==g and not selP)
+local r=mk("TextButton",{Size=UDim2.new(1,0,0,30),BackgroundColor3=on and SURF2 or SURF,Text="",AutoButtonColor=false,LayoutOrder=ord},list)
+corner(r,8)
+if on then acc(mk("UIStroke",{Thickness=1.5,ApplyStrokeMode=Enum.ApplyStrokeMode.Border},r),"Color")end
+lab(r,g.name,11,FONTB,TXT,UDim2.fromOffset(8,0),UDim2.new(1,-90,1,0)).TextTruncate=Enum.TextTruncate.AtEnd
+lab(r,"x" .. n,10,FONTB,DIM,UDim2.new(1,-78,0,0),UDim2.fromOffset(40,30),Enum.TextXAlignment.Right)
+local ex=expanded[g.name:lower()]
+local eb=mk("TextButton",{AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-4,0.5,0),Size=UDim2.fromOffset(30,22),BackgroundColor3=SURF2,Text=ex and "v" or ">",Font=FONTK,TextSize=12,TextColor3=TXT,AutoButtonColor=false},r)
+corner(eb,7)
+r.MouseButton1Click:Connect(function()click()selG,selP=g,nil styleT()render(true)end)
+eb.MouseButton1Click:Connect(function()click()expanded[g.name:lower()]=(not ex)or nil render(true)end)
+if ex then
+local ps=sortNear(groupParts(g,opt.inter))
+local o=hrpPos()
+for j=1,math.min(#ps,25)do
+local p=ps[j]
+ord+=1
+local sub=mk("TextButton",{Size=UDim2.new(1,-14,0,26),BackgroundColor3=(selP==p)and SURF2 or SURF,Text="",AutoButtonColor=false,LayoutOrder=ord},list)
+sub.Position=UDim2.fromOffset(14,0)
+corner(sub,7)
+local dtx=o and(math.floor((p.Position - o).Magnitude+0.5).. " m")or "-"
+lab(sub,"#" .. j .. "  " .. dtx,10,FONT,TXT,UDim2.fromOffset(8,0),UDim2.new(1,-64,1,0))
+local tp=mk("TextButton",{AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-3,0.5,0),Size=UDim2.fromOffset(52,20),BackgroundColor3=SURF2,Text="TP",Font=FONTB,TextSize=10,TextColor3=TXT,AutoButtonColor=false},sub)
+corner(tp,6)
+sub.MouseButton1Click:Connect(function()click()selG,selP=g,p styleT()render(true)end)
+tp.MouseButton1Click:Connect(function()click()tpTo(p)end)
+end
+end
+end
+end
+box:GetPropertyChangedSignal("Text"):Connect(function()q=box.Text:lower()render()end)
+scB.MouseButton1Click:Connect(function()
+click()
+say("Memindai...")
+task.spawn(function()scan()render(true)say("Selesai: " ..#(function()local t={}for k in pairs(groups)do t[#t+1]=k end return t end)().. " nama part")end)
+end)
+local function toggle(b,key)
+b.MouseButton1Click:Connect(function()click()opt[key]=not opt[key]styleT()render(true)end)
+end
+toggle(bDist,"dist")toggle(bTr,"tracer")toggle(bInt,"inter")toggle(bAll,"all")
+bTp.MouseButton1Click:Connect(function()
+click()
+local p=selP
+if not p and selG then p=nearestOf(selG)end
+if not p then say("Pilih nama part dulu.")return end
+tpTo(p)
+end)
+bNear.MouseButton1Click:Connect(function()
+click()
+local best,bd
+for _,g in pairs(groups)do
+if matchQ(g)then
+local p,d=nearestOf(g)
+if p and(not bd or d<bd)then best,bd=p,d end
+end
+end
+if best then selG,selP=partG[best],best styleT()render(true)tpTo(best)else say("Tidak ada hasil.")end
+end)
+bClr.MouseButton1Click:Connect(function()click()selG,selP,opt.all=nil,nil,false styleT()render(true)end)
+local okD=pcall(function()return Drawing.new end)
+local lines={}
+local holder
+pcall(function()holder=Instance.new("Folder")holder.Name="_pesp" holder.Parent=(gethui and gethui())or game:GetService("CoreGui")end)
+if not holder then holder=Instance.new("Folder")holder.Name="_pesp" holder.Parent=player:WaitForChild("PlayerGui")end
+local function dropMark(p)
+local m=marks[p]
+if m then pcall(function()m.bb:Destroy()end)if m.hl then pcall(function()m.hl:Destroy()end)end marks[p]=nil end
+end
+local function mkMark(p,useHl)
+local bb=Instance.new("BillboardGui")
+bb.Adornee,bb.AlwaysOnTop,bb.Size,bb.StudsOffset,bb.ResetOnSpawn=p,true,UDim2.fromOffset(130,26),Vector3.new(0,2,0),false
+bb.Parent=holder
+local t=Instance.new("TextLabel")
+t.BackgroundTransparency,t.Size,t.Font,t.TextSize,t.TextColor3,t.TextStrokeTransparency=1,UDim2.fromScale(1,1),Enum.Font.GothamBold,12,C3n(255,214,90),0.2
+t.Text=p.Name
+t.Parent=bb
+local hl
+if useHl then
+hl=Instance.new("Highlight")
+hl.Adornee,hl.FillColor,hl.OutlineColor,hl.FillTransparency,hl.DepthMode=p,C3n(255,196,60),C3n(255,255,255),0.65,Enum.HighlightDepthMode.AlwaysOnVisible
+hl.Parent=holder
+end
+marks[p]={bb=bb,hl=hl,t=t}
+end
+local function pickTargets()
+local arr={}
+if opt.all then
+for _,g in pairs(groups)do
+if matchQ(g)then
+for p in pairs(g.set)do if p.Parent and(not opt.inter or inter[p])then arr[#arr+1]=p end end
+end
+end
+elseif selP then arr[1]=selP
+elseif selG then arr=groupParts(selG,opt.inter)end
+if#arr>120 then sortNear(arr)for i=#arr,121,-1 do arr[i]=nil end
+elseif#arr>1 then sortNear(arr)end
+return arr
+end
+task.spawn(function()
+local tk=0
+while alive()and not killed do
+tk+=1
+if tk%(opt.all and 6 or 2)==1 then tlist=pickTargets()end
+local want={}
+local o=hrpPos()
+for i,p in ipairs(tlist)do
+if p.Parent then
+want[p]=true
+if not marks[p]then mkMark(p,i<=25)end
+local m=marks[p]
+if m then m.t.Text=(opt.dist and o)and(p.Name .. " [" .. math.floor((p.Position - o).Magnitude+0.5).. "m]")or p.Name end
+end
+end
+for p in pairs(marks)do if not want[p]then dropMark(p)end end
+task.wait(0.25)
+end
+for p in pairs(marks)do dropMark(p)end
+for _,l in ipairs(lines)do pcall(function()l:Remove()end)end
+pcall(function()holder:Destroy()end)
+end)
+bind(RS.RenderStepped,function()
+if not(okD and opt.tracer)then
+for _,l in ipairs(lines)do l.Visible=false end
+return
+end
+local cam=WS.CurrentCamera
+if not cam then return end
+local vs=cam.ViewportSize
+local from=Vector2.new(vs.X/2,vs.Y)
+local n=0
+for i=1,math.min(#tlist,40)do
+local p=tlist[i]
+if p and p.Parent and marks[p]then
+local v,on=cam:WorldToViewportPoint(p.Position)
+if on then
+n+=1
+local l=lines[n]
+if not l then
+local ok,nl=pcall(function()return Drawing.new("Line")end)
+if not ok then return end
+nl.Thickness,nl.Color=1.5,C3n(255,214,90)
+l=nl
+lines[n]=l
+end
+l.From,l.To,l.Visible=from,Vector2.new(v.X,v.Y),true
+end
+end
+end
+for i=n+1,#lines do lines[i].Visible=false end
+end)
+task.spawn(function()
+while alive()and not killed do
+if pg.Visible then
+if not scanned and not scanning then scan()dirty=true end
+if dirty or true then pcall(render)dirty=false end
+end
+task.wait(1.5)
+end
+end)
 end
 end
 do
@@ -18846,7 +19815,7 @@ img.Image=asset
 return true
 end
 end
-local statusL=lab(pg,"",11,FONTB,DIM,UDim2.fromOffset(0,62),UDim2.new(1,0,0,18))
+local statusL=lab(pg,"",11,FONTB,DIM,UDim2.fromOffset(0,90),UDim2.new(1,0,0,18))
 local function say(t,kind)
 statusL.Text=t
 statusL.TextColor3=(kind=="err")and C3(255,110,100)or((kind=="ok")and C3(90,220,130)or DIM)
@@ -18888,7 +19857,7 @@ corner(qBox,10)
 mk("UIPadding",{PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)},qBox)
 local goB=acc(mk("TextButton",{AnchorPoint=Vector2.new(1,0),Position=UDim2.new(1,0,0,0),Size=UDim2.fromOffset(90,30),Text="CARI",Font=FONTK,TextSize=12,TextColor3=INK,AutoButtonColor=false},pg))
 corner(goB,10)
-local list=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,84),Size=UDim2.new(1,0,1,-84),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
+local list=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,110),Size=UDim2.new(1,0,1,-110),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
 mk("UIListLayout",{Padding=UDim.new(0,6),SortOrder=Enum.SortOrder.LayoutOrder},list)
 local function card(order,title,info,getCode,loaderLine)
 local f=mk("Frame",{Size=UDim2.new(1,-6,0,70),BackgroundColor3=SURF,LayoutOrder=order},list)
@@ -19154,6 +20123,14 @@ end)
 qBox.FocusLost:Connect(function(enter)
 if enter then search()end
 end)
+local sugBar=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,62),Size=UDim2.new(1,0,0,26),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=0,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.X,ScrollingDirection=Enum.ScrollingDirection.X},pg)
+mk("UIListLayout",{FillDirection=Enum.FillDirection.Horizontal,Padding=UDim.new(0,5),SortOrder=Enum.SortOrder.LayoutOrder},sugBar)
+local SUGS={"Universal","fly","esp","aimbot","admin","fling","noclip","auto farm","anti afk","speed","teleport","gui hub","blox fruits","brookhaven","da hood","pet simulator","murder mystery","arsenal","rivals","jailbreak","dex","remote spy","emote","troll"}
+for i,w in ipairs(SUGS)do
+local b=mk("TextButton",{Size=UDim2.fromOffset(18+#w*6.5,26),BackgroundColor3=SURF,Text=w,Font=FONTB,TextSize=11,TextColor3=DIM,AutoButtonColor=false,LayoutOrder=i},sugBar)
+corner(b,13)
+b.MouseButton1Click:Connect(function()click()qBox.Text=(w=="Universal")and "" or w search()end)
+end
 styleSrc()
 end
 do
@@ -21759,6 +22736,21 @@ panDrag,rsz=false,false
 saveSoon()
 end
 end)
+local function clampOpenBtn()
+local c=cam()
+if not c then return end
+local vp=c.ViewportSize
+local sz=openBtn.AbsoluteSize.X>0 and openBtn.AbsoluteSize.X or 58
+local mx,myTop,myBot=14,44,18
+local pos=openBtn.Position
+local x=pos.X.Scale*vp.X+pos.X.Offset
+local y=pos.Y.Scale*vp.Y+pos.Y.Offset
+x=math.clamp(x,mx,math.max(mx,vp.X - sz - mx))
+y=math.clamp(y,myTop,math.max(myTop,vp.Y - sz - myBot))
+openBtn.Position=UDim2.fromOffset(x,y)
+end
+task.defer(clampOpenBtn)
+if cam()then bind(cam():GetPropertyChangedSignal("ViewportSize"),function()task.defer(clampOpenBtn)end)end
 local dragging,moved,dragStart,startPos,dragInp=false,false,nil,nil,nil
 local function isPress(input)
 return input.UserInputType==Enum.UserInputType.MouseButton1 or input.UserInputType==Enum.UserInputType.Touch
@@ -21784,6 +22776,7 @@ local d=Vector2.new(input.Position.X,input.Position.Y)- dragStart
 if d.Magnitude>8 then moved=true end
 if moved then
 openBtn.Position=UDim2.new(startPos.X.Scale,startPos.X.Offset+d.X,startPos.Y.Scale,startPos.Y.Offset+d.Y)
+clampOpenBtn()
 end
 end
 end)
