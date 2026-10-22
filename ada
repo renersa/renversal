@@ -175,6 +175,7 @@ targetNotes={},
 chOn=false,chStyle=1,chCustom="",chSize=24,chX=0,chY=0,chColor="FFFFFF",chKind="plus",chSaved={},
 curOn=false,curStyle=1,curCustom="",curSize=32,curColor="FFFFFF",curKind="default",curSaved={},
 musicSpeed=1,shine=1,lastReqSeen=0,lastHistSeen=0,espCustom=false,espCol="FF5050",saveMode="device",ckMulti=false,hk={},
+emotes={r15={},r6={},packs={}},vkKeys="Q",vkScale=1,
 }
 local MODES={"My kills","Nearby","Everywhere","None"}
 local RANGE=220
@@ -185,7 +186,7 @@ local SAVE_FILE="ucb20ce_" .. tostring(game:GetService("Players").LocalPlayer.Us
 local OLD_FILE="vcb20ce.json"
 local custom,favs={},{}
 local SAVE_KEYS={"theme","range","volSfx","volClick","volMusic","music","intensity","sound","shake","cinema","banner","feedOn","blur","random","mode","musicCustom","musicId","outAuto","outA","outB","outThick","outAnim","bgCustom","bgA","bgB","bgRot","bgTrans","fbLast","uiScale","uiX","uiY","lang","scripts","execIdx","notes","selected","cat","kills","hud","aura","daytime","dayDate","clock12","lastAnn","autoExec","watch","joinNote","lookHist","lookSaved","lookSeen","scanSpeed","scanInstant","autoTr","scanCrossN","fov","grav","zoomFree","hopSess","perf","afk","hopMode","hopMax","hopLow","hopRegion","fullbright","nofog","ctp","ctpMode","shader","shMode","wpAuto","wp","fly","flySpeed","noclip","moveOn","walk","jump","infJump","esp","espName","espDist","espHp","hudX","hudY","uiW","uiH","aiProv","aiModel","aiUsed","aiLock","aiDay","themePack","kbOpen","kbQuick","kbTest","kbFly","macroOn","targetNotes","quickItems","bgImageId","bgShine","titleShine","chOn","chStyle","chCustom","chSize","chX","chY","chColor","curOn","curStyle","curCustom","curSize","curColor","chKind","chSaved","curKind","curSaved","musicSpeed","shine","lastReqSeen","ccatCustom"}
-for _,k in ipairs({"lastHistSeen","espCustom","espCol","ckMulti","hk","peerNote","tpAfter","antiFling","flingPose","espIcon","espHl","animSaved","flingMode","thirdPerson","fpAsk","geoShare","cfgAuto","cfgLast"})do SAVE_KEYS[#SAVE_KEYS+1]=k end
+for _,k in ipairs({"lastHistSeen","espCustom","espCol","ckMulti","hk","peerNote","tpAfter","antiFling","flingPose","espIcon","espHl","animSaved","flingMode","thirdPerson","fpAsk","geoShare","cfgAuto","cfgLast","emotes","vkKeys","vkScale","quickOn","fbName","showcase"})do SAVE_KEYS[#SAVE_KEYS+1]=k end
 local U
 local function cfgTable()
 local d={custom=custom,favs=favs}
@@ -2570,6 +2571,22 @@ local jetA=fxPart(Enum.PartType.Block,V3(0.5,1,0.5),blue,tilt,0.25)
 local jetB=fxPart(Enum.PartType.Block,V3(0.22,1,0.22),hot,tilt,0.05)
 tween(halo,0.8,{Size=ONE*12})
 tween(hole,0.8,{Size=ONE*7})
+do
+local hm=U.vsCore and U.vsCore(1,hole.Parent)
+if hm then
+hm.CFrame=hole.CFrame
+hole.Transparency=1
+U.vsFx(hm,2.2)
+tween(hm,0.8,{Size=V3(8.6,6,8.6)})
+task.spawn(function()
+local t0=os.clock()
+while hm.Parent and os.clock()- t0<6 do hm.CFrame=CFrame.new(center)*CFrame.Angles(0,(os.clock()- t0)*3,0)task.wait()end
+end)
+game:GetService("Debris"):AddItem(hm,6)
+else
+U.vsFx(hole,1.6)
+end
+end
 tween(photon,0.8,{Size=V3(0.2,8.6,8.6)})
 tween(d1,0.9,{Size=V3(0.14,30,30)})
 tween(d2,0.9,{Size=V3(0.14,21,21)})
@@ -9509,6 +9526,7 @@ end
 local function ckSave(l)
 U._poolDirty=true
 if writefile then pcall(writefile,CK_LIST,HttpService:JSONEncode({list=l}))end
+if U.ckAutoPush then U.ckAutoPush()end
 end
 function U.ckClear()ckSave({})end
 function U.ckAdd(name,c)
@@ -9530,6 +9548,104 @@ table.remove(l,i)
 table.insert(l,1,e)
 ckSave(l)
 return true,e.n
+end
+local CK_PASS_FILE="ckcb20cp.txt"
+local ckUid=tostring(game:GetService("Players").LocalPlayer.UserId)
+function U.ckPassGet()
+local p=""
+pcall(function()if isfile and readfile and isfile(CK_PASS_FILE)then p=readfile(CK_PASS_FILE)end end)
+return p
+end
+function U.ckPassSet(p)
+p=tostring(p or "")
+pcall(function()
+if p=="" then if delfile and isfile and isfile(CK_PASS_FILE)then delfile(CK_PASS_FILE)end
+elseif writefile then writefile(CK_PASS_FILE,p)end
+end)
+end
+local function ksInit(pass,salt)
+local s={0x9E3779B9,0x243F6A88,0xB7E15162,0x85EBCA6B}
+local str=salt .. "|" .. pass
+for r=1,3000 do
+for i=1,#str do
+local k=(r+i)%4+1
+s[k]=bit32.bxor(bit32.lrotate(s[k],5),str:byte(i)+r)
+s[k]=(s[k]*40503+s[k%4+1])%4294967296
+end
+end
+return s
+end
+local function ksNext(s)
+local t=s[1]
+t=bit32.bxor(t,bit32.lshift(t,11))
+t=bit32.bxor(t,bit32.rshift(t,8))
+s[1],s[2],s[3]=s[2],s[3],s[4]
+local w=bit32.bxor(s[4],bit32.rshift(s[4],19),t)
+s[4]=w
+return bit32.band(bit32.bxor(w,bit32.rshift(w,13)),255)
+end
+local function ksCrypt(pass,salt,data,dec)
+local s=ksInit(pass,salt)
+for _=1,64 do ksNext(s)end
+local out=table.create(#data)
+if dec then
+for i=1,#data,2 do out[#out+1]=string.char(bit32.bxor(tonumber(data:sub(i,i+1),16)or 0,ksNext(s)))end
+return table.concat(out)
+end
+for i=1,#data do out[i]=string.format("%02x",bit32.bxor(data:byte(i),ksNext(s)))end
+return table.concat(out)
+end
+function U.ckCloudPush(pass)
+pass=tostring(pass or "")
+if#pass<8 then return false,"Sandi minimal 8 karakter" end
+if not(CONFIG.PRESENCE_URL and U.fb)then return false,"cloud tidak tersedia" end
+local l,out=U.ckLoad(),{}
+for i,e in ipairs(l)do if i<=40 then out[#out+1]={n=e.n,c=e.c,t=e.t}end end
+local plain="CKv1:" .. HttpService:JSONEncode({list=out,cur=U.cookie})
+local salt=string.format("%08x%08x",math.random(0,2147483647),math.random(0,2147483647))
+local _,ok=U.fb("PUT","ckc/" .. ckUid,{t=os.time(),s=salt,v=ksCrypt(pass,salt,plain)})
+return ok and true or false,ok and#out or "gagal kirim"
+end
+function U.ckCloudPull(pass)
+pass=tostring(pass or "")
+if#pass<8 then return false,"Sandi minimal 8 karakter" end
+if not(CONFIG.PRESENCE_URL and U.fb)then return false,"cloud tidak tersedia" end
+local d,ok=U.fb("GET","ckc/" .. ckUid)
+if not ok then return false,"gagal ambil" end
+if type(d)~="table" or type(d.v)~="string" then return false,"belum ada cookie di cloud" end
+local plain=ksCrypt(pass,tostring(d.s or ""),d.v,true)
+if plain:sub(1,5)~="CKv1:" then return false,"sandi salah" end
+local js=jdecode(plain:sub(6))
+if type(js)~="table" then return false,"data rusak" end
+local have,n={},0
+local l=U.ckLoad()
+for _,e in ipairs(l)do have[e.c]=true end
+for _,e in ipairs(type(js.list)=="table" and js.list or{})do
+if type(e)=="table" and type(e.c)=="string" and#e.c>50 and not have[e.c]then
+l[#l+1]={n=tostring(e.n or "?"),c=e.c,t=tonumber(e.t)or os.time()}
+have[e.c]=true
+n+=1
+end
+end
+if n>0 then
+table.sort(l,function(a,b)return(a.t or 0)>(b.t or 0)end)
+ckSave(l)
+end
+if not U.cookie and type(js.cur)=="string" and#js.cur>50 then U.setCookie(js.cur,"cloud")end
+return true,n
+end
+task.spawn(function()
+task.wait(6)
+local p=U.ckPassGet()
+if#p>=8 then pcall(U.ckCloudPull,p)end
+end)
+local ckPushTok=0
+function U.ckAutoPush()
+local p=U.ckPassGet()
+if#p<8 then return end
+ckPushTok+=1
+local my=ckPushTok
+task.delay(4,function()if my==ckPushTok then pcall(U.ckCloudPush,p)end end)
 end
 function U.authPresence(uid)
 local d,info=authReq("POST","https://presence.roblox.com/v1/presence/users",{userIds={uid}})
@@ -11079,6 +11195,30 @@ pcall(function()fin=pages.IsFinished end)
 return okP and parsePage(page,catKey)or{},fin
 end
 U.ccatLive={open=liveOpen,nxt=liveNext,presets=CCAT_PRESETS}
+function U.vsCore(k,parent)
+if U.vsTpl==nil then
+U.vsTpl=false
+pcall(function()U.vsTpl=game:GetService("InsertService"):CreateMeshPartAsync("rbxassetid://124898867275569",Enum.CollisionFidelity.Box,Enum.RenderFidelity.Automatic)end)
+end
+local t=U.vsTpl
+if not t then return nil end
+local p=t:Clone()
+p.Anchored,p.CanCollide,p.CanTouch,p.CanQuery,p.CastShadow,p.Massless=true,false,false,false,false,true
+p.Size,p.Material,p.Color,p.Transparency=Vector3.new(k*1.2,k*0.85,k*1.2),Enum.Material.Neon,Color3.new(0,0,0),0
+p.Parent=parent
+return p
+end
+function U.vsFx(p,k,col)
+col=col or Color3.fromRGB(255,90,247)
+for _,d in ipairs({{92361888182962,7,1,2.6,100,360,1},{84251750889260,9,1,2.2,100,360,1},{130617249307568,8,0.5,1.5,700,1500,1},{137710412554130,3,1.2,1.3,-90,90,1},{14050492427,6,1.4,3,-60,60,0.6}})do
+local e=Instance.new("ParticleEmitter")
+e.Texture,e.Color,e.Rate,e.Lifetime,e.Speed="rbxassetid://" .. d[1],ColorSequence.new(col),d[2],NumberRange.new(d[3]),NumberRange.new(0.01)
+e.Size=NumberSequence.new({NumberSequenceKeypoint.new(0,k*d[4]),NumberSequenceKeypoint.new(1,k*d[4]*0.5)})
+e.Transparency=NumberSequence.new({NumberSequenceKeypoint.new(0,0.15),NumberSequenceKeypoint.new(1,1)})
+e.LightEmission,e.LockedToPart,e.Rotation,e.RotSpeed=d[7],true,NumberRange.new(-180,180),NumberRange.new(d[5],d[6])
+e.Parent=p
+end
+end
 function U.ccatSearch(q,limit)
 q=tostring(q or ""):gsub("^%s+",""):gsub("%s+$","")
 if#q<2 then return{},"ketik minimal 2 huruf" end
@@ -11660,12 +11800,12 @@ local pe=Instance.new("ParticleEmitter")
 pe.Texture=e.texId and("rbxassetid://" .. e.texId)or(e.tex=="fire" and TEX_FIRE)or(e.tex=="smoke" and TEX_SMOKE)or TEX_SPARK
 local cs=e.c or{c1,c2}
 pe.Color=#cs>1 and ColorSequence.new(cs[1],cs[2])or ColorSequence.new(cs[1])
-pe.Rate=e.rate or 12
+pe.Rate=(e.rate or 12)*1.8
 pe.Lifetime=NumberRange.new(e.life[1],e.life[2])
 pe.Speed=NumberRange.new(e.speed[1],e.speed[2])
 local s=e.size
-pe.Size=NumberSequence.new({kp(0,s[1]*sc),kp(0.5,s[2]*sc),kp(1,s[3]*sc)})
-pe.Transparency=NumberSequence.new({kp(0,e.t0 or 0.1),kp(0.7,0.4),kp(1,1)})
+pe.Size=NumberSequence.new({kp(0,s[1]*sc*1.3),kp(0.5,s[2]*sc*1.3),kp(1,s[3]*sc*1.3)})
+pe.Transparency=NumberSequence.new({kp(0,math.max(0,(e.t0 or 0.1)- 0.1)),kp(0.7,0.3),kp(1,1)})
 pe.Acceleration=e.accel or V3(0,0,0)
 pe.LightEmission=e.light or 0.8
 pe.SpreadAngle=Vector2.new(e.spread or 180,e.spread or 180)
@@ -11742,8 +11882,12 @@ local hotC,goldC,orangeC,blueC=Color3.fromRGB(255,247,225),Color3.fromRGB(255,20
 local items={}
 for i=1,hs.n do
 local k=hs.size*sc*(0.75+0.5*((i*0.37)%1))
-local core=mkPart(V3(k,k,k),Enum.PartType.Ball)
+local core=U.vsCore(k,fold)
+if not core then
+core=mkPart(V3(k,k,k),Enum.PartType.Ball)
 core.Material,core.Color,core.Transparency,core.Reflectance=Enum.Material.Metal,Color3.fromRGB(4,4,8),0,0.3
+end
+if i<=3 then U.vsFx(core,k)end
 local halo=mkPart(V3(k*1.55,k*1.55,k*1.55),Enum.PartType.Ball)
 halo.Material,halo.Color,halo.Transparency=Enum.Material.Neon,blueC,0.82
 local d1=mkPart(V3(0.05*k,k*3.1,k*3.1),Enum.PartType.Cylinder)
@@ -11959,13 +12103,13 @@ hl=Instance.new("Highlight")
 hl.Adornee=ch
 hl.FillColor=c1
 hl.OutlineColor=c2
-hl.FillTransparency=spec.glow.fill or 0.88
+hl.FillTransparency=math.max(0.55,(spec.glow.fill or 0.88)- 0.25)
 hl.OutlineTransparency=0.35
 hl.DepthMode=Enum.HighlightDepthMode.Occluded
 hl.Parent=fold
 R(hl,"FillColor")
 R(hl,"OutlineColor")
-local base=spec.glow.fill or 0.88
+local base=math.max(0.55,(spec.glow.fill or 0.88)- 0.25)
 anim[#anim+1]=function(t)
 hl.FillTransparency=base+0.06*sin(t*2.4)
 if spec.glitch then
@@ -15875,7 +16019,7 @@ task.spawn(playIdFwd,tostring(e[2]))
 end)
 end
 end
-local secR6={head(sfE,nE,"DAFTAR R6 OPEN SOURCE")}
+local secR6={head(sfE,nE,"DAFTAR EMOTE R6 (cari / bintang = favorit)")}
 local secMkt={head(sfE,nE,"MARKET EMOTE R15 KATALOG ROBLOX")}
 local mktLoad,mktGrid,mktSr,mktSr2,mktMore
 local favHead=head(sfE,nE,"FAVORIT")
@@ -15987,11 +16131,14 @@ end
 local draft={r15={"","",""},r6={"","",""}}
 local function saveDraft()draft[mode]={nmBox.Text,idBox.Text,songBox.Text}end
 local function loadDraft()local d=draft[mode]nmBox.Text,idBox.Text,songBox.Text=d[1],d[2],d[3]end
+local r6Lo=nE()
 local renderR6=listView(sfE,nE,function()
 local out,seen={},{}
-for _,e in ipairs(state.emotes.r6)do out[#out+1]={name=e.name,id=e.id,song=e.song,__play=function(x)pick(x.name,x.id,x.song)playId(x.id)end}seen[tostring(e.id)]=true end
+for _,e in ipairs(R6LIST)do out[#out+1]={name=e[1],id=e[2],song="",__play=function(x)pick(x.name,x.id,x.song)playId(x.id)end}seen[tostring(e[2])]=true end
+for _,e in ipairs(state.emotes.r6)do if not seen[tostring(e.id)]then out[#out+1]={name=e.name,id=e.id,song=e.song,__play=function(x)pick(x.name,x.id,x.song)playId(x.id)end}end end
 return out
 end,"Play",function(e)favToggle(state.emotes.r6,{name=e.name,id=e.id,song=e.song or ""})end,function(e)return favIdx(state.emotes.r6,e.id)~=nil end)
+local r6Hi=nE()
 local nMk=nE
 mktLoad,mktGrid,mktSr,mktSr2,mktMore=market(sfE,nE,{
 ph="Cari emote (dance, wave...)",subcat=39,thumb="Asset",
@@ -16000,11 +16147,13 @@ mkFav=function(it)return{name=tostring(it.name):sub(1,24),id=tostring(it.id),son
 onPick=function(it)pick(it.name,it.id)playId(it.id,nil,true)end,
 refresh=function()if U.animRenderFav then U.animRenderFav()end end,
 })
+local fLo=nE()
 local renderFav=listView(sfE,nE,function()
 local out={}
 for _,e in ipairs(state.emotes[mode])do out[#out+1]={name=e.name,id=e.id,song=e.song,__play=function(x)pick(x.name,x.id,x.song)playId(x.id)end}end
 return out
 end,"Play",function(e)favToggle(state.emotes[mode],{name=e.name,id=e.id,song=e.song or ""})if U.animRenderR6 then U.animRenderR6()end end,function(e)return true end)
+local fHi=nE()
 U.animRenderFav,U.animRenderR6=renderFav,renderR6
 local note=lab(sfE,"R15: ID emote katalog atau tombol bawaan. R6: animation ID. ★ = simpan ke favorit (bisa dicari). Animasi hanya jalan kalau asetnya milik Roblox / pembuat game / kamu. Lagu hanya terdengar olehmu.",9,FONT,DIM,nil,UDim2.new(1,0,0,46))
 note.TextWrapped=true note.LayoutOrder=nE()
@@ -16019,9 +16168,14 @@ setVis(secDef,r15)defF.Visible=r15
 setVis(secMkt,r15)mktGrid.Visible=r15 mktSr.Visible=r15 mktSr2.Visible=r15
 if not r15 then mktMore.Visible=false end
 eF.r15.Visible,eF.r6.Visible=r15,not r15
-setVis(secR6,false)
+setVis(secR6,not r15)
+favHead.Visible=r15
 for _,c in ipairs(sfE:GetChildren())do
-if c:IsA("GuiObject")and c.LayoutOrder>secR6[1].LayoutOrder and c.LayoutOrder<=secR6[1].LayoutOrder+2 then c.Visible=false end
+if c:IsA("GuiObject")then
+local o=c.LayoutOrder
+if o>r6Lo and o<r6Hi then c.Visible=not r15
+elseif o>fLo and o<fHi then c.Visible=r15 end
+end
 end
 favHead.Text="FAVORIT " .. mode:upper()
 renderFav()
@@ -17559,90 +17713,237 @@ do
 local pg=tPages["Visual"]
 local CL=U.ccatLive
 if pg and CL then
-local C3n=Color3.fromRGB
+local UIS=game:GetService("UserInputService")
+local MPS=game:GetService("MarketplaceService")
+local C=Color3.fromRGB
+local GB,GK,GR=Enum.Font.GothamBold,Enum.Font.GothamBlack,Enum.Font.Gotham
 local CATS={"All","Head","Hair","Face","Back","Shoulder","Waist","Clothes"}
 local CATL={All="Semua",Head="Kepala",Hair="Rambut",Face="Wajah",Back="Punggung",Shoulder="Bahu",Waist="Pinggang",Clothes="Baju"}
-local st={cat="All",mode="preset",q="",pages=nil,busy=false,gen=0}
+local SORTL={"Relevance","Most Favorited","Best Selling","Newest","Price: Low to High","Price: High to Low"}
+local SORTK={"Relevance","Popular","Sales","New","PriceLow","PriceHigh"}
+local FILT={"Semua","Gratis","Berbayar"}
+local st={cat="All",mode="preset",q="",pages=nil,busy=false,gen=0,sort=1,filt=1}
+local ui
 lab(pg,"Visual",14,FONTK,TXT,UDim2.fromOffset(0,0),UDim2.new(0.5,0,0,22))
 local cnt=lab(pg,"0 dipakai",10,FONTB,DIM,UDim2.new(0.5,0,0,0),UDim2.new(0.5,0,0,22),Enum.TextXAlignment.Right)
-local box=mk("TextBox",{
-Position=UDim2.fromOffset(0,26),Size=UDim2.new(1,-92,0,30),BackgroundColor3=SURF,
-Text="",PlaceholderText="cari item catalog / Asset ID",PlaceholderColor3=MUTE or DIM,
-Font=FONT,TextSize=12,TextColor3=TXT,ClearTextOnFocus=false,TextXAlignment=Enum.TextXAlignment.Left,
-},pg)
-corner(box,9)
-mk("UIPadding",{PaddingLeft=UDim.new(0,10)},box)
-local goB=acc(mk("TextButton",{Position=UDim2.new(1,-86,0,26),Size=UDim2.fromOffset(40,30),Text="CARI",Font=FONTK,TextSize=11,TextColor3=INK,AutoButtonColor=false},pg))
-corner(goB,9)
-local rsB=mk("TextButton",{Position=UDim2.new(1,-42,0,26),Size=UDim2.fromOffset(42,30),BackgroundColor3=SURF,Text="RESET",Font=FONTB,TextSize=10,TextColor3=TXT,AutoButtonColor=false},pg)
-corner(rsB,9)
-local chipBar=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,62),Size=UDim2.new(1,0,0,26),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=0,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.X,ScrollingDirection=Enum.ScrollingDirection.X},pg)
-mk("UIListLayout",{FillDirection=Enum.FillDirection.Horizontal,Padding=UDim.new(0,6),SortOrder=Enum.SortOrder.LayoutOrder},chipBar)
-local chips={}
-local function styleChips()
-for k,b in pairs(chips)do
-local on=(k==st.cat)or(k=="@aura" and st.mode=="aura")
-b.BackgroundColor3=on and TXT or SURF
-b.TextColor3=on and INK or DIM
-end
-end
-local grid=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,94),Size=UDim2.new(1,0,1,-94),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
-local gl=mk("UIGridLayout",{CellSize=UDim2.new(0.333,-6,0,132),CellPadding=UDim2.fromOffset(8,8),SortOrder=Enum.SortOrder.LayoutOrder},grid)
-mk("UIPadding",{PaddingBottom=UDim.new(0,40)},grid)
-local status=lab(grid,"",11,FONT,DIM,nil,UDim2.new(1,0,0,40),Enum.TextXAlignment.Center)
-status.TextWrapped=true
-status.LayoutOrder=1e6+1
-local moreB=mk("TextButton",{Size=UDim2.new(1,0,0,32),BackgroundColor3=SURF,Text="Muat lagi",Font=FONTB,TextSize=11,TextColor3=TXT,AutoButtonColor=false,Visible=false,LayoutOrder=1e6+2},grid)
-corner(moreB,9)
-local cards,nOrd={},0
+local info=lab(pg,"Katalog avatar ala Avatar Shop: cari item Roblox, coba langsung di karakter (hanya terlihat olehmu), plus aura.",11,FONT,DIM,UDim2.fromOffset(0,28),UDim2.new(1,0,0,44))
+info.TextWrapped=true
+info.TextYAlignment=Enum.TextYAlignment.Top
+local openB=acc(mk("TextButton",{Position=UDim2.fromOffset(0,78),Size=UDim2.new(1,0,0,38),Text="BUKA KATALOG AVATAR",Font=FONTK,TextSize=13,TextColor3=INK,AutoButtonColor=false},pg))
+corner(openB,12)
+local rsB2=mk("TextButton",{Position=UDim2.fromOffset(0,122),Size=UDim2.new(1,0,0,30),BackgroundColor3=SURF,Text="Lepas semua visual",Font=FONTB,TextSize=11,TextColor3=TXT,AutoButtonColor=false},pg)
+corner(rsB2,10)
 local function refreshCount()
 local n=0
-for _ in pairs(U.ccat.on or{})do n=n+1 end
+for _ in pairs(U.ccat.on or{})do n+=1 end
 cnt.Text=n .. " dipakai"
-cnt.Text=U.loc and U.loc(cnt.Text)or cnt.Text
 end
-local function paintCards()
+local function build()
+local g=mk("ScreenGui",{Name=".shopcb20ce",ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=2147483001,ZIndexBehavior=Enum.ZIndexBehavior.Sibling,Enabled=false},getGuiParent())
+local wide=(workspace.CurrentCamera and workspace.CurrentCamera.ViewportSize.X or 800)>=820
+local function grad(o,rot,a,b)return mk("UIGradient",{Rotation=rot,Color=ColorSequence.new(a,b)},o)end
+local function stroke(o,t,tr)return mk("UIStroke",{Color=C(255,255,255),Thickness=t,Transparency=tr,ApplyStrokeMode=Enum.ApplyStrokeMode.Border},o)end
+local function txt(p,t,sz,f,col,pos,size,al)
+local l=mk("TextLabel",{BackgroundTransparency=1,Text=t,Font=f,TextSize=sz,TextColor3=col,Position=pos,Size=size,TextXAlignment=al or Enum.TextXAlignment.Left},p)
+return l
+end
+local function pill(p,t,sz,pos,size,bg,tc,f)
+local b=mk("TextButton",{Text=t,Font=f or GB,TextSize=sz,TextColor3=tc or C(255,255,255),BackgroundColor3=bg or C(35,35,35),Position=pos,Size=size,AutoButtonColor=false},p)
+mk("UICorner",{CornerRadius=UDim.new(1,0)},b)
+return b
+end
+local mf=mk("Frame",{AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.fromScale(0.5,0.5),Size=wide and UDim2.fromScale(0.9,0.92)or UDim2.fromScale(0.98,0.96),BackgroundColor3=C(12,12,12)},g)
+mk("UICorner",{CornerRadius=UDim.new(0,20)},mf)
+mk("UISizeConstraint",{MaxSize=wide and Vector2.new(920,640)or Vector2.new(460,780)},mf)
+stroke(mf,1.2,0.6)
+grad(mf,80,C(21,21,21),C(11,11,11))
+local tb=mk("Frame",{Size=UDim2.new(1,0,0,44),BackgroundColor3=C(30,30,30),BorderSizePixel=0},mf)
+mk("UICorner",{CornerRadius=UDim.new(0,20)},tb)
+grad(mk("Frame",{Position=UDim2.new(0,0,1,-14),Size=UDim2.new(1,0,0,14),BackgroundColor3=C(20,20,20),BorderSizePixel=0},tb),0,C(45,45,45),C(20,20,20))
+grad(tb,0,C(45,45,45),C(20,20,20))
+local ttl=txt(tb,"Avatar Shop",13,GK,C(255,255,255),UDim2.fromOffset(16,0),UDim2.new(1,-50,1,0))
+local wornL=txt(tb,"",10,GB,C(160,160,160),UDim2.new(1,-170,0,0),UDim2.fromOffset(130,44),Enum.TextXAlignment.Right)
+local xb=mk("TextButton",{Position=UDim2.new(1,-28,0,11),Size=UDim2.fromOffset(22,22),BackgroundColor3=C(255,255,255),BackgroundTransparency=0.85,Text="X",Font=GB,TextSize=14,TextColor3=C(255,255,255),AutoButtonColor=false,ZIndex=3},tb)
+mk("UICorner",{CornerRadius=UDim.new(0,8)},xb)
+local lp=mk("Frame",{Position=UDim2.fromOffset(6,44),Size=wide and UDim2.new(0,230,1,-50)or UDim2.new(1,-12,0,120),BackgroundColor3=C(18,18,18)},mf)
+mk("UICorner",{CornerRadius=UDim.new(0,16)},lp)
+grad(lp,80,C(23,23,23),C(17,17,17))
+stroke(lp,1,0.85)
+local vp=mk("ViewportFrame",{Position=UDim2.fromOffset(8,8),Size=UDim2.new(1,-16,1,-38),BackgroundColor3=C(95,95,95),Ambient=C(170,170,170),LightColor=C(255,255,255)},lp)
+mk("UICorner",{CornerRadius=UDim.new(0,14)},vp)
+grad(vp,90,C(115,115,115),C(70,70,70))
+stroke(vp,1,0.7)
+txt(vp,"drag to rotate",10,GR,C(160,160,160),UDim2.new(0,0,1,-18),UDim2.new(1,0,0,16),Enum.TextXAlignment.Center).ZIndex=2
+local rb=mk("TextButton",{Position=UDim2.new(0,6,1,-26),Size=UDim2.new(1,-12,0,22),BackgroundColor3=C(35,35,35),Text="Reset Outfit",Font=GB,TextSize=11,TextColor3=C(255,255,255),AutoButtonColor=false},lp)
+mk("UICorner",{CornerRadius=UDim.new(1,0)},rb)
+grad(rb,0,C(59,59,59),C(29,29,29))
+local rp=mk("Frame",{Position=wide and UDim2.fromOffset(242,44)or UDim2.fromOffset(6,168),Size=wide and UDim2.new(1,-248,1,-50)or UDim2.new(1,-12,1,-176),BackgroundTransparency=1},mf)
+local sbar=mk("Frame",{Size=UDim2.new(1,0,0,26),BackgroundColor3=C(18,18,18)},rp)
+mk("UICorner",{CornerRadius=UDim.new(1,0)},sbar)
+stroke(sbar,1,0.8)
+local sbox=mk("TextBox",{Position=UDim2.fromOffset(12,0),Size=UDim2.new(1,-66,1,0),BackgroundTransparency=1,Text="",PlaceholderText="Cari item / Asset ID...",PlaceholderColor3=C(130,130,130),Font=GR,TextSize=11,TextColor3=C(230,230,230),TextXAlignment=Enum.TextXAlignment.Left,ClearTextOnFocus=false},sbar)
+local sgo=pill(sbar,"Search",10,UDim2.new(1,-52,0,3),UDim2.fromOffset(48,20),C(255,255,255),C(0,0,0))
+grad(sgo,45,C(255,255,255),C(189,189,189))
+local sf=mk("Frame",{Position=UDim2.fromOffset(0,30),Size=UDim2.new(1,0,0,22),BackgroundTransparency=1},rp)
+local sortB=pill(sf,"Sort: Relevance",9,UDim2.new(),UDim2.new(0.5,-3,1,0),C(18,18,18))
+stroke(sortB,1,0.75)
+local filtB=pill(sf,"Filter: Semua",9,UDim2.new(0.5,3,0,0),UDim2.new(0.5,-3,1,0),C(18,18,18))
+stroke(filtB,1,0.75)
+local tabs=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,54),Size=UDim2.new(1,0,0,22),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=0,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.X,ScrollingDirection=Enum.ScrollingDirection.X},rp)
+mk("UIListLayout",{FillDirection=Enum.FillDirection.Horizontal,Padding=UDim.new(0,6),SortOrder=Enum.SortOrder.LayoutOrder},tabs)
+local grid=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,78),Size=UDim2.new(1,0,1,-108),BackgroundColor3=C(18,18,18),BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},rp)
+mk("UICorner",{CornerRadius=UDim.new(0,16)},grid)
+mk("UIPadding",{PaddingLeft=UDim.new(0,10),PaddingTop=UDim.new(0,10),PaddingRight=UDim.new(0,10),PaddingBottom=UDim.new(0,8)},grid)
+mk("UIGridLayout",{CellSize=UDim2.fromOffset(wide and 84 or 70,wide and 84 or 70),CellPadding=UDim2.fromOffset(4,4),SortOrder=Enum.SortOrder.LayoutOrder},grid)
+local stat=txt(rp,"",11,GR,C(160,160,160),UDim2.fromOffset(0,100),UDim2.new(1,0,0,40),Enum.TextXAlignment.Center)
+stat.TextWrapped=true
+stat.ZIndex=2
+local more=pill(rp,"Load More",11,UDim2.new(0,0,1,-34),UDim2.new(1,0,0,24),C(35,35,35))
+grad(more,0,C(54,54,54),C(28,28,28))
+more.Visible=false
+local ov=mk("TextButton",{Size=UDim2.fromScale(1,1),BackgroundColor3=C(0,0,0),BackgroundTransparency=0.4,Text="",AutoButtonColor=false,Visible=false,ZIndex=20},mf)
+mk("UICorner",{CornerRadius=UDim.new(0,20)},ov)
+local md=mk("Frame",{AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.fromScale(0.5,0.5),Size=UDim2.fromScale(0.94,0.9),BackgroundColor3=C(12,12,12),Visible=false,ZIndex=21},mf)
+mk("UICorner",{CornerRadius=UDim.new(0,20)},md)
+mk("UISizeConstraint",{MaxSize=Vector2.new(380,520)},md)
+stroke(md,1.5,0.6)
+grad(md,80,C(23,23,23),C(11,11,11))
+local mx=mk("TextButton",{Position=UDim2.new(1,-28,0,6),Size=UDim2.fromOffset(22,22),BackgroundColor3=C(255,255,255),BackgroundTransparency=0.85,Text="X",Font=GB,TextSize=14,TextColor3=C(160,160,160),AutoButtonColor=false,ZIndex=23},md)
+mk("UICorner",{CornerRadius=UDim.new(0,8)},mx)
+local mi=mk("ImageLabel",{Position=UDim2.new(0.5,-44,0,10),Size=UDim2.fromOffset(88,88),BackgroundColor3=C(28,28,28),ZIndex=22},md)
+mk("UICorner",{CornerRadius=UDim.new(0,14)},mi)
+local mn=txt(md,"",13,GB,C(255,255,255),UDim2.fromOffset(10,102),UDim2.new(1,-20,0,20),Enum.TextXAlignment.Center)
+local mc=txt(md,"",10,GR,C(160,160,160),UDim2.fromOffset(10,125),UDim2.new(1,-20,0,14),Enum.TextXAlignment.Center)
+local mp=txt(md,"",12,GB,C(255,255,255),UDim2.fromOffset(10,142),UDim2.new(1,-20,0,18),Enum.TextXAlignment.Center)
+for _,l in ipairs({mn,mc,mp})do l.ZIndex=22 end
+local ms=mk("ScrollingFrame",{Position=UDim2.fromOffset(8,164),Size=UDim2.new(1,-16,1,-214),BackgroundColor3=C(10,10,10),BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y,ZIndex=22},md)
+mk("UICorner",{CornerRadius=UDim.new(0,10)},ms)
+mk("UIPadding",{PaddingLeft=UDim.new(0,8),PaddingTop=UDim.new(0,6),PaddingRight=UDim.new(0,8)},ms)
+local mdsc=txt(ms,"",12,GR,C(230,230,230),UDim2.new(),UDim2.new(1,-16,0,0))
+mdsc.AutomaticSize=Enum.AutomaticSize.Y
+mdsc.TextWrapped=true
+mdsc.TextYAlignment=Enum.TextYAlignment.Top
+mdsc.ZIndex=22
+local ma=pill(md,"Pakai",12,UDim2.new(0,10,1,-34),UDim2.new(1,-20,0,28),C(255,255,255),C(15,15,15),GK)
+ma.ZIndex=23
+local vcam=Instance.new("Camera")
+vcam.FieldOfView=30
+vcam.Parent=vp
+vp.CurrentCamera=vcam
+local pv,rotY,pvTok=nil,0.5,0
+local function aim()
+if not pv then return end
+local ok,cf,size=pcall(function()return pv:GetBoundingBox()end)
+if not ok then return end
+local d=math.max(size.Y,size.X)/(2*math.tan(math.rad(15)))*1.12+size.Z
+local ctr=cf.Position
+vcam.CFrame=CFrame.lookAt(ctr+Vector3.new(math.sin(rotY)*d,size.Y*0.08,math.cos(rotY)*d),ctr)
+end
+local function rebuild()
+pvTok+=1
+local my=pvTok
+task.delay(0.35,function()
+if my~=pvTok or not g.Enabled then return end
+local ch=player.Character
+if not ch then return end
+local ok,cl=pcall(function()ch.Archivable=true return ch:Clone()end)
+if not ok or not cl then return end
+for _,d in ipairs(cl:GetDescendants())do if d:IsA("LuaSourceContainer")then pcall(function()d:Destroy()end)end end
+local h=cl:FindFirstChildOfClass("Humanoid")
+if h then h.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None end
+if pv then pv:Destroy()end
+cl.Parent=vp
+pv=cl
+aim()
+end)
+end
+local drag=false
+vp.InputBegan:Connect(function(i)if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then drag=true end end)
+bind(UIS.InputEnded,function(i)if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then drag=false end end)
+bind(UIS.InputChanged,function(i)
+if drag and(i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch)then
+rotY=rotY - i.Delta.X*0.015
+aim()
+end
+end)
+local cards,nOrd={},0
+local function paint()
 for key,c in pairs(cards)do
-local on=U.ccat.on and U.ccat.on[key]~=nil
-c.stroke.Color=on and C3n(90,230,170)or C3n(40,46,60)
-c.stroke.Thickness=on and 2 or 1
+local on=(c.aura and U.ccat.auraStyle==key)or(not c.aura and U.ccat.on and U.ccat.on[key]~=nil)
+c.sk.Transparency=on and 0 or 0.8
+c.sk.Thickness=on and 2 or 1
 c.tag.Visible=on
 end
+local n=0
+for _ in pairs(U.ccat.on or{})do n+=1 end
+wornL.Text=n .. " dipakai"
 refreshCount()
 end
-local function clearGrid()
+local function clear()
 for _,c in pairs(cards)do pcall(function()c.f:Destroy()end)end
 cards,nOrd={},0
 end
-local function addCard(it)
-local key=tostring(it.id)
-if cards[key]then return end
-nOrd=nOrd+1
-local f=mk("TextButton",{BackgroundColor3=SURF,Text="",AutoButtonColor=false,LayoutOrder=nOrd},grid)
-corner(f,11)
-local sk=mk("UIStroke",{Color=C3n(40,46,60),Thickness=1,ApplyStrokeMode=Enum.ApplyStrokeMode.Border},f)
-local img=mk("ImageLabel",{BackgroundColor3=C3n(22,26,36),Position=UDim2.fromOffset(6,6),Size=UDim2.new(1,-12,0,84),Image="rbxthumb://type=Asset&id=" .. it.id .. "&w=150&h=150",ScaleType=Enum.ScaleType.Fit},f)
-corner(img,8)
-lab(f,it.name or("Item " .. it.id),10,FONTB,TXT,UDim2.fromOffset(6,92),UDim2.new(1,-12,0,14)).TextTruncate=Enum.TextTruncate.AtEnd
-local pr=it.price and(it.price>0 and("R$ " .. it.price)or "Free")or(it.creator and tostring(it.creator))or(it.cat or "")
-lab(f,tostring(pr),9,FONT,DIM,UDim2.fromOffset(6,108),UDim2.new(1,-12,0,14)).TextTruncate=Enum.TextTruncate.AtEnd
-local tag=mk("TextLabel",{BackgroundColor3=C3n(90,230,170),Position=UDim2.new(1,-30,0,8),Size=UDim2.fromOffset(22,16),Text="ON",Font=FONTK,TextSize=9,TextColor3=INK,Visible=false,ZIndex=3},f)
-corner(tag,6)
-cards[key]={f=f,stroke=sk,tag=tag}
-f.MouseButton1Click:Connect(function()
-click()
+local function setStat(t)stat.Text=t or "" end
+local cur
+local function openDetail(it)
+cur=it
+ov.Visible,md.Visible=true,true
+mi.Image="rbxthumb://type=Asset&id=" .. it.id .. "&w=420&h=420"
+mn.Text,mc.Text=it.name or("Item " .. it.id),"By " .. tostring(it.creator or "...")
+mp.Text=it.price and(it.price>0 and("R$ " .. it.price)or "Free")or ""
+mdsc.Text="Memuat deskripsi..."
+local function btnTxt()ma.Text=(U.ccat.on and U.ccat.on[tostring(it.id)])and "Lepas" or "Pakai" end
+btnTxt()
 task.spawn(function()
-local ok,err=U.ccatToggle(it.id,key,it.name)
-if ok==false and err then U.note("Gagal: " .. tostring(err))end
-paintCards()
-end)
+local ok,pi=pcall(function()return MPS:GetProductInfo(it.id)end)
+if cur~=it then return end
+if ok and pi then
+mc.Text="By " .. tostring(pi.Creator and pi.Creator.Name or it.creator or "?")
+mp.Text=pi.IsPublicDomain and "Free" or((pi.PriceInRobux and pi.PriceInRobux>0)and("R$ " .. pi.PriceInRobux)or(pi.IsForSale==false and "Off sale" or "Free"))
+mdsc.Text=(pi.Description and pi.Description~="")and pi.Description or "(tanpa deskripsi)"
+else mdsc.Text="(info tidak tersedia)" end
 end)
 end
-local function setStatus(t)status.Text=t or "" end
+ma.MouseButton1Click:Connect(function()
+click()
+local it=cur
+if not it then return end
+task.spawn(function()
+local ok,err=U.ccatToggle(it.id,tostring(it.id),it.name)
+if ok==false and err then U.note("Gagal: " .. tostring(err))end
+ma.Text=(U.ccat.on and U.ccat.on[tostring(it.id)])and "Lepas" or "Pakai"
+paint()
+end)
+end)
+local function closeDetail()ov.Visible,md.Visible,cur=false,false,nil end
+mx.MouseButton1Click:Connect(function()click()closeDetail()end)
+ov.MouseButton1Click:Connect(closeDetail)
+local function passFilt(it)
+if st.filt==1 or not it.price then return true end
+return(st.filt==2)==(it.price==0)
+end
+local function addCard(it)
+local key=tostring(it.id)
+if cards[key]or not passFilt(it)then return end
+nOrd+=1
+local f=mk("TextButton",{BackgroundColor3=C(28,28,28),Text="",AutoButtonColor=false,LayoutOrder=nOrd},grid)
+mk("UICorner",{CornerRadius=UDim.new(0,12)},f)
+local sk=stroke(f,1,0.8)
+local im=mk("ImageLabel",{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,Image="rbxthumb://type=Asset&id=" .. it.id .. "&w=150&h=150",ScaleType=Enum.ScaleType.Fit},f)
+mk("UICorner",{CornerRadius=UDim.new(0,12)},im)
+local bl=mk("Frame",{Position=UDim2.new(0,0,1,-16),Size=UDim2.new(1,0,0,16),BackgroundColor3=C(0,0,0),BackgroundTransparency=0.45,BorderSizePixel=0},f)
+mk("UICorner",{CornerRadius=UDim.new(0,8)},bl)
+local nl=txt(bl,it.name or "",8,GB,C(255,255,255),UDim2.fromOffset(4,0),UDim2.new(1,-8,1,0),Enum.TextXAlignment.Center)
+nl.TextTruncate=Enum.TextTruncate.AtEnd
+local tag=mk("TextLabel",{Position=UDim2.new(1,-18,0,3),Size=UDim2.fromOffset(15,15),BackgroundColor3=C(255,255,255),Text="v",Font=GK,TextSize=10,TextColor3=C(0,0,0),Visible=false},f)
+mk("UICorner",{CornerRadius=UDim.new(1,0)},tag)
+cards[key]={f=f,sk=sk,tag=tag}
+f.MouseButton1Click:Connect(function()click()openDetail(it)end)
+end
 local function loadPreset()
-clearGrid()
+clear()
 st.pages=nil
-moreB.Visible=false
+more.Visible=false
 local qq=st.q:lower()
 for _,it in ipairs(CL.presets)do
 if(st.cat=="All" or it.cat==st.cat)and(qq=="" or it.name:lower():find(qq,1,true))then addCard(it)end
@@ -17650,128 +17951,159 @@ end
 if type(state.ccatCustom)=="table" then
 for _,it in ipairs(state.ccatCustom)do if st.cat=="All" or it.cat==st.cat then addCard(it)end end
 end
-setStatus(nOrd==0 and "Kosong. Ketik kata kunci lalu tekan CARI untuk cari di catalog Roblox." or "")
-paintCards()
+setStat(nOrd==0 and "Kosong. Tekan Search atau Sort untuk cari di katalog Roblox." or "")
+paint()
 end
-local function loadLive(more)
+local function loadLive(moreP)
 if st.busy then return end
 st.busy=true
-st.gen=st.gen+1
-local g=st.gen
+st.gen+=1
+local gen=st.gen
 task.spawn(function()
 local items,fin
-if more and st.pages then
-items,fin=CL.nxt(st.pages,st.cat)
+if moreP and st.pages then items,fin=CL.nxt(st.pages,st.cat)
 else
-clearGrid()
-setStatus("Mencari…")
-local pages,first=CL.open(st.cat,st.q,"Relevance")
+clear()
+setStat("Mencari...")
+local pages,first=CL.open(st.cat,st.q,SORTK[st.sort])
 if pages then st.pages=pages items,fin=first,false
 else
 st.pages=nil
 local its,e=U.ccatSearch(st.q,40)
 items,fin=its or{},true
-if#items==0 then setStatus("Tidak ada hasil / catalog diblokir (" .. tostring(e or first).. ")")end
+if#items==0 then setStat("Tidak ada hasil / katalog diblokir (" .. tostring(e or first).. ")")end
 end
 end
-if g~=st.gen then st.busy=false return end
+if gen~=st.gen then st.busy=false return end
 for _,it in ipairs(items or{})do addCard(it)end
-if nOrd>0 then setStatus("")end
-moreB.Visible=st.pages~=nil and not fin
-paintCards()
+if nOrd>0 then setStat("")elseif stat.Text=="Mencari..." then setStat("Tidak ada hasil")end
+more.Visible=st.pages~=nil and not fin
+paint()
 st.busy=false
 end)
 end
 local function loadAura()
-clearGrid()
-moreB.Visible=false
-setStatus("")
-local A=U.ccatAuras or{}
-local cur=U.ccat.auraStyle
-local function mark()
-for k,c in pairs(cards)do
-local on=(cur==k)
-c.stroke.Color=on and C3n(90,230,170)or C3n(40,46,60)
-c.stroke.Thickness=on and 2 or 1
-c.tag.Visible=on
-end
-end
-for _,a in ipairs(A)do
-nOrd=nOrd+1
-local f=mk("TextButton",{BackgroundColor3=SURF,Text="",AutoButtonColor=false,LayoutOrder=nOrd},grid)
-corner(f,11)
-local sk=mk("UIStroke",{Color=C3n(40,46,60),Thickness=1,ApplyStrokeMode=Enum.ApplyStrokeMode.Border},f)
-local orb=mk("Frame",{Position=UDim2.new(0.5,-22,0,14),Size=UDim2.fromOffset(44,44),BackgroundColor3=a.c1 or C3n(255,255,255)},f)
-corner(orb,22)
-mk("UIGradient",{Color=ColorSequence.new(a.c1 or C3n(255,255,255),a.c2 or a.c1 or C3n(255,255,255)),Rotation=45},orb)
-lab(f,a.name,11,FONTB,TXT,UDim2.fromOffset(6,68),UDim2.new(1,-12,0,16),Enum.TextXAlignment.Center).TextTruncate=Enum.TextTruncate.AtEnd
-lab(f,string.rep("★",a.rar or 1),11,FONT,a.c2 or DIM,UDim2.fromOffset(6,86),UDim2.new(1,-12,0,14),Enum.TextXAlignment.Center)
-local tag=mk("TextLabel",{BackgroundColor3=C3n(90,230,170),Position=UDim2.new(1,-30,0,8),Size=UDim2.fromOffset(22,16),Text="ON",Font=FONTK,TextSize=9,TextColor3=INK,Visible=false},f)
-corner(tag,6)
-cards[a.key]={f=f,stroke=sk,tag=tag}
+clear()
+more.Visible=false
+setStat("")
+for _,a in ipairs(U.ccatAuras or{})do
+nOrd+=1
+local f=mk("TextButton",{BackgroundColor3=C(28,28,28),Text="",AutoButtonColor=false,LayoutOrder=nOrd},grid)
+mk("UICorner",{CornerRadius=UDim.new(0,12)},f)
+local sk=stroke(f,1,0.8)
+local orb=mk("Frame",{Position=UDim2.new(0.5,-16,0,8),Size=UDim2.fromOffset(32,32),BackgroundColor3=a.c1 or C(255,255,255)},f)
+mk("UICorner",{CornerRadius=UDim.new(1,0)},orb)
+grad(orb,45,a.c1 or C(255,255,255),a.c2 or a.c1 or C(255,255,255))
+txt(f,a.name,8,GB,C(255,255,255),UDim2.new(0,2,1,-28),UDim2.new(1,-4,0,12),Enum.TextXAlignment.Center).TextTruncate=Enum.TextTruncate.AtEnd
+txt(f,string.rep("*",a.rar or 1),9,GB,a.c2 or C(160,160,160),UDim2.new(0,0,1,-15),UDim2.new(1,0,0,12),Enum.TextXAlignment.Center)
+local tag=mk("TextLabel",{Position=UDim2.new(1,-18,0,3),Size=UDim2.fromOffset(15,15),BackgroundColor3=C(255,255,255),Text="v",Font=GK,TextSize=10,TextColor3=C(0,0,0),Visible=false},f)
+mk("UICorner",{CornerRadius=UDim.new(1,0)},tag)
+cards[a.key]={f=f,sk=sk,tag=tag,aura=true}
 f.MouseButton1Click:Connect(function()
 click()
-if cur==a.key then cur=nil U.ccatStopAura()U.ccat.auraStyle=nil
-else cur=a.key if U.ccatSetAura then U.ccatSetAura(a.key)end end
-mark()
+if U.ccat.auraStyle==a.key then U.ccatStopAura()U.ccat.auraStyle=nil
+elseif U.ccatSetAura then U.ccatSetAura(a.key)end
+paint()
+rebuild()
 end)
 end
-mark()
+paint()
 end
+local tbtn={}
 local function reload()
-styleChips()
-if st.mode=="aura" then loadAura()
-elseif st.mode=="live" then loadLive(false)
-else loadPreset()end
+for k,b in pairs(tbtn)do
+local on=(k==st.cat and st.mode~="aura")or(k=="@aura" and st.mode=="aura")
+b.BackgroundColor3=on and C(255,255,255)or C(35,35,35)
+b.TextColor3=on and C(0,0,0)or C(255,255,255)
 end
-local function addChip(key,text,order)
-local b=mk("TextButton",{Size=UDim2.fromOffset(18+#text*6.5,26),BackgroundColor3=SURF,Text=text,Font=FONTB,TextSize=11,TextColor3=DIM,AutoButtonColor=false,LayoutOrder=order},chipBar)
-corner(b,13)
-chips[key]=b
+if st.mode=="aura" then loadAura()elseif st.mode=="live" then loadLive(false)else loadPreset()end
+end
+local function addTab(key,text,order)
+local b=pill(tabs,text,10,nil,UDim2.fromOffset(16+#text*6.5,22),C(35,35,35))
+b.LayoutOrder=order
+tbtn[key]=b
 return b
 end
 for i,k in ipairs(CATS)do
-addChip(k,CATL[k],i).MouseButton1Click:Connect(function()
+addTab(k,CATL[k],i).MouseButton1Click:Connect(function()
 click()
 st.cat=k
-if st.mode=="aura" then st.mode=(st.q~="" and "live" or "preset")end
+if st.mode=="aura" then st.mode=(st.q~="")and "live" or "preset" end
 reload()
 end)
 end
-addChip("@aura","Aura",99).MouseButton1Click:Connect(function()click()st.mode="aura" reload()end)
+addTab("@aura","Aura",99).MouseButton1Click:Connect(function()click()st.mode="aura" reload()end)
 local function doSearch()
-click()
-local q=box.Text:gsub("^%s+",""):gsub("%s+$","")
+local q=sbox.Text:gsub("^%s+",""):gsub("%s+$","")
 st.q=q
 local id=tonumber(q)
 if id and#q>=4 then
 st.mode="preset"
-clearGrid()
+clear()
 local nm="ID " .. q
-pcall(function()nm=game:GetService("MarketplaceService"):GetProductInfo(id).Name end)
+pcall(function()nm=MPS:GetProductInfo(id).Name end)
 addCard({id=id,name=nm,cat="Custom"})
-setStatus("")
-paintCards()
+setStat("")
+paint()
 return
 end
 st.mode=(q~="")and "live" or "preset"
 reload()
 end
-goB.MouseButton1Click:Connect(doSearch)
-box.FocusLost:Connect(function(enter)if enter then doSearch()end end)
-moreB.MouseButton1Click:Connect(function()click()loadLive(true)end)
-rsB.MouseButton1Click:Connect(function()
+sgo.MouseButton1Click:Connect(function()click()doSearch()end)
+sbox.FocusLost:Connect(function(e)if e then doSearch()end end)
+more.MouseButton1Click:Connect(function()click()loadLive(true)end)
+sortB.MouseButton1Click:Connect(function()
 click()
+st.sort=st.sort%#SORTL+1
+sortB.Text="Sort: " .. SORTL[st.sort]
+if st.mode=="aura" then st.mode="live" end
+st.mode="live"
+reload()
+end)
+filtB.MouseButton1Click:Connect(function()
+click()
+st.filt=st.filt%#FILT+1
+filtB.Text="Filter: " .. FILT[st.filt]
+reload()
+end)
+local function unall()
 if U.ccatUnequipAll then U.ccatUnequipAll()end
 U.quiet("Visual di-reset")
-if st.mode=="aura" then loadAura()else paintCards()end
+paint()
+rebuild()
+end
+rb.MouseButton1Click:Connect(function()click()unall()end)
+U.ccat.onChange=function()pcall(paint)rebuild()end
+bind(player.CharacterAdded,function()rebuild()end)
+local function show(v)
+g.Enabled=v
+if U.cursorFree then U.cursorFree("shop",v)end
+if v then
+if not next(cards)then reload()end
+rebuild()
+paint()
+else closeDetail()end
+end
+xb.MouseButton1Click:Connect(function()click()show(false)end)
+return{show=show,g=g,unall=unall}
+end
+openB.MouseButton1Click:Connect(function()
+click()
+if not ui then ui=build()end
+ui.show(not ui.g.Enabled)
 end)
-U.ccat.onChange=function()if st.mode~="aura" then pcall(paintCards)end end
-local first=true
-pg:GetPropertyChangedSignal("Visible"):Connect(function()
-if pg.Visible and first then first=false reload()end
+rsB2.MouseButton1Click:Connect(function()
+click()
+if ui then ui.unall()else
+if U.ccatUnequipAll then U.ccatUnequipAll()end
+U.quiet("Visual di-reset")
+end
+refreshCount()
 end)
-if pg.Visible then first=false reload()end
+U.openShop=function()if not ui then ui=build()end ui.show(true)end
+U.ccat.onChange=function()refreshCount()end
+refreshCount()
 end
 end
 do
@@ -21563,6 +21895,28 @@ end,28)
 mb.Text="Pakai semua cookie (rotasi): " ..(state.ckMulti and "ON" or "OFF")
 mb.TextColor3=state.ckMulti and C3(70,220,120)or TXT
 end
+do
+local pbox=mk("TextBox",{Size=UDim2.new(1,0,0,30),BackgroundColor3=SURF,Text=U.ckPassGet(),PlaceholderText="Sandi sinkron cookie (min 8 huruf, disimpan lokal di device ini saja)",PlaceholderColor3=DIM,ClearTextOnFocus=false,Font=FONT,TextSize=11,TextColor3=TXT,TextXAlignment=Enum.TextXAlignment.Left,LayoutOrder=nextOrd()},list)
+corner(pbox,10)
+mk("UIPadding",{PaddingLeft=UDim.new(0,10),PaddingRight=UDim.new(0,10)},pbox)
+cbtn("Kirim cookie ke cloud (terenkripsi)",function()
+local pw=pbox.Text
+task.spawn(function()
+local ok2,r=U.ckCloudPush(pw)
+if ok2 then U.ckPassSet(pw)end
+say(ok2 and("Terkirim (" .. tostring(r).. " cookie, terenkripsi). Di device lain: isi sandi yang sama lalu Ambil.")or("Gagal: " .. tostring(r)))
+end)
+end,28)
+cbtn("Ambil cookie dari cloud (sandi di atas)",function()
+local pw=pbox.Text
+task.spawn(function()
+local ok2,r=U.ckCloudPull(pw)
+if ok2 then U.ckPassSet(pw)end
+say(ok2 and("Selesai: " .. tostring(r).. " cookie baru ditambahkan.")or("Gagal: " .. tostring(r)))
+if ok2 and alive()and cSub=="Find" then renderCreator()end
+end)
+end,28)
+end
 if U.cookie then
 cbtn("Hapus cookie aktif",function()U.setCookie("")say("Cookie dilepas.")renderCreator()end,28)
 end
@@ -21633,7 +21987,6 @@ else
 say("Ditemukan.")
 pcall(U.histAdd,r.uid,r.name,r.display)
 lookRes,lookErr,lookCands=r,"",nil
-U.autoFind(r,function()if U.fndUpd then U.fndUpd()end end,function()if alive()and cSub=="Find" and lookRes==r then renderCreator()end end)
 end
 if cSub=="Find" then renderCreator()end
 end)
@@ -21769,6 +22122,15 @@ end,true)
 end
 end
 end
+end
+if lookRes and lookRes.src~="server ini" and not U.fnd.running and not(U.fnd.uid==lookRes.uid and U.fnd.status~="")then
+local fb=cbtn("\u{1F50D} Find players (scan server & game lain)",function()
+U.autoFind(lookRes,function()if U.fndUpd then U.fndUpd()end end,function()if alive()and cSub=="Find" then renderCreator()end end)
+task.wait(0.25)
+if alive()and cSub=="Find" then renderCreator()end
+end,34)
+acc(fb,"BackgroundColor3")
+fb.TextColor3=INK
 end
 if lookRes and not U.fnd.running and lookRes.src~="server ini" then
 local cr2=mk("Frame",{Size=UDim2.new(1,0,0,32),BackgroundColor3=SURF,LayoutOrder=nextOrd()},list)
