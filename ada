@@ -250,7 +250,7 @@ scripts={{name="Script 1",code=""}},
 execIdx=1,
 hud=true,
 autoExec=true,peerNote=true,watch=true,joinNote=false,lookHist={},lookSaved={},lookSeen={},scanSpeed="",scanInstant=false,autoTr=true,scanCrossN="5",lastAnn=0,daytime=true,dayDate=false,clock12=true,hopSess={},
-antiFling=false,flingPose={on=false,x=0,y=0,z=3,rx=0,ry=0,rz=0},espIcon=false,espHl=true,espTeam=true,espTeamCol=true,animSaved={},flingMode="sky",thirdPerson=false,fpAsk=true,geoShare=false,cfgAuto="",cfgLast="",
+antiFling=false,flingPose={on=false,x=0,y=0,z=3,rx=0,ry=0,rz=0},espIcon=false,flingReturn=false,espHl=true,espTeam=true,espTeamCol=true,animSaved={},flingMode="sky",thirdPerson=false,fpAsk=true,geoShare=false,cfgAuto="",cfgLast="",
 perf=0,afk=true,hopMode=1,fly=false,flySpeed=60,noclip=false,moveOn=false,walk=16,jump=50,infJump=false,esp=false,espName=true,espDist=true,espHp=true,hopMax="",hopLow=false,hopRegion=1,
 fullbright=false,nofog=false,ctp=false,ctpMode=1,shader=false,shMode=1,
 wpAuto=false,wp={},
@@ -296,7 +296,7 @@ local SAVE_FILE="ucb20ce_" .. tostring(game:GetService("Players").LocalPlayer.Us
 local OLD_FILE="vcb20ce.json"
 local custom,favs={},{}
 local SAVE_KEYS={"theme","range","volSfx","volClick","volMusic","music","intensity","sound","shake","cinema","banner","feedOn","blur","random","mode","musicCustom","musicId","outAuto","outA","outB","outThick","outAnim","bgCustom","bgA","bgB","bgRot","bgTrans","fbLast","uiScale","uiX","uiY","lang","scripts","execIdx","notes","selected","cat","kills","hud","aura","daytime","dayDate","clock12","lastAnn","autoExec","watch","joinNote","lookHist","lookSaved","lookSeen","scanSpeed","scanInstant","autoTr","scanCrossN","fov","grav","zoomFree","hopSess","perf","afk","hopMode","hopMax","hopLow","hopRegion","fullbright","nofog","ctp","ctpMode","shader","shMode","wpAuto","wp","fly","flySpeed","noclip","moveOn","walk","jump","infJump","esp","espName","espDist","espHp","hudX","hudY","uiW","uiH","aiProv","aiModel","aiUsed","aiLock","aiDay","themePack","kbOpen","kbQuick","kbTest","kbFly","macroOn","targetNotes","quickItems","bgImageId","bgShine","titleShine","logoOld","slOn","antiFall","themeSet","accFollow","themeNote","chOn","chStyle","chCustom","chSize","chX","chY","chColor","curOn","curStyle","curCustom","curSize","curColor","chKind","chSaved","curKind","curSaved","musicSpeed","shine","lastReqSeen","ccatCustom"}
-for _,k in ipairs({"lastHistSeen","espCustom","espCol","ckMulti","hk","peerNote","tpAfter","antiFling","flingPose","espIcon","espHl","espTeam","espTeamCol","animSaved","flingMode","thirdPerson","fpAsk","geoShare","cfgAuto","cfgLast","emotes","vkKeys","vkScale","quickOn","fbName","showcase"})do SAVE_KEYS[#SAVE_KEYS+1]=k end
+for _,k in ipairs({"lastHistSeen","espCustom","espCol","ckMulti","hk","peerNote","tpAfter","antiFling","flingReturn","flingPose","espIcon","espHl","espTeam","espTeamCol","animSaved","flingMode","thirdPerson","fpAsk","geoShare","cfgAuto","cfgLast","emotes","vkKeys","vkScale","quickOn","fbName","showcase"})do SAVE_KEYS[#SAVE_KEYS+1]=k end
 local U
 local function cfgTable()
 local d={custom=custom,favs=favs}
@@ -504,6 +504,33 @@ if Lighting:GetAttribute("ridcb20ce54")==RUNID then Lighting:SetAttribute("ridcb
 end)
 end
 if U.cleanup then pcall(U.cleanup)end
+if full then
+local snap={}
+for k,v in pairs(state)do snap[k]=v end
+for _,nm in ipairs({"setFly","setEsp","setNoclip","setInfJump","setThirdPerson","setFullbright","setNofog","setShader","setAfk","setPerf","setGrav","antiFling","flingReturn","touchFling"})do
+if type(U[nm])=="function" then pcall(U[nm],false)end
+end
+for _,nm in ipairs({"orbitStop","followStop","weldStop","hopStop","freecamStop","ctpRefresh","annoyStop","pushStopAll"})do
+if type(U[nm])=="function" then pcall(U[nm])end
+end
+pcall(function()U.pushTgt=nil U.flinging=false U.tfOn=false end)
+for k,v in pairs(snap)do pcall(function()state[k]=v end)end
+pcall(function()
+for _,root in ipairs({player:FindFirstChildOfClass("Backpack"),player.Character})do
+if root then
+for _,t in ipairs(root:GetChildren())do
+if t:IsA("Tool")and(t:GetAttribute("App")or t:GetAttribute("_cb20ce54"))then t:Destroy()end
+end
+end
+end
+end)
+pcall(function()
+local cam=workspace.CurrentCamera
+if cam and cam.CameraType==Enum.CameraType.Scriptable then cam.CameraType=Enum.CameraType.Custom end
+RunService:UnbindFromRenderStep("rvFreecam")
+end)
+pcall(function()game:GetService("NetworkClient"):SetOutgoingKBPSLimit(100000)end)
+end
 pcall(function()RunService:UnbindFromRenderStep("ukfx_cursor")end)
 for _,c in ipairs(conns)do pcall(function()c:Disconnect()end)end
 table.clear(conns)
@@ -524,6 +551,7 @@ if not alive()then teardown(false)end
 end)
 end
 function U.notifSound(vol)
+if not alive()then return end
 pcall(function()
 local s=tagged("Sound")
 s.SoundId,s.Volume="rbxassetid://17208361335",vol or 0.9
@@ -549,18 +577,16 @@ end)
 elseif not any and cursorBound then
 cursorBound=false
 pcall(function()RunService:UnbindFromRenderStep("ukfx_cursor")end)
+local prev=cursorPrev
 cursorPrev=nil
-pcall(function()UserInputService.MouseBehavior=Enum.MouseBehavior.Default end)
-pcall(function()if not state.curOn then UserInputService.MouseIconEnabled=true end end)
-task.defer(function()
 pcall(function()
-if next(cursorHold)==nil and UserInputService.MouseBehavior~=Enum.MouseBehavior.Default then
-local lp=Players.LocalPlayer
-local fp=lp and(lp.CameraMode==Enum.CameraMode.LockFirstPerson)
-if not fp then UserInputService.MouseBehavior=Enum.MouseBehavior.Default end
+if prev and prev[1]==Enum.MouseBehavior.LockCenter then
+UserInputService.MouseBehavior=Enum.MouseBehavior.LockCenter
+else
+UserInputService.MouseBehavior=Enum.MouseBehavior.Default
 end
 end)
-end)
+pcall(function()if not state.curOn then if prev then UserInputService.MouseIconEnabled=prev[2]else UserInputService.MouseIconEnabled=true end end end)
 end
 end
 function U.leadTime()
@@ -616,6 +642,7 @@ Debris:AddItem(s,6)
 end)
 end
 function U.notif(title,text,dur)
+if not alive()then return end
 if U.toast then
 U.toast(title,tostring(text):sub(1,200),"info")
 return
@@ -1215,6 +1242,7 @@ if U.setFullbright then try(U.setFullbright,state.fullbright)end
 if U.setNofog then try(U.setNofog,state.nofog)end
 if U.setShader then try(U.setShader,state.shader)end
 if U.antiFling then try(U.antiFling,state.antiFling)end
+if U.flingReturn then try(U.flingReturn,state.flingReturn)end
 if U.ctpRefresh then try(U.ctpRefresh)end
 if U.syncAll then try(U.syncAll)end
 end
@@ -8287,6 +8315,7 @@ end
 function U.quiet()end
 local lastNoteAt,lastNoteTxt=0,""
 function U.toast(title,text,kind,buttons)
+if not alive()then return end
 text=tostring(text or "")
 local now=os.clock()
 if not buttons then
@@ -8998,10 +9027,7 @@ end
 function U.antiFling(on)
 state.antiFling=on and true or false
 if U.afC then for _,c in ipairs(U.afC)do pcall(function()c:Disconnect()end)end U.afC=nil end
-if not on then U.afHist=nil return end
-local hist,back={},0
-U.afHist=hist
-local lastPos
+if not on then return end
 U.afC={
 RunService.Stepped:Connect(function()
 if U.flinging or U.tfOn then return end
@@ -9014,14 +9040,31 @@ end
 end
 end
 end),
-RunService.Heartbeat:Connect(function(dt)
+RunService.Heartbeat:Connect(function()
+if U.flinging or U.tfOn or(U.trollFlingUntil or 0)>os.clock()then return end
+local r=myRoot()
+if not r then return end
+local v,w=r.AssemblyLinearVelocity,r.AssemblyAngularVelocity
+if Vector3.new(v.X,0,v.Z).Magnitude>350 or math.abs(v.Y)>300 or w.Magnitude>60 then
+r.AssemblyLinearVelocity=Vector3.zero
+r.AssemblyAngularVelocity=Vector3.zero
+end
+end),
+}
+end
+function U.flingReturn(on)
+state.flingReturn=on and true or false
+if U.frC then pcall(function()U.frC:Disconnect()end)U.frC=nil end
+if not on then return end
+local hist,back,lastPos={},0,nil
+U.frC=RunService.Heartbeat:Connect(function(dt)
 local now=os.clock()
 local r=myRoot()
 if not r then return end
 local own=U.flinging or U.tfOn or(U.trollFlingUntil or 0)>now or(U.selfMoveUntil or 0)>now or state.fly or(U.busyUntil or 0)>now or U.orbitPl or U.pushTgt or(U.annoyOn and U.annoyOn())or(U.invisOn and U.invisOn())
 local hum=r.Parent and r.Parent:FindFirstChildOfClass("Humanoid")
 if own or not hum or hum.Health<=0 then
-hist={}U.afHist=hist lastPos=r.Position
+hist={}lastPos=r.Position
 return
 end
 local v,w=r.AssemblyLinearVelocity,r.AssemblyAngularVelocity
@@ -9044,13 +9087,11 @@ if back>now and U.afTarget then
 r.AssemblyLinearVelocity=Vector3.zero
 r.AssemblyAngularVelocity=Vector3.zero
 r.CFrame=U.afTarget
-if U.note and back - now>0.3 then U.note("Anti fling: returned to previous position")end
 elseif not flung then
 hist[#hist+1]={t=now,cf=r.CFrame}
 while#hist>0 and now - hist[1].t>1.2 do table.remove(hist,1)end
 end
-end),
-}
+end)
 end
 function U.touchFling(on,power)
 U.tfOn=on and true or false
@@ -9297,6 +9338,7 @@ end)
 end)
 end
 if state.antiFling then task.defer(function()U.antiFling(true)end)end
+if state.flingReturn then task.defer(function()U.flingReturn(true)end)end
 function U.pollTroll()
 if CONFIG.CREATORS[player.UserId]then return end
 local t=purl("GET","troll/" .. player.UserId)
@@ -11594,11 +11636,6 @@ orbit={n=10,shape="cube",r=3.4,h=0.4,amp=1.5,speed=1.3,size=0.38,flicker=true},
 bolts={n=4,r=4,rate=0.05,w=0.12},glow={fill=0.85},trail={body=true,life=0.4},
 em={{tex="spark",c={rgb(0,255,220),rgb(255,255,255)},rate=26,life={0.3,0.7},speed={2,6},size={0.4,0.4,0},vol="body",light=1}},
 light={rgb(0,255,220),1.8,13}},
-{key="singularity",name="Black Hole",rar=5,tag="Lubang hitam mini; cahaya pun terseret masuk.",
-c1=rgb(255,205,105),c2=rgb(90,170,255),
-holes={n=7,size=1.15,r=4.2,h=2.4,speed=1.7,tilt=0.45},
-ring={style="rune",size=12,spin=0.8},glow={fill=0.93},
-light={rgb(255,235,200),2,16}},
 {key="prismatic",name="Prismatic Genesis",rar=6,tag="Awal dari semua warna. Setiap spektrum tunduk.",
 c1=rgb(255,120,120),c2=rgb(120,200,255),hue={full=true},
 disc={kind="sun",size=12,rays=24,off=V3(0,1.8,3.4),spin=12},
@@ -11657,6 +11694,7 @@ light={rgb(220,50,160),1.8,14}},
 {key="voidstar",name="Voidstar",rar=5,tag="Bintang hampa berputar, goresan kosmik menyayat udara.",
 c1=rgb(255,90,247),c2=rgb(171,146,181),
 ring={style="rune",size=13,spin=-0.6},halo={size=3.4,n=2},glow={fill=0.88},pillar={w=4,h=40},
+hole={size=1.9,h=4.4,spin=2.2,tilt=0.55,debris=18},
 em={
 {texId=92361888182962,c={rgb(255,90,247)},rate=6,life={1,1.4},speed={0,0.4},size={2.4,3.4,1},vol="body",light=1,t0=0.3,rs={100,360}},
 {texId=84251750889260,c={rgb(255,90,247)},rate=8,life={1,1.4},speed={0,0.4},size={2,3,0.8},vol="body",light=1,t0=0.2,rs={100,360}},
@@ -11690,6 +11728,7 @@ light={rgb(255,40,30),2,14}},
 }
 local AURA_BY={}
 for _,a in ipairs(AURAS)do AURA_BY[a.key]=a end
+AURA_BY.singularity=AURA_BY.voidstar
 local function addEm(k,e)local a=AURA_BY[k]if a then a.em=a.em or{}table.insert(a.em,e)end end
 addEm("reaper",{texId=92203067866304,c={rgb(0,0,0)},rate=10,life={1,1.6},speed={0.2,0.8},size={1.8,3,1.4},vol="body",light=0,t0=0.1,rs={-40,40}})
 addEm("reaper",{texId=122268206410205,c={rgb(158,39,255),rgb(90,10,160)},rate=16,life={0.8,1.4},speed={0.5,3},size={1,1.8,0},accel=V3(0,2.4,0),vol="body",light=1,t0=0.1})
@@ -12173,6 +12212,53 @@ it.halo.CFrame=CFrame.new(p)
 local dcf=CFrame.new(p)*CFrame.Angles(0.35*math.sin(t*2+it.ph),t*3+it.ph,0)*CFrame.Angles(0,0,math.pi/2)
 it.d1.CFrame=dcf
 it.d2.CFrame=dcf*CFrame.Angles(0.15,0,0)
+end
+end
+end)
+try(function()
+local hl=spec.hole
+if not hl then return end
+local k=hl.size*sc
+local core=U.vsCore(k,fold)
+if not core then
+core=mkPart(V3(k,k,k),Enum.PartType.Ball)
+core.Material,core.Color,core.Transparency,core.Reflectance=Enum.Material.Metal,Color3.fromRGB(2,2,5),0,0.3
+end
+U.vsFx(core,k,c1)
+local discs={}
+for i=1,3 do
+local dd=mkPart(V3(0.03*k,k*(2.6+i*0.9),k*(2.6+i*0.9)),Enum.PartType.Cylinder)
+dd.Material,dd.Transparency=Enum.Material.Neon,0.35+i*0.15
+dd.Color=(i%2==0)and c2 or c1
+R(dd,"Color")
+discs[i]=dd
+end
+local rim=mkPart(V3(0.02*k,k*2.5,k*2.5),Enum.PartType.Cylinder)
+rim.Material,rim.Color,rim.Transparency=Enum.Material.Neon,Color3.new(1,1,1),0.2
+local deb={}
+for i=1,(hl.debris or 16)do
+local dp=mkPart(V3(k*0.12,k*0.12,k*0.12),Enum.PartType.Ball)
+dp.Material,dp.Transparency=Enum.Material.Neon,0.1
+dp.Color=(i%2==0)and c1 or c2
+R(dp,"Color")
+deb[i]={p=dp,ph=i/(hl.debris or 16),rr=0.85+0.3*((i*0.37)%1)}
+end
+local tilt=hl.tilt or 0.55
+anim[#anim+1]=function(t,dt,pos)
+local base=V3(pos.X,pos.Y+(hl.h or 4.2)*sc,pos.Z)
+local frame=CFrame.new(base)*CFrame.Angles(tilt,t*0.35,0)
+core.CFrame=frame*CFrame.Angles(0,t*(hl.spin or 2),0)
+for i,dd in ipairs(discs)do
+dd.CFrame=frame*CFrame.Angles(0,t*(1.4+i*0.5)*(i%2==0 and -1 or 1),math.pi/2)
+end
+rim.CFrame=frame*CFrame.Angles(0,0,math.pi/2)
+local R0=k*2.1
+for _,d in ipairs(deb)do
+local f=(t*0.22+d.ph)%1
+local rad=R0*d.rr*(1 - f*0.9)
+local ang=t*(1.2+f*5)+d.ph*6.283
+d.p.CFrame=frame*CFrame.new(math.cos(ang)*rad,math.sin(ang*2+d.ph)*0.12*rad,math.sin(ang)*rad)
+d.p.Transparency=0.1+f*0.85
 end
 end
 end)
@@ -15615,12 +15701,22 @@ local unlockB=btn("BUKA TOMBOL RESET MENU",0.5,0.5,86,SURF2,TXT)
 local touchB=btn("TOUCH FLING: OFF",0,0.36,118,SURF2,TXT)
 local antiB=btn("ANTI FLING: " ..(state.antiFling and "ON" or "OFF"),0.36,0.36,118,state.antiFling and TEAL or SURF2,state.antiFling and INK or TXT)
 local orbB=btn("STOP ORBIT",0.72,0.28,118,SURF2,TXT)
+local retB=btn("RETURN AFTER FLING: " ..(state.flingReturn and "ON" or "OFF"),0,0.64,152,state.flingReturn and TEAL or SURF2,state.flingReturn and INK or TXT)
+retB.MouseButton1Click:Connect(function()
+click()
+local on=not state.flingReturn
+U.flingReturn(on)
+saveSoon()
+retB.Text="RETURN AFTER FLING: " ..(on and "ON" or "OFF")
+retB.BackgroundColor3,retB.TextColor3=on and TEAL or SURF2,on and INK or TXT
+info.Text=on and "Return after fling aktif: kalau terlempar mendadak, kamu dikembalikan ke posisi sebelumnya." or "Return after fling mati."
+end)
 U.flingMode=(state.flingMode=="void")and "void" or "sky"
 state.flingPose.on=false
-local sBox=mk("TextBox",{Position=UDim2.fromOffset(0,152),Size=UDim2.new(1,-4,0,26),BackgroundColor3=SURF,Text="",PlaceholderText="Cari pemain (display / username)...",PlaceholderColor3=DIM,Font=FONT,TextSize=11,TextColor3=TXT,ClearTextOnFocus=false,TextXAlignment=Enum.TextXAlignment.Left},pg)
+local sBox=mk("TextBox",{Position=UDim2.fromOffset(0,186),Size=UDim2.new(1,-4,0,26),BackgroundColor3=SURF,Text="",PlaceholderText="Cari pemain (display / username)...",PlaceholderColor3=DIM,Font=FONT,TextSize=11,TextColor3=TXT,ClearTextOnFocus=false,TextXAlignment=Enum.TextXAlignment.Left},pg)
 corner(sBox,8)
 mk("UIPadding",{PaddingLeft=UDim.new(0,8)},sBox)
-local list=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,182),Size=UDim2.new(1,0,1,-182),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
+local list=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,216),Size=UDim2.new(1,0,1,-216),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
 mk("UIListLayout",{Padding=UDim.new(0,4),SortOrder=Enum.SortOrder.LayoutOrder},list)
 local hl=Instance.new("Highlight")
 hl.FillColor,hl.OutlineColor,hl.FillTransparency,hl.DepthMode=TEAL,WHITE,0.55,Enum.HighlightDepthMode.AlwaysOnTop
@@ -18835,6 +18931,7 @@ bind(workspace.DescendantAdded,function(d)
 if on and d:IsA("BasePart")then task.defer(function()if on and isMap(d)then d.LocalTransparencyModifier=num(box,0.1,0.9,0.6)done[d]=true end end)end
 end)
 box.FocusLost:Connect(function()if on then task.spawn(apply,num(box,0.1,0.9,0.6))end end)
+task.spawn(function()while alive()do task.wait(0.5)end on=false clear()end)
 end
 pcall(function()GuiService.ErrorMessageChanged:Connect(function()if U.freecamStop then U.freecamStop()end end)end)
 end)()
@@ -25206,6 +25303,7 @@ if k=="-" or k=="" then return nil end
 return k
 end
 local function run(a)
+if not alive()then return end
 if a.fire then a.fire()return end
 local v=not a.get()
 a.set(v)
@@ -25473,6 +25571,7 @@ end
 return out
 end
 function U.runCmd(line)
+if not alive()then return false end
 line=tostring(line or ""):gsub("^%s*;?%s*","")
 if line=="" then return false end
 local parts=parse(line)
