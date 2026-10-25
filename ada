@@ -250,7 +250,7 @@ scripts={{name="Script 1",code=""}},
 execIdx=1,
 hud=true,
 autoExec=true,peerNote=true,watch=true,joinNote=false,lookHist={},lookSaved={},lookSeen={},scanSpeed="",scanInstant=false,autoTr=true,scanCrossN="5",lastAnn=0,daytime=true,dayDate=false,clock12=true,hopSess={},
-antiFling=false,flingPose={on=false,x=0,y=0,z=3,rx=0,ry=0,rz=0},espIcon=false,flingReturn=false,espHl=true,espTeam=true,espTeamCol=true,animSaved={},flingMode="sky",thirdPerson=false,fpAsk=true,geoShare=false,cfgAuto="",cfgLast="",
+antiFling=false,flingPose={on=false,x=0,y=0,z=3,rx=0,ry=0,rz=0},espIcon=false,flingReturn=false,ccatSaves={},ccatLast={},ccatAuto=true,espHl=true,espTeam=true,espTeamCol=true,animSaved={},flingMode="sky",thirdPerson=false,fpAsk=true,geoShare=false,cfgAuto="",cfgLast="",
 perf=0,afk=true,hopMode=1,fly=false,flySpeed=60,noclip=false,moveOn=false,walk=16,jump=50,infJump=false,esp=false,espName=true,espDist=true,espHp=true,hopMax="",hopLow=false,hopRegion=1,
 fullbright=false,nofog=false,ctp=false,ctpMode=1,shader=false,shMode=1,
 wpAuto=false,wp={},
@@ -296,7 +296,7 @@ local SAVE_FILE="ucb20ce_" .. tostring(game:GetService("Players").LocalPlayer.Us
 local OLD_FILE="vcb20ce.json"
 local custom,favs={},{}
 local SAVE_KEYS={"theme","range","volSfx","volClick","volMusic","music","intensity","sound","shake","cinema","banner","feedOn","blur","random","mode","musicCustom","musicId","outAuto","outA","outB","outThick","outAnim","bgCustom","bgA","bgB","bgRot","bgTrans","fbLast","uiScale","uiX","uiY","lang","scripts","execIdx","notes","selected","cat","kills","hud","aura","daytime","dayDate","clock12","lastAnn","autoExec","watch","joinNote","lookHist","lookSaved","lookSeen","scanSpeed","scanInstant","autoTr","scanCrossN","fov","grav","zoomFree","hopSess","perf","afk","hopMode","hopMax","hopLow","hopRegion","fullbright","nofog","ctp","ctpMode","shader","shMode","wpAuto","wp","fly","flySpeed","noclip","moveOn","walk","jump","infJump","esp","espName","espDist","espHp","hudX","hudY","uiW","uiH","aiProv","aiModel","aiUsed","aiLock","aiDay","themePack","kbOpen","kbQuick","kbTest","kbFly","macroOn","targetNotes","quickItems","bgImageId","bgShine","titleShine","logoOld","slOn","antiFall","themeSet","accFollow","themeNote","chOn","chStyle","chCustom","chSize","chX","chY","chColor","curOn","curStyle","curCustom","curSize","curColor","chKind","chSaved","curKind","curSaved","musicSpeed","shine","lastReqSeen","ccatCustom"}
-for _,k in ipairs({"lastHistSeen","espCustom","espCol","ckMulti","hk","peerNote","tpAfter","antiFling","flingReturn","flingPose","espIcon","espHl","espTeam","espTeamCol","animSaved","flingMode","thirdPerson","fpAsk","geoShare","cfgAuto","cfgLast","emotes","vkKeys","vkScale","quickOn","fbName","showcase"})do SAVE_KEYS[#SAVE_KEYS+1]=k end
+for _,k in ipairs({"lastHistSeen","espCustom","espCol","ckMulti","hk","peerNote","tpAfter","antiFling","flingReturn","ccatSaves","ccatLast","ccatAuto","flingPose","espIcon","espHl","espTeam","espTeamCol","animSaved","flingMode","thirdPerson","fpAsk","geoShare","cfgAuto","cfgLast","emotes","vkKeys","vkScale","quickOn","fbName","showcase"})do SAVE_KEYS[#SAVE_KEYS+1]=k end
 local U
 local function cfgTable()
 local d={custom=custom,favs=favs}
@@ -8529,7 +8529,7 @@ local function nowMs()return os.time()*1000 end
 if PURL then
 task.spawn(function()
 while alive()and not killed do
-purl("PUT","presence/" .. player.UserId,{n=player.Name,d=player.DisplayName,g=placeName,p=PLACE,j=game.JobId,v="v28",t=nowMs(),k=tonumber(state.kills)or 0,e=state.selected,a=U.ccat and U.ccat.auraStyle or nil})
+purl("PUT","presence/" .. player.UserId,{n=player.Name,d=player.DisplayName,g=placeName,p=PLACE,j=game.JobId,v="v28",t=nowMs(),k=tonumber(state.kills)or 0,e=state.selected,a=U.ccat and U.ccat.auraStyle or nil,c=U.ccatShare and U.ccatShare()or nil})
 task.wait(8)
 end
 end)
@@ -9384,6 +9384,7 @@ if PURL then
 task.spawn(function()
 local seen,tags,auras={},{},{}
 local function drop(uid)
+if U.ccatPeerClear then pcall(U.ccatPeerClear,uid)end
 if tags[uid]then pcall(function()tags[uid]:Destroy()end)tags[uid]=nil end
 if auras[uid]then
 pcall(function()U.auraStopFor(auras[uid],Players:GetPlayerByUserId(uid)or player)end)
@@ -9444,6 +9445,7 @@ if want then
 nAura=nAura+1
 if nAura>6 then want=nil end
 end
+if U.ccatPeer then pcall(U.ccatPeer,uid,h.pl,type(h.v.c)=="string" and h.v.c or nil)end
 local st=auras[uid]
 if want then
 if not st then st={}auras[uid]=st end
@@ -11134,6 +11136,40 @@ for _,rec in ipairs(oldI)do
 pcall(function()rec.inst.Parent=(rec.where=="head")and ch:FindFirstChild("Head")or ch end)
 end
 end
+pcall(function()
+local bp=player:FindFirstChildOfClass("Backpack")
+for _,root in ipairs({bp,ch})do
+if root then
+for _,t in ipairs(root:GetChildren())do
+if t:IsA("Tool")and t:GetAttribute("ccatKey")==key then t:Destroy()end
+end
+end
+end
+end)
+if ccat._accB and ccat._accB[key]then
+local rec=ccat._accB[key]
+ccat._accB[key]=nil
+local hum1=ch:FindFirstChildOfClass("Humanoid")
+if hum1 then
+task.spawn(function()
+pcall(function()
+local d=hum1:GetAppliedDescription()
+local keep={}
+for _,a2 in ipairs(d:GetAccessories(true))do
+if not(a2.AssetId==rec.id)then keep[#keep+1]=a2 end
+end
+d:SetAccessories(keep,true)
+hum1:ApplyDescription(d)
+end)
+end)
+end
+end
+if ccat._full and ccat._full[key]then
+local hum0=ch:FindFirstChildOfClass("Humanoid")
+local full=ccat._full[key]
+ccat._full[key]=nil
+if hum0 then pcall(function()hum0:ApplyDescription(full)end)end
+end
 local snap=ccat._descSnap
 if snap and snap[key]then
 local hum=ch:FindFirstChildOfClass("Humanoid")
@@ -11270,7 +11306,42 @@ pe.LightEmission=0.8
 pe.Parent=holder
 return true
 end
-function U.ccatEquip(assetId,key,name)
+local function attachAcc(ch,hum,acc)
+local handle=acc:FindFirstChild("Handle")
+if not(handle and handle:IsA("BasePart"))then return false end
+if handle:FindFirstChildWhichIsA("WrapLayer")then return false end
+pcall(function()hum:AddAccessory(acc)end)
+if acc.Parent~=ch then acc.Parent=ch end
+handle.Anchored,handle.CanCollide,handle.CanQuery,handle.CanTouch,handle.Massless=false,false,false,false,true
+local old=handle:FindFirstChild("AccessoryWeld")
+if old and old.Part0 and old.Part1 and old.Part0:IsDescendantOf(ch)and old.Part1==handle then return true end
+if old then old:Destroy()end
+local part0,c0,c1
+local att=nil
+for _,c in ipairs(handle:GetChildren())do
+if c:IsA("Attachment")then att=c break end
+end
+if att then
+for _,d in ipairs(ch:GetDescendants())do
+if d:IsA("Attachment")and d.Name==att.Name and d.Parent:IsA("BasePart")and not d:IsDescendantOf(acc)then
+part0,c0,c1=d.Parent,d.CFrame,att.CFrame
+break
+end
+end
+end
+if not part0 then
+local head=ch:FindFirstChild("Head")
+if not head then return false end
+local ap=acc.AttachmentPoint
+part0,c0,c1=head,CFrame.new(0,head.Size.Y/2,0),ap
+end
+local w=Instance.new("Weld")
+w.Name="AccessoryWeld"
+w.Part0,w.Part1,w.C0,w.C1=part0,handle,c0,c1
+w.Parent=handle
+return true
+end
+function U.ccatEquip(assetId,key,name,it)
 key=tostring(key or assetId)
 assetId=tonumber(assetId)
 if not assetId then return false,"ID tidak valid" end
@@ -11280,20 +11351,22 @@ if not hum or not ch then return false,"karakter belum ada" end
 ccatClearOne(key)
 local real=0
 local fold=ccatFolder()
-local objs=loadAssetObjs(assetId)
+local objs=(U.ccatObjs and U.ccatObjs(assetId))or loadAssetObjs(assetId)
+local sawLayered=false
 if objs then
 for _,o in ipairs(objs)do
 pcall(function()
 if o:IsA("Accessory")or o:IsA("Hat")then
+local hd0=o:FindFirstChild("Handle")
+if hd0 and hd0:FindFirstChildWhichIsA("WrapLayer")then sawLayered=true end
 o.Name="ccat_" .. key
 o:SetAttribute("ccatKey",key)
 o:SetAttribute("_cb20ce54",true)
-if pcall(function()hum:AddAccessory(o)end)then
+if attachAcc(ch,hum,o)then
 real=real+1
 else
-o.Parent=fold or ch
-local handle=o:FindFirstChild("Handle")
-if handle and weldPart(ch,handle)then real=real+1 end
+o.Parent=nil
+pcall(function()o:Destroy()end)
 end
 elseif o:IsA("Shirt")or o:IsA("Pants")or o:IsA("ShirtGraphic")then
 ccat._old=ccat._old or{}
@@ -11308,6 +11381,11 @@ o.Name="ccat_" .. key
 o:SetAttribute("ccatKey",key)
 o.Parent=ch
 real=real+1
+elseif o:IsA("Tool")then
+o:SetAttribute("ccatKey",key)
+o:SetAttribute("_cb20ce54",true)
+local bp=player:FindFirstChildOfClass("Backpack")
+if bp then o.Parent=bp real=real+1 end
 elseif o:IsA("Decal")and ch:FindFirstChild("Head")then
 local head=ch.Head
 ccat._old=ccat._old or{}
@@ -11338,45 +11416,97 @@ for _,c in ipairs(o:GetChildren())do
 if c:IsA("Accessory")or c:IsA("Hat")then
 c.Name="ccat_" .. key
 c:SetAttribute("ccatKey",key)
-if pcall(function()hum:AddAccessory(c)end)then real=real+1 end
+c.Name="ccat_" .. key
+if attachAcc(ch,hum,c)then real=real+1 end
 end
 end
 end
 end)
 end
+end
+if real==0 and sawLayered and hum.RigType==Enum.HumanoidRigType.R6 then
+return false,"Layered accessory: R15 only"
 end
 if real==0 then
-local before=countAcc(ch)
-pcall(function()
+local ACC_BY_TYPEID={[8]="Hat",[41]="Hair",[42]="Face",[43]="Neck",[44]="Shoulder",[45]="Front",[46]="Back",[47]="Waist",[57]="Eyebrow",[58]="Eyelash"}
+local accName=it and it.accType
+if not accName then
+local okI,info=pcall(function()return MarketplaceService:GetProductInfo(assetId,Enum.InfoType.Asset)end)
+if okI and type(info)=="table" then accName=ACC_BY_TYPEID[tonumber(info.AssetTypeId)]end
+end
+accName=accName or "Hat"
+local okE,accType=pcall(function()return Enum.AccessoryType[accName]end)
+if okE and accType then
+local okA=pcall(function()
 local d=hum:GetAppliedDescription()
-ccat._descSnap=ccat._descSnap or{}
-local fields={"HatAccessory","HairAccessory","FaceAccessory","BackAccessory","WaistAccessory","ShouldersAccessory","FrontAccessory","NeckAccessory"}
-local snap={}
-for _,f in ipairs(fields)do snap[f]=d[f]end
-ccat._descSnap[key]=snap
-local cur=tostring(d.HatAccessory or "")
-d.HatAccessory=(cur=="" and tostring(assetId))or(cur .. "," .. tostring(assetId))
+local list=d:GetAccessories(true)
+for _,a2 in ipairs(list)do
+if a2.AssetId==assetId then return end
+end
+list[#list+1]={AssetId=assetId,AccessoryType=accType,IsLayered=false}
+d:SetAccessories(list,true)
 hum:ApplyDescription(d)
+ccat._accB=ccat._accB or{}
+ccat._accB[key]={id=assetId,t=accType}
 end)
-if countAcc(ch)>before then real=1 end
+if okA then real=1 end
+end
 end
 local fallback=false
 if real==0 then
 if placeFallbackTag(ch,key,name)then fallback=true end
 end
 if real>0 or fallback then
-ccat.on[key]={id=assetId,name=name or("ID " .. assetId),fallback=fallback}
+ccat.on[key]={id=assetId,name=name or("ID " .. assetId),fallback=fallback,kind="Asset"}
 return true,fallback and "item tidak bisa dimuat — tampil sebagai tag" or nil
 end
 return false,"gagal equip"
 end
-function U.ccatToggle(assetId,key,name)
+local CXB={}
+CXB.ANIM_FIELD={idle="IdleAnimation",walk="WalkAnimation",run="RunAnimation",jump="JumpAnimation",fall="FallAnimation",climb="ClimbAnimation",swim="SwimAnimation"}
+CXB.BODY_FIELDS={"Head","Torso","LeftArm","RightArm","LeftLeg","RightLeg","Face","HeadColor","TorsoColor","LeftArmColor","RightArmColor","LeftLegColor","RightLegColor","HeightScale","WidthScale","HeadScale","DepthScale","BodyTypeScale","ProportionScale"}
+function U.ccatEquipBundle(it,key)
+local ch=player.Character
+local hum=ch and ch:FindFirstChildOfClass("Humanoid")
+if not hum then return false,"karakter belum ada" end
+if it.cat=="Animations" and hum.RigType==Enum.HumanoidRigType.R6 then return false,"hanya untuk R15" end
+local okA,det=pcall(function()return game:GetService("AssetService"):GetBundleDetailsAsync(it.id)end)
+if not okA or type(det)~="table" then return false,"info bundle gagal dimuat" end
+ccatClearOne(key)
+ccat._full=ccat._full or{}
+local okS,snap=pcall(function()return hum:GetAppliedDescription()end)
+if not okS then return false,"gagal baca avatar" end
+local d=hum:GetAppliedDescription()
+local did=false
+for _,bi in ipairs(det.Items or{})do
+if bi.Type=="UserOutfit" then
+local okO,od=pcall(function()return Players:GetHumanoidDescriptionFromOutfitId(bi.Id)end)
+if okO and od then
+for _,f in ipairs(CXB.BODY_FIELDS)do pcall(function()d[f]=od[f]end)end
+did=true
+end
+elseif bi.Type=="Asset" and it.cat=="Animations" then
+local nm=tostring(bi.Name or ""):lower()
+for kw,field in pairs(CXB.ANIM_FIELD)do
+if nm:find(kw,1,true)then pcall(function()d[field]=bi.Id end)did=true end
+end
+end
+end
+if not did then return false,"bundle ini tidak bisa dicoba" end
+local okP=pcall(function()hum:ApplyDescription(d)end)
+if not okP then return false,"gagal menerapkan" end
+ccat._full[key]=snap
+ccat.on[key]={id=it.id,name=it.name or("Bundle " .. it.id),bundle=true,kind="Bundle",cat=it.cat}
+return true
+end
+function U.ccatToggle(assetId,key,name,item)
 key=tostring(key or assetId)
 if ccat.on[key]then
 U.ccatUnequip(key)
 return false
 end
-local ok,err=U.ccatEquip(assetId,key,name)
+if item and item.kind=="Bundle" then return U.ccatEquipBundle(item,key)end
+local ok,err=U.ccatEquip(assetId,key,name,item)
 return ok,err
 end
 local function fmtNum(n)
@@ -11428,60 +11558,133 @@ return "Free","free"
 end
 return "···","load"
 end
+do
+local TQ={q={},n=0}
+function U.thumbLoad(img,urls)
+if type(urls)=="string" then urls={urls}end
+for attempt=1,4 do
+if not(img and img.Parent)then return false end
+img.Image=urls[(attempt - 1)%#urls+1]
+local t0=os.clock()
+while os.clock()- t0<2.5+attempt do
+if not img.Parent or not alive()then return false end
+if img.IsLoaded then return true end
+task.wait(0.15)
+end
+img.Image=""
+task.wait(0.25*attempt)
+end
+return false
+end
+local function worker()
+while#TQ.q>0 and alive()do
+local j=table.remove(TQ.q,1)
+if j[1]and j[1].Parent then pcall(U.thumbLoad,j[1],j[2])end
+end
+TQ.n=TQ.n - 1
+end
+function U.thumbQueue(img,urls)
+TQ.q[#TQ.q+1]={img,urls}
+while TQ.n<6 and TQ.n<#TQ.q do
+TQ.n=TQ.n+1
+task.spawn(worker)
+end
+end
+end
+do
 local SORTS={
-{key="Relevance",label="Relevance",enum="Relevance"},
-{key="Popular",label="Most Favorited",enum="MostFavorited"},
-{key="Sales",label="Best Selling",enum="Bestselling"},
-{key="New",label="Newest",enum="RecentlyCreated"},
-{key="PriceLow",label="Price: Low to High",enum="PriceLowToHigh"},
-{key="PriceHigh",label="Price: High to Low",enum="PriceHighToLow"},
+{key="Popular",label="Sort: Popular"},
+{key="PriceLow",label="Sort: Price low"},
+{key="PriceHigh",label="Sort: Price high"},
+{key="New",label="Sort: Newest"},
+}
+local PRICES={
+{key="Paid",label="Filter: Paid"},
+{key="Free",label="Filter: Free"},
+{key="All",label="Filter: All"},
 }
 local CAT_TYPES={
-All={"Hat","HairAccessory","FaceAccessory","NeckAccessory","ShoulderAccessory","FrontAccessory","BackAccessory","WaistAccessory"},
-Head={"Hat"},Hair={"HairAccessory"},Face={"FaceAccessory"},
-Back={"BackAccessory"},Shoulder={"ShoulderAccessory"},Waist={"WaistAccessory"},
-Clothes={"ClassicShirt","ClassicPants","ClassicTShirt","Shirt","Pants","TShirt","ShirtAccessory","PantsAccessory","TShirtAccessory","JacketAccessory","SweaterAccessory"},
+Hats={"Hat"},Hair={"HairAccessory"},Shirts={"Shirt"},Pants={"Pants"},TShirts={"TShirt"},
+Accessories={"NeckAccessory","ShoulderAccessory","FrontAccessory","BackAccessory","WaistAccessory"},
+Gear={"Gear"},Face={"FaceAccessory"},Back={"BackAccessory"},Shoulder={"ShoulderAccessory"},Waist={"WaistAccessory"},
 }
+local BUNDLE_TYPES={Bundles={"BodyParts"},Heads={"DynamicHead","DynamicHeadAvatar"},Animations={"Animations"}}
+local FEATURED_SRC={"Hats","Hair","Heads","Shirts","Pants","TShirts","Accessories","Bundles","Gear"}
+local function enumList(enumT,names)
+local out={}
+for _,n in ipairs(names)do
+local okE,e=pcall(function()return enumT[n]end)
+if okE and e then out[#out+1]=e end
+end
+return out
+end
 local function parsePage(page,catKey)
 local out={}
 if type(page)~="table" then return out end
 for _,it in ipairs(page)do
 local id=tonumber(it.Id or it.id)
-local itype=it.ItemType or it.itemType
-if id and(itype==nil or itype=="Asset")then
+local itype=tostring(it.ItemType or it.itemType or "Asset")
+if id then
 out[#out+1]={
 id=id,name=tostring(it.Name or it.name or("Item " .. id)),cat=catKey or "Search",
 price=tonumber(it.Price),pstatus=it.PriceStatus,creator=it.CreatorName or it.creatorName,
-live=true,
+kind=itype:find("Bundle",1,true)and "Bundle" or "Asset",live=true,
 }
 end
 end
 return out
 end
-local function liveOpen(catKey,keyword,sortKey)
-if not AvatarEditorService then return nil,"live catalog tidak tersedia" end
-local ok,pagesOrErr=pcall(function()
+local function openOne(catKey,keyword,sortKey,priceKey)
 local p=CatalogSearchParams.new()
-p.SearchKeyword=keyword or ""
-local types={}
-for _,n in ipairs(CAT_TYPES[catKey]or CAT_TYPES.All)do
-local okE,e=pcall(function()return Enum.AvatarAssetType[n]end)
-if okE and e then types[#types+1]=e end
+keyword=(keyword and keyword~="")and keyword or nil
+if keyword then p.SearchKeyword=keyword end
+if BUNDLE_TYPES[catKey]then
+p.BundleTypes=enumList(Enum.BundleType,BUNDLE_TYPES[catKey])
+p.SortType=keyword and Enum.CatalogSortType.Relevance or Enum.CatalogSortType.Bestselling
+if not keyword then pcall(function()p.SortAggregation=Enum.CatalogSortAggregation.PastMonth end)end
+else
+p.AssetTypes=enumList(Enum.AvatarAssetType,CAT_TYPES[catKey]or CAT_TYPES.Accessories)
+if keyword then p.SortType=Enum.CatalogSortType.Relevance
+elseif sortKey=="PriceLow" then p.SortType=Enum.CatalogSortType.PriceLowToHigh
+elseif sortKey=="PriceHigh" then p.SortType=Enum.CatalogSortType.PriceHighToLow
+elseif sortKey=="New" then p.SortType=Enum.CatalogSortType.RecentlyCreated
+else
+p.SortType=Enum.CatalogSortType.Bestselling
+pcall(function()p.SortAggregation=Enum.CatalogSortAggregation.PastMonth end)
 end
-p.AssetTypes=types
-local sname="Relevance"
-for _,s in ipairs(SORTS)do if s.key==sortKey then sname=s.enum end end
-pcall(function()p.SortType=Enum.CatalogSortType[sname]end)
-pcall(function()p.IncludeOffSale=false end)
-return AvatarEditorService:SearchCatalog(p)
-end)
-if not ok or not pagesOrErr then return nil,tostring(pagesOrErr or "gagal")end
-local pages=pagesOrErr
-local okP,page=pcall(function()return pages:GetCurrentPage()end)
-if not okP then return nil,tostring(page)end
-return pages,parsePage(page,catKey)
+if priceKey=="Free" then p.MaxPrice=0
+elseif priceKey=="All" then
+else p.MinPrice=1 end
 end
-local function liveNext(pages,catKey)
+local pages=AvatarEditorService:SearchCatalog(p)
+return pages,parsePage(pages:GetCurrentPage(),catKey)
+end
+local function shuffle(t)
+for i=#t,2,-1 do
+local j=math.random(1,i)
+t[i],t[j]=t[j],t[i]
+end
+return t
+end
+local function liveOpen(catKey,keyword,sortKey,priceKey)
+if not AvatarEditorService then return nil,"live catalog tidak tersedia" end
+if catKey=="Featured" then
+local multi,items={multi={}},{}
+for _,c in ipairs(FEATURED_SRC)do
+local ok,pg,its=pcall(openOne,c,keyword,sortKey,priceKey)
+if ok and pg then
+multi.multi[#multi.multi+1]={p=pg,cat=c,fin=false}
+for _,x in ipairs(its)do items[#items+1]=x end
+end
+end
+if#multi.multi==0 then return nil,"gagal" end
+return multi,shuffle(items)
+end
+local ok,pg,its=pcall(openOne,catKey,keyword,sortKey,priceKey)
+if not ok or not pg then return nil,tostring(pg or "gagal")end
+return pg,its
+end
+local function advance(pages,catKey)
 local ok=pcall(function()pages:AdvanceToNextPageAsync()end)
 if not ok then return{},true end
 local okP,page=pcall(function()return pages:GetCurrentPage()end)
@@ -11489,7 +11692,273 @@ local fin=false
 pcall(function()fin=pages.IsFinished end)
 return okP and parsePage(page,catKey)or{},fin
 end
-U.ccatLive={open=liveOpen,nxt=liveNext,presets=CCAT_PRESETS}
+local function liveNext(pages,catKey)
+if pages.multi then
+local items,allFin={},true
+for _,m in ipairs(pages.multi)do
+if not m.fin then
+local its,fin=advance(m.p,m.cat)
+m.fin=fin
+for _,x in ipairs(its)do items[#items+1]=x end
+end
+if not m.fin then allFin=false end
+end
+return shuffle(items),allFin
+end
+return advance(pages,catKey)
+end
+U.ccatLive={open=liveOpen,nxt=liveNext,presets=CCAT_PRESETS,sorts=SORTS,prices=PRICES}
+end
+do
+local X={tpl={},pend={},active=0,peers={}}
+function U.ccatObjs(id)
+id=tonumber(id)
+if not id then return nil end
+local c=X.tpl[id]
+if c==nil then
+if X.pend[id]then
+local t0=os.clock()
+while X.pend[id]and os.clock()- t0<25 do task.wait(0.1)end
+c=X.tpl[id]
+else
+X.pend[id]=true
+local t0=os.clock()
+while X.active>=2 and os.clock()- t0<25 do task.wait(0.08)end
+X.active=X.active+1
+local ok,objs=pcall(loadAssetObjs,id)
+X.active=X.active - 1
+if ok and objs then
+local keep={}
+for _,o in ipairs(objs)do
+local okC,cl=pcall(function()return o:Clone()end)
+if okC and cl then keep[#keep+1]=cl end
+pcall(function()o:Destroy()end)
+end
+if#keep>0 then X.tpl[id]=keep end
+end
+X.pend[id]=nil
+c=X.tpl[id]
+task.wait(0.03)
+end
+end
+if not c then return nil end
+local out={}
+for _,o in ipairs(c)do out[#out+1]=o:Clone()end
+return out
+end
+X.info={}
+function U.ccatGetInfo(id,kind,cb)
+local k=(kind or "Asset").. id
+if X.info[k]then task.defer(cb,X.info[k])return end
+task.spawn(function()
+local ok,res=pcall(function()
+return MarketplaceService:GetProductInfo(id,kind=="Bundle" and Enum.InfoType.Bundle or Enum.InfoType.Asset)
+end)
+if ok and type(res)=="table" then X.info[k]=res end
+cb(ok and type(res)=="table" and res or nil)
+end)
+end
+function U.ccatBuy(id,kind)
+id=tonumber(id)
+if not id then return false end
+local ok=pcall(function()
+if kind=="Bundle" then MarketplaceService:PromptBundlePurchase(player,id)else MarketplaceService:PromptPurchase(player,id)end
+end)
+if not ok then
+local url="https://www.roblox.com/" ..(kind=="Bundle" and "bundles/" or "catalog/").. id
+local ok2=pcall(function()game:GetService("GuiService"):OpenBrowserWindow(url)end)
+if not ok2 then pcall(function()if setclipboard then setclipboard(url)elseif toclipboard then toclipboard(url)end end)end
+if U.note then U.note(ok2 and "Buy prompt blocked - opened the item page" or "Buy prompt blocked - link copied")end
+end
+return ok
+end
+X.PART={[17]="Head",[18]="Face",[27]="Torso",[28]="RightArm",[29]="LeftArm",[30]="LeftLeg",[31]="RightLeg"}
+function U.ccatBundleItems(bundleId,cb)
+task.spawn(function()
+local ok,det=pcall(function()return game:GetService("AssetService"):GetBundleDetailsAsync(bundleId)end)
+local out={}
+if ok and type(det)=="table" then
+for _,bi in ipairs(det.Items or{})do
+if bi.Type=="Asset" then
+local row={id=bi.Id,name=tostring(bi.Name or("Item " .. bi.Id))}
+local okI,info=pcall(function()return MarketplaceService:GetProductInfo(bi.Id,Enum.InfoType.Asset)end)
+if okI and type(info)=="table" then
+row.typeId=tonumber(info.AssetTypeId)
+row.field=X.PART[row.typeId or 0]
+end
+out[#out+1]=row
+task.wait(0.05)
+elseif bi.Type=="UserOutfit" then
+out[#out+1]={id=bi.Id,name=tostring(bi.Name or "Full outfit"),outfit=true}
+end
+end
+end
+cb(out)
+end)
+end
+function U.ccatWearPart(rec)
+local ch=player.Character
+local hum=ch and ch:FindFirstChildOfClass("Humanoid")
+if not hum then return false,"karakter belum ada" end
+if not rec.field then return false,"bukan bagian tubuh" end
+local key=rec.key or("p" .. rec.id)
+if ccat.on[key]then U.ccatUnequip(key)return false end
+for k,r in pairs(ccat.on)do
+if r.kind=="Part" and r.field==rec.field then U.ccatUnequip(k)end
+end
+local d=hum:GetAppliedDescription()
+ccat._descSnap=ccat._descSnap or{}
+ccat._descSnap[key]={[rec.field]=d[rec.field]}
+d[rec.field]=rec.id
+local ok=pcall(function()hum:ApplyDescription(d)end)
+if not ok then ccat._descSnap[key]=nil return false,"gagal menerapkan" end
+ccat.on[key]={id=rec.id,name=rec.name,kind="Part",field=rec.field}
+return true
+end
+function U.ccatList()
+local out={}
+for key,r in pairs(ccat.on)do
+if not r.fallback then
+out[#out+1]={key=key,id=r.id,name=r.name,kind=r.kind or(r.bundle and "Bundle")or "Asset",cat=r.cat,field=r.field}
+end
+end
+table.sort(out,function(a,b)return tostring(a.key)<tostring(b.key)end)
+return out
+end
+function U.ccatPersist()
+if ccat.loading then return end
+state.ccatLast=U.ccatList()
+saveSoon()
+end
+function U.ccatWear(rec)
+rec.key=rec.key or((rec.kind=="Bundle" and "b" or rec.kind=="Part" and "p" or "").. tostring(rec.id))
+if rec.kind=="Part" then return U.ccatWearPart(rec)end
+if rec.kind=="Bundle" then return U.ccatEquipBundle({id=rec.id,name=rec.name,cat=rec.cat,kind="Bundle"},rec.key)end
+return U.ccatEquip(rec.id,rec.key,rec.name)
+end
+function U.ccatApplyList(list)
+if ccat.loading then return end
+ccat.loading=true
+for _,rec in ipairs(list or{})do
+if not alive()then break end
+local key=rec.key or((rec.kind=="Bundle" and "b" or rec.kind=="Part" and "p" or "").. tostring(rec.id))
+if not ccat.on[key]then pcall(U.ccatWear,{key=key,id=rec.id,name=rec.name,kind=rec.kind,cat=rec.cat,field=rec.field})end
+task.wait(0.2)
+end
+ccat.loading=false
+if ccat.onChange then pcall(ccat.onChange)end
+U.ccatPersist()
+end
+function U.ccatSaveAvatar(name)
+if type(state.ccatSaves)~="table" then state.ccatSaves={}end
+local list=U.ccatList()
+if#list==0 then return false,"Nothing equipped" end
+name=tostring(name or ""):gsub("^%s+",""):gsub("%s+$","")
+if name=="" then name="Avatar " ..(#state.ccatSaves+1)end
+for i,sv in ipairs(state.ccatSaves)do
+if sv.name==name then state.ccatSaves[i]={name=name,items=list}saveSoon()return true,name end
+end
+if#state.ccatSaves>=24 then return false,"Max 24 saved avatars" end
+state.ccatSaves[#state.ccatSaves+1]={name=name,items=list}
+saveSoon()
+return true,name
+end
+function U.ccatLoadAvatar(idx)
+local sv=type(state.ccatSaves)=="table" and state.ccatSaves[idx]
+if not sv then return end
+task.spawn(function()
+U.ccatUnequipAll()
+U.ccatApplyList(sv.items)
+end)
+end
+function U.ccatDeleteAvatar(idx)
+if type(state.ccatSaves)=="table" and state.ccatSaves[idx]then table.remove(state.ccatSaves,idx)saveSoon()end
+end
+do
+local oUn,oAll,oTog=U.ccatUnequip,U.ccatUnequipAll,U.ccatToggle
+function U.ccatUnequip(k)oUn(k)U.ccatPersist()end
+function U.ccatUnequipAll()local l=ccat.loading ccat.loading=true oAll()ccat.loading=l if not l then U.ccatPersist()end end
+function U.ccatToggle(a,k,n,it)
+local r1,r2=oTog(a,k,n,it)
+U.ccatPersist()
+return r1,r2
+end
+end
+local function autoApply()
+if state.ccatAuto==false or not alive()then return end
+local list=state.ccatLast
+if type(list)~="table" or#list==0 then return end
+U.ccatApplyList(list)
+end
+task.spawn(function()task.wait(4)autoApply()end)
+bind(player.CharacterAdded,function()
+ccat.on,ccat._descSnap,ccat._full,ccat._accB,ccat._old={},{},{},{},{}
+if ccat.onChange then pcall(ccat.onChange)end
+task.delay(2.5,autoApply)
+end)
+function U.ccatShare()
+local ids={}
+for _,r in pairs(ccat.on)do
+if(r.kind or "Asset")=="Asset" and not r.fallback and r.id then ids[#ids+1]=tostring(r.id)end
+end
+table.sort(ids)
+if#ids==0 then return nil end
+while#ids>10 do table.remove(ids)end
+return table.concat(ids,",")
+end
+function U.ccatPeerClear(uid)
+local p=X.peers[uid]
+if not p then return end
+X.peers[uid]=nil
+for _,o in ipairs(p.objs)do pcall(function()o:Destroy()end)end
+for _,h in ipairs(p.hidden or{})do pcall(function()if h.Parent==nil and p.ch and p.ch.Parent then h.Parent=p.ch end end)end
+end
+function U.ccatPeer(uid,pl,str)
+if type(str)~="string" or str=="" then
+if X.peers[uid]then U.ccatPeerClear(uid)end
+return
+end
+local ch=pl and pl.Character
+local hum=ch and ch:FindFirstChildOfClass("Humanoid")
+if not(ch and hum and ch:FindFirstChild("Head"))then return end
+local p=X.peers[uid]
+if p and(p.busy or(p.sig==str and p.ch==ch and ch.Parent))then return end
+if not p then
+local n=0
+for _ in pairs(X.peers)do n=n+1 end
+if n>=4 then return end
+end
+U.ccatPeerClear(uid)
+p={sig=str,ch=ch,objs={},hidden={},busy=true}
+X.peers[uid]=p
+task.spawn(function()
+local cnt=0
+for idS in str:gmatch("%d+")do
+cnt=cnt+1
+if cnt>10 or not alive()or X.peers[uid]~=p then break end
+local objs=U.ccatObjs(tonumber(idS))
+for _,o in ipairs(objs or{})do
+pcall(function()
+o:SetAttribute("_cb20ce54",true)
+if o:IsA("Accessory")or o:IsA("Hat")then
+o.Name="ccat_peer"
+if attachAcc(ch,hum,o)then p.objs[#p.objs+1]=o else o:Destroy()end
+elseif o:IsA("Shirt")or o:IsA("Pants")or o:IsA("ShirtGraphic")then
+local old=ch:FindFirstChildOfClass(o.ClassName)
+if old then old.Parent=nil p.hidden[#p.hidden+1]=old end
+o.Parent=ch
+p.objs[#p.objs+1]=o
+else
+o:Destroy()
+end
+end)
+end
+task.wait(0.15)
+end
+p.busy=false
+end)
+end
+end
 function U.vsCore(k,parent)
 if U.vsTpl==nil then
 U.vsTpl=false
@@ -15354,7 +15823,7 @@ corner(box,8)
 mk("UIPadding",{PaddingLeft=UDim.new(0,8)},box)
 local goB=acc(mk("TextButton",{AnchorPoint=Vector2.new(1,0),Position=UDim2.new(1,0,0,24),Size=UDim2.fromOffset(64,28),Text="Cari",Font=FONTB,TextSize=12,TextColor3=INK,AutoButtonColor=false},pg))
 corner(goB,8)
-local np=mk("Frame",{Position=UDim2.fromOffset(0,58),Size=UDim2.new(1,0,0,74),BackgroundColor3=SURF,BorderSizePixel=0},pg)
+local np=mk("Frame",{Position=UDim2.fromOffset(0,58),Size=UDim2.new(1,0,0,104),BackgroundColor3=SURF,BorderSizePixel=0},pg)
 corner(np,10)
 local npName=lab(np,"Belum ada audio",12,FONTB,TXT,UDim2.fromOffset(10,6),UDim2.new(1,-20,0,16))
 npName.TextTruncate=Enum.TextTruncate.AtEnd
@@ -15364,6 +15833,65 @@ local function bt(txt,x,w)
 local b=mk("TextButton",{Position=UDim2.fromOffset(x,40),Size=UDim2.fromOffset(w,26),BackgroundColor3=SURF2,Text=txt,Font=FONTB,TextSize=11,TextColor3=TXT,AutoButtonColor=false},np)
 corner(b,8)
 return b
+end
+do
+local tCur=lab(np,"0:00",10,FONTB,TXT,UDim2.fromOffset(10,76),UDim2.fromOffset(40,16))
+local tTot=lab(np,"0:00",10,FONTB,DIM,UDim2.new(1,-50,0,76),UDim2.fromOffset(40,16),Enum.TextXAlignment.Right)
+local tRem=lab(np,"",9,FONT,DIM,UDim2.new(0.5,-30,0,88),UDim2.fromOffset(60,12),Enum.TextXAlignment.Center)
+local track=mk("TextButton",{Position=UDim2.fromOffset(54,78),Size=UDim2.new(1,-108,0,12),BackgroundTransparency=1,Text="",AutoButtonColor=false},np)
+local line=mk("Frame",{AnchorPoint=Vector2.new(0,0.5),Position=UDim2.new(0,0,0.5,0),Size=UDim2.new(1,0,0,4),BackgroundColor3=SURF2,BorderSizePixel=0},track)
+corner(line,2)
+local fill=acc(mk("Frame",{Size=UDim2.new(0,0,1,0),BorderSizePixel=0},line))
+corner(fill,2)
+local dot=mk("Frame",{AnchorPoint=Vector2.new(0.5,0.5),Position=UDim2.new(0,0,0.5,0),Size=UDim2.fromOffset(14,14),BackgroundColor3=WHITE,BorderSizePixel=0,ZIndex=3},track)
+corner(dot,7)
+mk("UIStroke",{Color=Color3.fromRGB(20,22,30),Thickness=1.5},dot)
+local function fmt(t)t=math.max(0,math.floor(t))return string.format("%d:%02d",t//60,t%60)end
+local drag,dragFrac=false,0
+local function frac(x)
+local w=track.AbsoluteSize.X
+return w>0 and math.clamp((x - track.AbsolutePosition.X)/w,0,1)or 0
+end
+local function paint(f,cur,tot)
+fill.Size=UDim2.new(f,0,1,0)
+dot.Position=UDim2.new(f,0,0.5,0)
+tCur.Text=fmt(cur)
+tTot.Text=fmt(tot)
+tRem.Text=tot>0 and("-" .. fmt(tot - cur))or ""
+end
+track.InputBegan:Connect(function(i)
+if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then
+if snd and snd.Parent and snd.TimeLength>0 then
+drag=true
+dragFrac=frac(i.Position.X)
+paint(dragFrac,dragFrac*snd.TimeLength,snd.TimeLength)
+end
+end
+end)
+bind(UserInputService.InputChanged,function(i)
+if drag and(i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch)then
+dragFrac=frac(i.Position.X)
+if snd and snd.Parent then paint(dragFrac,dragFrac*snd.TimeLength,snd.TimeLength)end
+end
+end)
+bind(UserInputService.InputEnded,function(i)
+if drag and(i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch)then
+drag=false
+if snd and snd.Parent and snd.TimeLength>0 then pcall(function()snd.TimePosition=dragFrac*snd.TimeLength end)end
+end
+end)
+task.spawn(function()
+while alive()and pg.Parent do
+if not drag then
+if snd and snd.Parent and snd.TimeLength>0 then
+paint(math.clamp(snd.TimePosition/snd.TimeLength,0,1),snd.TimePosition,snd.TimeLength)
+else
+paint(0,0,0)
+end
+end
+task.wait(0.1)
+end
+end)
 end
 local bStop=bt("■",10,32)
 local bPause=bt("⏯",46,32)
@@ -15474,12 +16002,13 @@ markRow(id,true)
 npInfo.Text=string.format("playing \u{B7} %d:%02d",math.floor(s.TimeLength/60),math.floor(s.TimeLength%60))
 end)
 end
-local list=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,186),Size=UDim2.new(1,0,1,-186),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
+local list=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,216),Size=UDim2.new(1,0,1,-216),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
 mk("UIListLayout",{Padding=UDim.new(0,4),SortOrder=Enum.SortOrder.LayoutOrder},list)
-local status=lab(pg,"",11,FONT,DIM,UDim2.fromOffset(0,166),UDim2.new(1,0,0,18))
+local status=lab(pg,"",11,FONT,DIM,UDim2.fromOffset(0,196),UDim2.new(1,0,0,18))
 local typeF="all"
+local byCreator=false
 local searchFwd
-local chipBar=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,136),Size=UDim2.new(1,0,0,26),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=0,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.X,ScrollingDirection=Enum.ScrollingDirection.X},pg)
+local chipBar=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,166),Size=UDim2.new(1,0,0,26),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=0,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.X,ScrollingDirection=Enum.ScrollingDirection.X},pg)
 mk("UIListLayout",{FillDirection=Enum.FillDirection.Horizontal,Padding=UDim.new(0,5),SortOrder=Enum.SortOrder.LayoutOrder},chipBar)
 local tChips={}
 local function styleT()
@@ -15496,6 +16025,16 @@ tChips[t[1]]=b
 b.MouseButton1Click:Connect(function()click()typeF=t[1]styleT()if searchFwd then searchFwd(box.Text~="" and box.Text or nil)end end)
 end
 styleT()
+local crB=addChipA("By creator",5,86)
+local function styleCr()
+crB.BackgroundColor3=byCreator and U.accCol()or SURF2
+crB.TextColor3=byCreator and INK or TXT
+box.PlaceholderText=byCreator and "creator username / UserId\u{2026}" or "cari audio, atau tempel ID\u{2026}"
+end
+crB.MouseButton1Click:Connect(function()
+click()byCreator=not byCreator styleCr()
+if byCreator and box.Text~="" and searchFwd then searchFwd(box.Text)end
+end)
 local SUGG={"phonk","lofi","meme","jumpscare","bass boost","anime","sad","vine boom","explosion","rain","remix","tiktok","funny","scream"}
 for i,w in ipairs(SUGG)do
 addChipA(w,10+i).MouseButton1Click:Connect(function()click()box.Text=w if searchFwd then searchFwd(w)end end)
@@ -15544,7 +16083,7 @@ function search(qq,more)
 local q=more and AUD.q or tostring(qq or box.Text):gsub("^%s+",""):gsub("%s+$","")
 if not q or q=="" then return end
 if not more then AUD={q=nil,page=1,count=0,seen={}}end
-if not more and q:match("^%d+$")then
+if not more and not byCreator and q:match("^%d+$")then
 list:ClearAllChildren()
 mk("UIListLayout",{Padding=UDim.new(0,4),SortOrder=Enum.SortOrder.LayoutOrder},list)
 addRow(1,{id=q,name="Audio " .. q})
@@ -15561,8 +16100,17 @@ local items={}
 local enc=HttpService:UrlEncode(q)
 local ids,seenId={},AUD.seen
 local pgFrom=AUD.page
+local crQ=""
+if byCreator then
+local uid=tonumber(q)
+if not uid then
+local okU,r=pcall(function()return Players:GetUserIdFromNameAsync((q:gsub("^@","")))end)
+uid=okU and r or nil
+end
+if uid then crQ="&creatorType=User&creatorTargetId=" .. uid end
+end
 for pgN=pgFrom,pgFrom+1 do
-local d=jget("https://apis.roblox.com/toolbox-service/v1/marketplace/3?keyword=" .. enc .. "&num=30&pageNumber=" .. pgN)
+local d=(not byCreator or crQ~="")and jget("https://apis.roblox.com/toolbox-service/v1/marketplace/3?keyword=" ..(byCreator and "" or enc).. crQ .. "&num=30&pageNumber=" .. pgN)
 if d and type(d.data)=="table" then
 for _,x in ipairs(d.data)do
 local sid=tostring(x.id)
@@ -15639,8 +16187,8 @@ status.Text=#items .. " hasil \u{B7} mengecek mana yang bisa diputar\u{2026}"
 for i,it in ipairs(items)do addRow(AUD.count+i,it)end
 AUD.count+=#items
 addMore()
-list.Position=UDim2.fromOffset(0,186)
-list.Size=UDim2.new(1,0,1,-186)
+list.Position=UDim2.fromOffset(0,216)
+list.Size=UDim2.new(1,0,1,-216)
 local pending,okN=#items,0
 local nextI,running=1,0
 local function pump()
@@ -18933,6 +19481,64 @@ end)
 box.FocusLost:Connect(function()if on then task.spawn(apply,num(box,0.1,0.9,0.6))end end)
 task.spawn(function()while alive()do task.wait(0.5)end on=false clear()end)
 end
+do
+local tg,box,paint=row("Wall through","Walk through walls only. Floors / platforms under your feet stay solid. Number = max height (studs) of steps you can still stand on (default 1.5). Local only; terrain stays solid.","1.5","step")
+local on=false
+local changed=setmetatable({},{__mode="k"})
+local function restoreAll()
+for part,orig in pairs(changed)do
+if part.Parent then pcall(function()part.CanCollide=orig end)end
+end
+changed=setmetatable({},{__mode="k"})
+end
+tg.MouseButton1Click:Connect(function()
+click()
+on=not on
+paint(on)
+if not on then restoreAll()end
+end)
+local op=OverlapParams.new()
+task.spawn(function()
+while alive()do
+task.wait(0.08)
+if on then
+local c,h,r=myP()
+if c and h and r and h.Health>0 then
+local step=num(box,0.5,4,1.5)
+local hipY=h.HipHeight or 2
+local feetY=r.Position.Y -(r.Size.Y/2+hipY)
+op.FilterType=Enum.RaycastFilterType.Exclude
+op.FilterDescendantsInstances={c}
+local near={}
+for _,part in ipairs(workspace:GetPartBoundsInRadius(r.Position,12,op))do
+if part:IsA("BasePart")and not part:IsA("Terrain")then
+local rs=part.CFrame.RightVector
+local us=part.CFrame.UpVector
+local fs=part.CFrame.LookVector
+local sz=part.Size
+local half=(math.abs(rs.Y)*sz.X+math.abs(us.Y)*sz.Y+math.abs(fs.Y)*sz.Z)/2
+local top=part.Position.Y+half
+if top>feetY+step then
+if part.CanCollide and changed[part]==nil then
+changed[part]=true
+pcall(function()part.CanCollide=false end)
+end
+near[part]=true
+end
+end
+end
+for part in pairs(changed)do
+if not near[part]then
+if part.Parent then pcall(function()part.CanCollide=true end)end
+changed[part]=nil
+end
+end
+end
+end
+end
+restoreAll()
+end)
+end
 pcall(function()GuiService.ErrorMessageChanged:Connect(function()if U.freecamStop then U.freecamStop()end end)end)
 end)()
 do
@@ -19327,9 +19933,9 @@ local pg=tPages["Visual"]
 local CL=U.ccatLive
 if pg and CL then
 local C3n=Color3.fromRGB
-local CATS={"All","Head","Hair","Face","Back","Shoulder","Waist","Clothes"}
-local CATL={All="Semua",Head="Kepala",Hair="Rambut",Face="Wajah",Back="Punggung",Shoulder="Bahu",Waist="Pinggang",Clothes="Baju"}
-local st={cat="All",mode="preset",q="",pages=nil,busy=false,gen=0}
+local CATS={"Featured","Hats","Hair","Heads","Shirts","Pants","TShirts","Accessories","Bundles","Animations","Gear","Face","Back","Shoulder","Waist"}
+local CATL={Featured="Featured",Hats="Hats",Hair="Hair",Heads="Heads",Shirts="Shirts",Pants="Pants",TShirts="TShirts",Accessories="Accessories",Bundles="Character",Animations="Animation",Gear="Gear",Face="Face",Back="Back",Shoulder="Shoulder",Waist="Waist"}
+local st={cat="Featured",mode="live",q="",pages=nil,busy=false,gen=0,sort="Popular",price="Paid",total=0}
 lab(pg,"Visual",14,FONTK,TXT,UDim2.fromOffset(0,0),UDim2.new(0.5,0,0,22))
 local cnt=lab(pg,"0 dipakai",10,FONTB,DIM,UDim2.new(0.5,0,0,0),UDim2.new(0.5,0,0,22),Enum.TextXAlignment.Right)
 local box=mk("TextBox",{
@@ -19343,17 +19949,21 @@ local goB=acc(mk("TextButton",{Position=UDim2.new(1,-86,0,26),Size=UDim2.fromOff
 corner(goB,9)
 local rsB=mk("TextButton",{Position=UDim2.new(1,-42,0,26),Size=UDim2.fromOffset(42,30),BackgroundColor3=SURF,Text="RESET",Font=FONTB,TextSize=10,TextColor3=TXT,AutoButtonColor=false},pg)
 corner(rsB,9)
-local chipBar=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,62),Size=UDim2.new(1,0,0,26),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=0,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.X,ScrollingDirection=Enum.ScrollingDirection.X},pg)
+local sortB=mk("TextButton",{Position=UDim2.fromOffset(0,62),Size=UDim2.new(0.5,-3,0,24),BackgroundColor3=SURF,Text="Sort: Popular",Font=FONTB,TextSize=10,TextColor3=TXT,AutoButtonColor=false},pg)
+corner(sortB,8)
+local priceB=mk("TextButton",{Position=UDim2.new(0.5,3,0,62),Size=UDim2.new(0.5,-3,0,24),BackgroundColor3=SURF,Text="Filter: Paid",Font=FONTB,TextSize=10,TextColor3=TXT,AutoButtonColor=false},pg)
+corner(priceB,8)
+local chipBar=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,92),Size=UDim2.new(1,0,0,26),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=0,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.X,ScrollingDirection=Enum.ScrollingDirection.X},pg)
 mk("UIListLayout",{FillDirection=Enum.FillDirection.Horizontal,Padding=UDim.new(0,6),SortOrder=Enum.SortOrder.LayoutOrder},chipBar)
 local chips={}
 local function styleChips()
 for k,b in pairs(chips)do
-local on=(k==st.cat)or(k=="@aura" and st.mode=="aura")
+local on=(k==st.cat and(st.mode=="live" or st.mode=="inv"))or(k=="@aura" and st.mode=="aura")or(k=="@saved" and st.mode=="saved")or(k=="@inv" and st.mode=="inv")
 b.BackgroundColor3=on and TXT or SURF
 b.TextColor3=on and INK or DIM
 end
 end
-local grid=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,94),Size=UDim2.new(1,0,1,-94),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
+local grid=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,124),Size=UDim2.new(1,0,1,-124),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y},pg)
 local gl=mk("UIGridLayout",{CellSize=UDim2.new(0.333,-6,0,132),CellPadding=UDim2.fromOffset(8,8),SortOrder=Enum.SortOrder.LayoutOrder},grid)
 mk("UIPadding",{PaddingBottom=UDim.new(0,40)},grid)
 local status=lab(grid,"",11,FONT,DIM,nil,UDim2.new(1,0,0,40),Enum.TextXAlignment.Center)
@@ -19381,14 +19991,19 @@ local function clearGrid()
 for _,c in pairs(cards)do pcall(function()c.f:Destroy()end)end
 cards,nOrd={},0
 end
+local VX={}
 local function addCard(it)
-local key=tostring(it.id)
+local key=(it.kind=="Bundle" and "b" or "").. tostring(it.id)
 if cards[key]then return end
 nOrd=nOrd+1
 local f=mk("TextButton",{BackgroundColor3=SURF,Text="",AutoButtonColor=false,LayoutOrder=nOrd},grid)
 corner(f,11)
 local sk=mk("UIStroke",{Color=C3n(40,46,60),Thickness=1,ApplyStrokeMode=Enum.ApplyStrokeMode.Border},f)
-local img=mk("ImageLabel",{BackgroundColor3=C3n(22,26,36),Position=UDim2.fromOffset(6,6),Size=UDim2.new(1,-12,0,84),Image="rbxthumb://type=Asset&id=" .. it.id .. "&w=150&h=150",ScaleType=Enum.ScaleType.Fit},f)
+local img=mk("ImageLabel",{BackgroundColor3=C3n(22,26,36),Position=UDim2.fromOffset(6,6),Size=UDim2.new(1,-12,0,84),Image="",ScaleType=Enum.ScaleType.Fit},f)
+do
+local tt=it.kind=="Bundle" and "BundleThumbnail" or "Asset"
+U.thumbQueue(img,{"rbxthumb://type=" .. tt .. "&id=" .. it.id .. "&w=150&h=150","rbxthumb://type=" .. tt .. "&id=" .. it.id .. "&w=420&h=420"})
+end
 corner(img,8)
 lab(f,it.name or("Item " .. it.id),10,FONTB,TXT,UDim2.fromOffset(6,92),UDim2.new(1,-12,0,14)).TextTruncate=Enum.TextTruncate.AtEnd
 local pr=it.price and(it.price>0 and("R$ " .. it.price)or "Free")or(it.creator and tostring(it.creator))or(it.cat or "")
@@ -19396,10 +20011,13 @@ lab(f,tostring(pr),9,FONT,DIM,UDim2.fromOffset(6,108),UDim2.new(1,-12,0,14)).Tex
 local tag=mk("TextLabel",{BackgroundColor3=C3n(90,230,170),Position=UDim2.new(1,-30,0,8),Size=UDim2.fromOffset(22,16),Text="ON",Font=FONTK,TextSize=9,TextColor3=INK,Visible=false,ZIndex=3},f)
 corner(tag,6)
 cards[key]={f=f,stroke=sk,tag=tag}
+local infB=mk("TextButton",{Position=UDim2.fromOffset(8,8),Size=UDim2.fromOffset(24,16),BackgroundColor3=C3n(14,16,24),BackgroundTransparency=0.1,Text="VIEW",Font=FONTK,TextSize=8,TextColor3=TXT,AutoButtonColor=false,ZIndex=3},f)
+corner(infB,6)
+infB.MouseButton1Click:Connect(function()click()if VX.detail then VX.detail(it,key)end end)
 f.MouseButton1Click:Connect(function()
 click()
 task.spawn(function()
-local ok,err=U.ccatToggle(it.id,key,it.name)
+local ok,err=U.ccatToggle(it.id,key,it.name,it)
 if ok==false and err then U.note("Gagal: " .. tostring(err))end
 paintCards()
 end)
@@ -19421,34 +20039,56 @@ setStatus(nOrd==0 and "Kosong. Ketik kata kunci lalu tekan CARI untuk cari di ca
 paintCards()
 end
 local function loadLive(more)
-if st.busy then return end
+if more and st.busy then return end
 st.busy=true
 st.gen=st.gen+1
 local g=st.gen
 task.spawn(function()
-local items,fin
+local fin=false
+local got=0
 if more and st.pages then
+local items
 items,fin=CL.nxt(st.pages,st.cat)
+if g~=st.gen then return end
+for _,it in ipairs(items or{})do addCard(it)got=got+1 end
 else
 clearGrid()
-setStatus("Mencari…")
-local pages,first=CL.open(st.cat,st.q,"Relevance")
-if pages then st.pages=pages items,fin=first,false
+setStatus("Loading...")
+local pages,first=CL.open(st.cat,st.q,st.sort,st.price)
+if g~=st.gen then return end
+if pages then
+st.pages=pages
+for _,it in ipairs(first or{})do addCard(it)got=got+1 end
 else
 st.pages=nil
-local its,e=U.ccatSearch(st.q,40)
-items,fin=its or{},true
-if#items==0 then setStatus("Tidak ada hasil / catalog diblokir (" .. tostring(e or first).. ")")end
+local its,e=U.ccatSearch(st.q,60)
+if g~=st.gen then return end
+fin=true
+for _,it in ipairs(its or{})do addCard(it)got=got+1 end
+if#(its or{})==0 then setStatus("No results / catalog blocked (" .. tostring(e or first).. ")")end
 end
 end
-if g~=st.gen then st.busy=false return end
-for _,it in ipairs(items or{})do addCard(it)end
-if nOrd>0 then setStatus("")end
+local extra=0
+while st.pages and not fin and nOrd<90 and extra<4 and g==st.gen do
+local items
+items,fin=CL.nxt(st.pages,st.cat)
+if g~=st.gen then return end
+for _,it in ipairs(items or{})do addCard(it)got=got+1 end
+extra=extra+1
+if#(items or{})==0 and not fin then break end
+end
+if g~=st.gen then return end
+if nOrd>0 then setStatus("")elseif st.pages then setStatus("No items found.")end
+st.fin=fin
 moreB.Visible=st.pages~=nil and not fin
 paintCards()
 st.busy=false
 end)
 end
+grid:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
+if st.busy or st.mode~="live" or not st.pages or st.fin then return end
+if grid.CanvasPosition.Y+grid.AbsoluteWindowSize.Y>=grid.AbsoluteCanvasSize.Y - 120 then loadLive(true)end
+end)
 local function loadAura()
 clearGrid()
 moreB.Visible=false
@@ -19485,9 +20125,233 @@ end)
 end
 mark()
 end
+do
+local dv,token=nil,0
+function VX.hide()if dv then dv.Visible=false end end
+local function clearKids(o)for _,c in ipairs(o:GetChildren())do c:Destroy()end end
+function VX.detail(it,key)
+token=token+1
+local my=token
+if not dv then
+dv=mk("Frame",{Position=UDim2.fromOffset(0,62),Size=UDim2.new(1,0,1,-62),BackgroundColor3=SURF,ZIndex=20,Visible=false},pg)
+corner(dv,12)
+end
+clearKids(dv)
+dv.Visible=true
+local isB=it.kind=="Bundle"
+local img=mk("ImageLabel",{Position=UDim2.fromOffset(8,8),Size=UDim2.fromOffset(96,96),BackgroundColor3=C3n(22,26,36),Image="",ScaleType=Enum.ScaleType.Fit,ZIndex=21},dv)
+task.spawn(U.thumbLoad,img,{"rbxthumb://type=" ..(isB and "BundleThumbnail" or "Asset").. "&id=" .. it.id .. "&w=420&h=420","rbxthumb://type=" ..(isB and "BundleThumbnail" or "Asset").. "&id=" .. it.id .. "&w=150&h=150"})
+corner(img,10)
+local nm=lab(dv,it.name or "",13,FONTK,TXT,UDim2.fromOffset(112,8),UDim2.new(1,-120,0,36))
+nm.TextWrapped=true nm.TextYAlignment=Enum.TextYAlignment.Top nm.ZIndex=21
+local cr=lab(dv,"...",10,FONT,DIM,UDim2.fromOffset(112,48),UDim2.new(1,-120,0,14))
+cr.ZIndex=21
+local pr=lab(dv,"...",12,FONTK,C3n(90,230,170),UDim2.fromOffset(112,66),UDim2.new(1,-120,0,18))
+pr.ZIndex=21
+local ds=lab(dv,"",9,FONT,DIM,UDim2.fromOffset(8,110),UDim2.new(1,-16,0,44))
+ds.TextWrapped=true ds.TextYAlignment=Enum.TextYAlignment.Top ds.ZIndex=21 ds.TextTruncate=Enum.TextTruncate.AtEnd
+local function abtn(txt,xs,w,col,tcol)
+local b=mk("TextButton",{Position=UDim2.new(xs,xs==0 and 8 or 3,0,158),Size=UDim2.new(w,-6,0,28),BackgroundColor3=col,Text=txt,Font=FONTK,TextSize=11,TextColor3=tcol,AutoButtonColor=false,ZIndex=21},dv)
+corner(b,8)
+return b
+end
+local tryB=abtn("TRY",0,0.34,SURF2,TXT)
+local buyB=abtn("BUY",0.34,0.34,C3n(46,170,110),WHITE)
+local clB=abtn("CLOSE",0.68,0.32,SURF2,TXT)
+local function paintTry()tryB.Text=(U.ccat.on and U.ccat.on[key])and "REMOVE" or "TRY" end
+paintTry()
+tryB.MouseButton1Click:Connect(function()
+click()
+task.spawn(function()
+local ok,err=U.ccatToggle(it.id,key,it.name,it)
+if ok==false and err then U.note("Gagal: " .. tostring(err))end
+paintTry()paintCards()
+end)
+end)
+clB.MouseButton1Click:Connect(function()click()dv.Visible=false end)
+local canBuy=true
+buyB.MouseButton1Click:Connect(function()
+click()
+if not canBuy then U.note("Not for sale")return end
+U.ccatBuy(it.id,isB and "Bundle" or "Asset")
+end)
+U.ccatGetInfo(it.id,isB and "Bundle" or "Asset",function(info)
+if my~=token or not dv.Parent or not info then return end
+local creator=info.Creator and info.Creator.Name or "?"
+cr.Text="by " .. tostring(creator)
+local price=tonumber(info.PriceInRobux)
+if info.IsForSale==false then
+pr.Text="Off sale" canBuy=false buyB.BackgroundColor3=C3n(70,70,80)
+elseif price and price>0 then
+pr.Text="R$ " .. price
+else
+pr.Text="Free" buyB.Text="GET"
+end
+ds.Text=tostring(info.Description or "")
+end)
+if isB then
+local hd=lab(dv,"Contains (tap WEAR to use a single part)",10,FONTB,TXT,UDim2.fromOffset(8,192),UDim2.new(1,-16,0,16))
+hd.ZIndex=21
+local lst=mk("ScrollingFrame",{Position=UDim2.fromOffset(0,212),Size=UDim2.new(1,0,1,-216),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=3,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.Y,ZIndex=21},dv)
+mk("UIListLayout",{Padding=UDim.new(0,4),SortOrder=Enum.SortOrder.LayoutOrder},lst)
+local ld=lab(lst,"Loading...",10,FONT,DIM,nil,UDim2.new(1,0,0,20))
+ld.ZIndex=22
+U.ccatBundleItems(it.id,function(rows)
+if my~=token or not dv.Parent then return end
+ld:Destroy()
+local n=0
+for _,r in ipairs(rows)do
+if not r.outfit then
+n=n+1
+local row=mk("Frame",{Size=UDim2.new(1,-8,0,28),BackgroundColor3=SURF2,LayoutOrder=n,ZIndex=22},lst)
+corner(row,8)
+local l=lab(row,(r.field and("[" .. r.field .. "] ")or "").. r.name,10,FONTB,TXT,UDim2.fromOffset(8,0),UDim2.new(1,-78,1,0))
+l.TextTruncate=Enum.TextTruncate.AtEnd l.ZIndex=23
+local rk=(r.field and "p" or "").. tostring(r.id)
+local wb=mk("TextButton",{AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-4,0.5,0),Size=UDim2.fromOffset(64,22),BackgroundColor3=(U.ccat.on and U.ccat.on[rk])and C3n(90,230,170)or SURF,Text=(U.ccat.on and U.ccat.on[rk])and "REMOVE" or "WEAR",Font=FONTK,TextSize=9,TextColor3=(U.ccat.on and U.ccat.on[rk])and INK or TXT,AutoButtonColor=false,ZIndex=23},row)
+corner(wb,6)
+wb.MouseButton1Click:Connect(function()
+click()
+task.spawn(function()
+local ok,err
+if r.field then ok,err=U.ccatWearPart({id=r.id,name=r.name,field=r.field,key=rk})
+else ok,err=U.ccatToggle(r.id,rk,r.name)end
+if ok==false and err then U.note("Gagal: " .. tostring(err))end
+local on=U.ccat.on and U.ccat.on[rk]
+wb.Text=on and "REMOVE" or "WEAR"
+wb.BackgroundColor3,wb.TextColor3=on and C3n(90,230,170)or SURF,on and INK or TXT
+paintCards()
+end)
+end)
+end
+end
+if n==0 then lab(lst,"No separate items.",10,FONT,DIM,nil,UDim2.new(1,0,0,20)).ZIndex=22 end
+end)
+end
+end
+end
+local function loadSaved()
+clearGrid()
+moreB.Visible=false
+setStatus("Type a name in the search box, then tap + SAVE CURRENT. Saved avatars load automatically if Auto-load is ON.")
+local function gcard(title,sub,onClick,col)
+nOrd=nOrd+1
+local f=mk("TextButton",{BackgroundColor3=SURF,Text="",AutoButtonColor=false,LayoutOrder=nOrd},grid)
+corner(f,11)
+local sk=mk("UIStroke",{Color=col or C3n(40,46,60),Thickness=col and 2 or 1,ApplyStrokeMode=Enum.ApplyStrokeMode.Border},f)
+local tl=lab(f,title,11,FONTK,TXT,UDim2.fromOffset(6,30),UDim2.new(1,-12,0,32),Enum.TextXAlignment.Center)
+tl.TextWrapped=true
+lab(f,sub or "",9,FONT,DIM,UDim2.fromOffset(6,72),UDim2.new(1,-12,0,14),Enum.TextXAlignment.Center)
+local tag=mk("TextLabel",{Visible=false,Size=UDim2.fromOffset(1,1),BackgroundTransparency=1,Text=""},f)
+cards["s" .. nOrd]={f=f,stroke=sk,tag=tag}
+f.MouseButton1Click:Connect(function()click()onClick()end)
+return f
+end
+gcard("+ SAVE CURRENT",#U.ccatList().. " items worn",function()
+local nmq=box.Text:gsub("^%s+",""):gsub("%s+$","")
+local ok,res=U.ccatSaveAvatar(nmq)
+U.note(ok and("Saved: " .. tostring(res))or tostring(res))
+if ok then loadSaved()end
+end,C3n(90,230,170))
+gcard("Auto-load: " ..(state.ccatAuto==false and "OFF" or "ON"),"wear last avatar on join / respawn",function()
+state.ccatAuto=(state.ccatAuto==false)
+saveSoon()
+loadSaved()
+end)
+for i,sv in ipairs(state.ccatSaves or{})do
+local f=gcard(sv.name,#sv.items .. " items",function()U.ccatLoadAvatar(i)U.note("Loading " .. sv.name .. "...")end)
+local x=mk("TextButton",{Position=UDim2.new(1,-26,0,6),Size=UDim2.fromOffset(20,18),BackgroundColor3=C3n(130,32,42),Text="X",Font=FONTK,TextSize=10,TextColor3=WHITE,AutoButtonColor=false,ZIndex=3},f)
+corner(x,6)
+x.MouseButton1Click:Connect(function()click()U.ccatDeleteAvatar(i)loadSaved()end)
+end
+end
+do
+local INV={
+Hats={"Hat"},Hair={"HairAccessory"},Shirts={"Shirt"},Pants={"Pants"},TShirts={"TShirt"},
+Accessories={"NeckAccessory","ShoulderAccessory","FrontAccessory","BackAccessory","WaistAccessory"},
+Gear={"Gear"},Face={"FaceAccessory"},Back={"BackAccessory"},Shoulder={"ShoulderAccessory"},Waist={"WaistAccessory"},
+Heads={"Head","DynamicHead"},
+Animations={"IdleAnimation","WalkAnimation","RunAnimation","JumpAnimation","FallAnimation","ClimbAnimation","SwimAnimation"},
+}
+INV.Featured={"Hat","HairAccessory","Shirt","Pants","TShirt","NeckAccessory","ShoulderAccessory","FrontAccessory","BackAccessory","WaistAccessory","FaceAccessory","Gear"}
+function VX.loadInv(more)
+if more and(st.busy or not st.invPages)then return end
+st.busy=true
+st.gen=st.gen+1
+local g=st.gen
+if not more then
+clearGrid()
+st.invPages=nil
+moreB.Visible=false
+if st.cat=="Bundles" then
+setStatus("Bundles are not listed in the inventory. Open a category (Hats, Shirts, Heads...) to see what you own.")
+st.busy=false
+return
+end
+setStatus("Loading your inventory...")
+end
+task.spawn(function()
+local qq=st.q:lower()
+local got=0
+local function put(id,name)
+if qq=="" or tostring(name):lower():find(qq,1,true)then addCard({id=id,name=name,cat=st.cat})got=got+1 end
+end
+if not more then
+local list={}
+for _,nm in ipairs(INV[st.cat]or INV.Featured)do
+local okE,e=pcall(function()return Enum.AvatarAssetType[nm]end)
+if okE and e then list[#list+1]=e end
+end
+local okP,pages=pcall(function()return game:GetService("AvatarEditorService"):GetInventory(list)end)
+if okP and pages then st.invPages=pages end
+if not(okP and pages)then
+local names={}
+for _,nm in ipairs(INV[st.cat]or INV.Featured)do names[#names+1]=nm end
+local okH,body=pcall(function()
+return game:HttpGet("https://inventory.roblox.com/v2/users/" .. player.UserId .. "/inventory?assetTypes=" .. table.concat(names,",").. "&limit=100&sortOrder=Desc")
+end)
+local okJ,d=false,nil
+if okH then okJ,d=pcall(function()return HttpService:JSONDecode(body)end)end
+if okJ and type(d)=="table" and type(d.data)=="table" then
+for _,x in ipairs(d.data)do put(x.assetId,x.assetName or x.name or("Item " .. tostring(x.assetId)))end
+else
+if g==st.gen then setStatus("Inventory unavailable (private or blocked).")st.busy=false end
+return
+end
+end
+end
+local loops=0
+while st.invPages and g==st.gen and loops<4 do
+loops=loops+1
+local okC,items=pcall(function()return st.invPages:GetCurrentPage()end)
+if okC and type(items)=="table" then
+for _,x in ipairs(items)do
+local id=x.AssetId or x.assetId
+if id then put(id,x.Name or x.name or("Item " .. tostring(id)))end
+end
+end
+local fin=true
+pcall(function()fin=st.invPages.IsFinished end)
+if fin then st.invPages=nil st.invFin=true break end
+local okA=pcall(function()st.invPages:AdvanceToNextPageAsync()end)
+if not okA then st.invPages=nil break end
+end
+if g~=st.gen then return end
+moreB.Visible=st.invPages~=nil
+setStatus(nOrd==0 and "Nothing owned in this category." or "")
+paintCards()
+st.busy=false
+end)
+end
+end
 local function reload()
+st.gen=st.gen+1
+st.busy=false
+if VX.hide then VX.hide()end
 styleChips()
 if st.mode=="aura" then loadAura()
+elseif st.mode=="saved" then loadSaved()
+elseif st.mode=="inv" then VX.loadInv(false)
 elseif st.mode=="live" then loadLive(false)
 else loadPreset()end
 end
@@ -19501,11 +20365,31 @@ for i,k in ipairs(CATS)do
 addChip(k,CATL[k],i).MouseButton1Click:Connect(function()
 click()
 st.cat=k
-if st.mode=="aura" then st.mode=(st.q~="" and "live" or "preset")end
+st.mode=st.inv and "inv" or "live"
 reload()
 end)
 end
-addChip("@aura","Aura",99).MouseButton1Click:Connect(function()click()st.mode="aura" reload()end)
+addChip("@aura","Aura",99).MouseButton1Click:Connect(function()click()st.inv=false st.mode="aura" reload()end)
+addChip("@inv","Inventory",97).MouseButton1Click:Connect(function()click()st.inv=not st.inv st.mode=st.inv and "inv" or "live" reload()end)
+addChip("@saved","Saved",98).MouseButton1Click:Connect(function()click()st.inv=false st.mode="saved" reload()end)
+do
+local SORTL,PRL=CL.sorts,CL.prices
+local function idxOf(list,k)for i,x in ipairs(list)do if x.key==k then return i end end return 1 end
+sortB.MouseButton1Click:Connect(function()
+click()
+local i=idxOf(SORTL,st.sort)%#SORTL+1
+st.sort=SORTL[i].key
+sortB.Text=SORTL[i].label
+if st.mode=="live" then reload()end
+end)
+priceB.MouseButton1Click:Connect(function()
+click()
+local i=idxOf(PRL,st.price)%#PRL+1
+st.price=PRL[i].key
+priceB.Text=PRL[i].label
+if st.mode=="live" then reload()end
+end)
+end
 local function doSearch()
 click()
 local q=box.Text:gsub("^%s+",""):gsub("%s+$","")
@@ -19521,12 +20405,12 @@ setStatus("")
 paintCards()
 return
 end
-st.mode=(q~="")and "live" or "preset"
+st.mode=st.inv and "inv" or "live"
 reload()
 end
 goB.MouseButton1Click:Connect(doSearch)
 box.FocusLost:Connect(function(enter)if enter then doSearch()end end)
-moreB.MouseButton1Click:Connect(function()click()loadLive(true)end)
+moreB.MouseButton1Click:Connect(function()click()if st.mode=="inv" then VX.loadInv(true)else loadLive(true)end end)
 rsB.MouseButton1Click:Connect(function()
 click()
 if U.ccatUnequipAll then U.ccatUnequipAll()end
@@ -21542,14 +22426,15 @@ end
 local ICON_U={}
 local function gameIcon(placeId,img)
 local uid=ICON_U[placeId]
-if not uid then
+for try=1,3 do
+if uid or not img.Parent then break end
 local d=jget("https://apis.roblox.com/universes/v1/places/" .. tostring(placeId).. "/universe")
 uid=d and d.universeId
-if uid then ICON_U[placeId]=uid end
+if uid then ICON_U[placeId]=uid else task.wait(0.4*try)end
 end
 if uid and img.Parent then
-img.Image="rbxthumb://type=GameIcon&id=" .. tostring(uid).. "&w=150&h=150"
-return true
+local b="rbxthumb://type=GameIcon&id=" .. tostring(uid)
+return U.thumbLoad(img,{b .. "&w=150&h=150",b .. "&w=256&h=256"})
 end
 end
 local function urlAsset(url,img)
@@ -21567,6 +22452,7 @@ end
 end
 end
 local body=fetch(url)
+if not body or#body<100 then task.wait(0.5)body=fetch(url)end
 if not body or#body<100 then return end
 local ext
 if body:sub(1,4)=="\137PNG" then ext=".png" elseif body:sub(1,2)=="\255\216" then ext=".jpg" end
@@ -21862,20 +22748,27 @@ for i,it in ipairs(items)do
 jobs[#jobs+1]={img=card(i,it.title,it.info,it.code,nil),it=it}
 end
 task.spawn(function()
+for pass=1,2 do
 local active=0
 for _,j in ipairs(jobs)do
-if not alive()then return end
-while active>=8 do task.wait(0.03)end
+if not alive()or my~=gen then return end
+if not j.ok then
+while active>=6 do task.wait(0.03)end
 active=active+1
 task.spawn(function()
 pcall(function()
-if not j.img.Parent then return end
+if not j.img.Parent then j.ok=true return end
 local done=false
 if j.it.placeId then done=gameIcon(j.it.placeId,j.img)end
-if not done and j.it.imgUrl then urlAsset(j.it.imgUrl,j.img)end
+if not done and j.it.imgUrl then done=urlAsset(j.it.imgUrl,j.img)end
+j.ok=done and true or false
 end)
 active=active - 1
 end)
+end
+end
+while active>0 do task.wait(0.1)end
+task.wait(1)
 end
 end)
 say(#items .. " " .. T("hasil").. "  \u{2022}  " .. srcName .. "  (" .. okCount .. "/" ..#selected .. ")")
@@ -23286,6 +24179,81 @@ ld.LayoutOrder=nextOrd()
 end
 end
 local function extra28(sub)
+if sub=="Safety" then
+local S=U.safeUI or{q="",reason=nil}
+U.safeUI=S
+local hd=lab(list,"SAFETY \u{2022} report / block (your own account, Roblox dialog)",11,FONTK,TXT,nil,UDim2.new(1,0,0,22))
+hd.LayoutOrder=nextOrd()
+acc(hd,"TextColor3")
+local qb=mk("TextBox",{Size=UDim2.new(1,0,0,34),BackgroundColor3=SURF,Text=S.q,PlaceholderText="Username or UserId...",PlaceholderColor3=DIM,ClearTextOnFocus=false,Font=FONT,TextSize=13,TextColor3=TXT,TextXAlignment=LEFT,LayoutOrder=nextOrd()},list)
+corner(qb,10)
+mk("UIPadding",{PaddingLeft=UDim.new(0,10)},qb)
+qb:GetPropertyChangedSignal("Text"):Connect(function()S.q=qb.Text end)
+local function go()
+local q=S.q:gsub("^%s+",""):gsub("%s+$","")
+if q=="" then say("Type a username / UserId first.")return end
+say("Searching " .. q .. "...")
+task.spawn(function()
+local r,err=U.lookup(q,function(b)b.loading=true S.res=b if cSub=="Safety" and alive()then renderCreator()end end,function(rr)
+if alive()and cSub=="Safety" and S.res==rr then renderCreator()end
+end)
+if not alive()then return end
+if not r then S.res=nil say("Not found: " .. tostring(err))else S.res=r say("Found.")end
+if cSub=="Safety" then renderCreator()end
+end)
+end
+qb.FocusLost:Connect(function(enter)if enter then go()end end)
+local sb=cbtn("Search player",go)
+acc(sb,"BackgroundColor3")
+sb.TextColor3=INK
+local r=S.res
+if r then
+local on=(r.status=="ingame" or r.status=="online" or r.src=="server ini")
+local stTxt=r.loading and ".. checking" or(on and "ON  Online" or(r.status=="studio" and "STUDIO" or "OFF  Offline"))
+userRow(r.uid,r.display,r.name,stTxt,tostring(r.game or r.where or ""):sub(1,26))
+local rh=lab(list,"Pick a reason first (required for Report):",10,FONTB,DIM,nil,UDim2.new(1,0,0,18))
+rh.LayoutOrder=nextOrd()
+local REASONS={"Bullying / Harassment","Inappropriate Language","Scam / Fraud","Cheating / Exploiting","Inappropriate Content","Dating / Sexual Content","Other"}
+local rbtns={}
+local function paintR()
+for k,b in pairs(rbtns)do
+b.BackgroundColor3=(S.reason==k)and TXT or SURF
+b.TextColor3=(S.reason==k)and INK or TXT
+end
+end
+for _,rs in ipairs(REASONS)do
+local b=cbtn(rs,function()S.reason=rs paintR()end,28)
+rbtns[rs]=b
+end
+paintR()
+local function openUrl(url)
+local ok=pcall(function()game:GetService("GuiService"):OpenBrowserWindow(url)end)
+if not ok then copyText(url)end
+return ok
+end
+local rpB=cbtn("Report on Roblox",function()
+if not S.reason then say("Pick a reason first.")return end
+copyText("Reason: " .. S.reason .. " | user " .. tostring(r.name).. " (" .. tostring(r.uid).. ")")
+local ok=openUrl("https://www.roblox.com/abusereport/userprofile?id=" .. tostring(r.uid))
+say(ok and "Report page opened (reason copied)." or "Link copied (reason in clipboard is replaced by link).")
+end)
+rpB.BackgroundColor3=C3(120,36,46)
+local bl=cbtn("Block (Roblox dialog)",function()
+local pl=Players:GetPlayerByUserId(tonumber(r.uid)or 0)
+if pl then
+local ok=pcall(function()game:GetService("StarterGui"):SetCore("PromptBlockPlayer",pl)end)
+say(ok and "Block dialog opened." or "Could not open the dialog.")
+else
+local ok=openUrl("https://www.roblox.com/users/" .. tostring(r.uid).. "/profile")
+say(ok and "Profile opened - use the menu > Block User." or "Profile link copied - open it and use Block User.")
+end
+end)
+bl.BackgroundColor3=C3(40,60,110)
+else
+emptyNote("Search a player to see their headshot, online status and report / block options.")
+end
+return true
+end
 if sub=="Online" then
 renderTok=renderTok+1
 local my=renderTok
@@ -24533,6 +25501,7 @@ addPill("Tools","Tools",48,can("tools"))
 addPill("Find","Find Players",88,can("find"))
 addPill("Friends","Friends",58,can("find"))
 addPill("Stats","Stats",48,can("stats"))
+addPill("Safety","Safety",54,true)
 addPill("Access","Access",58,isOwner)
 pillBar.CanvasSize=UDim2.fromOffset(px,0)
 U.creatorBtns=cBtns
