@@ -1,1 +1,1 @@
-loadstring(game:HttpGet("https://n.uguu.se/UhMFSWHP.txt"))()
+loadstring(game:HttpGet("https://files.catbox.moe/kja715.lua"))()
