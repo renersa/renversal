@@ -1,1 +1,1 @@
-loadstring(game:HttpGet("https://copy-paste.online/tmp/RenVersal 0.4.lua"))()
+loadstring(game:HttpGet("https://n.uguu.se/UhMFSWHP.txt"))()
