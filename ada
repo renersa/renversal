@@ -285,6 +285,7 @@ logoOld=false,
 slOn=false,
 antiFall=false,
 invisOn=false,
+ghostTr=0.5,
 themeSet=false,
 accFollow=false,
 themeNote=false,
@@ -17564,7 +17565,7 @@ local stL=lab(cf,passId>0 and "Unlock every Exclusive feature: Online / Join, Fi
 stL.TextWrapped=true
 stL.TextYAlignment=Enum.TextYAlignment.Top
 local function say2(t)stL.Text=t end
-lab(cf,"RenVersal 4.4  \u{2022}  Pass " .. passId,8,FONT,DIM,UDim2.new(0,12,1,-14),UDim2.new(1,-24,0,10))
+lab(cf,"RenVersal 4.6  \u{2022}  Pass " .. passId,8,FONT,DIM,UDim2.new(0,12,1,-14),UDim2.new(1,-24,0,10))
 local function owns()
 local okO,o=pcall(function()return MPS:UserOwnsGamePassAsync(player.UserId,passId)end)
 if okO then return o==true end
@@ -17678,7 +17679,7 @@ showInfoSub()
 end
 local function __buildTools()
 pageTools=mk("Frame",{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,Visible=false},body)
-local TOOLS={"Kalkulator","Tic Tac Toe","Reaction","Memory","RPS","Guess Number","Simon","Arena","Whack","Executor","Search script","Catatan","Timer","Info","Chat","Pemain","Cepat","UI Detector","AI","Translate","Weather","Audio","Images","Video","YouTube","Fling","Animation","Macro","Visual","ESP Part","Bring Part","Telekinesis","Combat","Annoy","Extras"}
+local TOOLS={"Kalkulator","Tic Tac Toe","Reaction","Memory","RPS","Guess Number","Simon","Arena","Whack","Executor","Search script","Catatan","Timer","Info","Chat","Pemain","Cepat","UI Detector","AI","Translate","Weather","Audio","Images","Video","YouTube","Fling","Animation","Macro","Visual","ESP Part","Bring Part","Control Part","Combat","Annoy","Extras"}
 local function say(t)if U.note then U.note(t)end end
 local tPages,tPills,tCur={},{},"Kalkulator"
 local function styleTools()
@@ -17688,7 +17689,7 @@ b.TextColor3=(n==tCur)and INK or DIM
 end
 end
 restyle[#restyle+1]=styleTools
-local TW={["Weather"]=62,["Kalkulator"]=84,["Tic Tac Toe"]=82,["Executor"]=72,["Search script"]=100,["Catatan"]=70,["Timer"]=58,["Info"]=50,["Chat"]=50,["Pemain"]=72,["Cepat"]=58,["UI Detector"]=84,["AI"]=40,["Translate"]=70,["Audio"]=58,["Images"]=62,["Video"]=58,["YouTube"]=66,["Fling"]=58,["Animation"]=72,["Macro"]=58,["Theme"]=58,["Profil"]=58,["Reaction"]=72,["Memory"]=64,["RPS"]=48,["Guess Number"]=90,["Simon"]=58,["Arena"]=58,["Whack"]=58,["Visual"]=62,["ESP Part"]=70,["Bring Part"]=80,["Telekinesis"]=84,["Combat"]=62,["Annoy"]=58,["Extras"]=58}
+local TW={["Weather"]=62,["Kalkulator"]=84,["Tic Tac Toe"]=82,["Executor"]=72,["Search script"]=100,["Catatan"]=70,["Timer"]=58,["Info"]=50,["Chat"]=50,["Pemain"]=72,["Cepat"]=58,["UI Detector"]=84,["AI"]=40,["Translate"]=70,["Audio"]=58,["Images"]=62,["Video"]=58,["YouTube"]=66,["Fling"]=58,["Animation"]=72,["Macro"]=58,["Theme"]=58,["Profil"]=58,["Reaction"]=72,["Memory"]=64,["RPS"]=48,["Guess Number"]=90,["Simon"]=58,["Arena"]=58,["Whack"]=58,["Visual"]=62,["ESP Part"]=70,["Bring Part"]=80,["Control Part"]=84,["Combat"]=62,["Annoy"]=58,["Extras"]=58}
 local toolBar=mk("ScrollingFrame",{
 Position=UDim2.fromOffset(0,28),
 Size=UDim2.new(1,0,0,30),
@@ -17732,12 +17733,12 @@ do
 local CATS={
 {"All",nil},
 {"Mini games",{"Tic Tac Toe","Reaction","Memory","RPS","Guess Number","Simon","Arena","Whack","Kalkulator"}},
-{"Troll",{"Fling","Annoy","Extras","Animation","Bring Part","Telekinesis"}},
+{"Troll",{"Fling","Annoy","Extras","Animation","Bring Part","Control Part"}},
 {"Combat",{"Combat","Fling","Bring Part"}},
 {"Utility",{"Weather","Kalkulator","Executor","Search script","Catatan","Timer","Info","Cepat","UI Detector","AI","Translate","Macro"}},
 {"Social",{"Chat","Pemain","Arena"}},
 {"Media",{"Audio","Images","Video","YouTube","Visual"}},
-{"World",{"ESP Part","Bring Part","Telekinesis","Macro","Extras","Pemain"}},
+{"World",{"ESP Part","Bring Part","Control Part","Macro","Extras","Pemain"}},
 }
 CATS[2][2][9]=nil
 local catOf={}
@@ -24391,6 +24392,7 @@ up=b.MouseButton1Up:Connect(function()held=false if up then up:Disconnect()end e
 task.delay(0.4,function()while held and alive()and b.Parent do bump()task.wait(0.06)end end)
 end)
 end
+return show
 end
 function H.chips(parent,order,list,get,set)
 local sc=mk("ScrollingFrame",{Size=UDim2.new(1,0,0,28),BackgroundTransparency=1,BorderSizePixel=0,ScrollBarThickness=0,ScrollingDirection=Enum.ScrollingDirection.X,CanvasSize=UDim2.new(),AutomaticCanvasSize=Enum.AutomaticSize.X,LayoutOrder=order},parent)
@@ -25939,25 +25941,38 @@ end
 end
 do
 U.stage()
-local pg=tPages["Telekinesis"]
+local pg=tPages["Control Part"]
 if pg then
 local H=U.H
-local T={part=nil,dist=15,pull=18,power=150,cc=true,conn=nil,tap=false,lastC=0}
+local C3n=Color3.fromRGB
+local TAU=math.pi*2
+local UIS=UserInputService
+local CP={
+on=false,src="own",follow="Me",shape="Orbit",
+count=12,rad=8,sx=1,sy=1,sz=1,rx=0,ry=0,rz=0,ox=0,oy=0,oz=0,
+pw=1.2,ph=1.2,pd=1.2,
+move=true,speed=1.5,smooth=14,ph0=0,phase=0,
+level=0,hspeed=12,upKey=Enum.KeyCode.E,downKey=Enum.KeyCode.Q,punchKey=Enum.KeyCode.F,
+kUp=false,kDown=false,bUp=false,bDown=false,
+col="6EC8FF",neon=true,tr=0,trail=false,collide=false,
+stW=7,stD=3,stR=1,stT=0.8,stDir="Up",cpS=5,cpT=0.6,
+draw=nil,drawYaw=0,drawSize=12,
+camDist=20,power=150,tap=false,gn=8,gr=80,
+rmode="Follow",rbody="Noob",rcol="FFFFFF",rs=1,rbx=4,rby=0,rbz=0,rsp=18,
+rface="Move",rbase="Idle",apOn=false,apRate=1.2,aid="",aspd=1,aloop=true,
+dirty=true,ct=0,cen=nil,frz=nil,fixedYaw=0,baseY=nil,sOrigin=nil,sDir=nil,
+own={},world={},saved={},rob=nil,fold=nil,pick=nil,presetSel=nil,simT=0,
+}
+local DEF={count=12,rad=8,sx=1,sy=1,sz=1,rx=0,ry=0,rz=0,ox=0,oy=0,oz=0,pw=1.2,ph=1.2,pd=1.2,move=true,speed=1.5,col="6EC8FF",neon=true,tr=0,trail=false,collide=false}
+local M={}
+local SH={}
+local RF={}
 local sc=scroller(pg,UDim2.fromOffset(0,0),UDim2.new(1,0,1,0))
-local stat=lab(sc,"Pick a loose (unanchored / dropped) part",11,FONTB,DIM,nil,UDim2.new(1,0,0,30))
+local stat=lab(sc,"Control Part: turn ON, pick a shape. Own parts are only visible to you; World parts can be seen by others if you own them.",11,FONTB,DIM,nil,UDim2.new(1,0,0,44))
 stat.LayoutOrder=1 stat.TextWrapped=true
-local function say(t)stat.Text=t end
-local function release(vel)
-if T.conn then T.conn:Disconnect()T.conn=nil end
-local p=T.part
-T.part=nil
-if p and p.Parent then
-pcall(function()
-p.CanCollide=T.cc
-p.AssemblyLinearVelocity=vel or Vector3.zero
-end)
-end
-end
+function M.say(t)if stat.Text~=t then stat.Text=t end end
+local ord=1
+local function O()ord+=1 return ord end
 local function isChar(p)
 local a=p.Parent
 while a and a~=workspace do
@@ -25966,99 +25981,982 @@ a=a.Parent
 end
 return false
 end
-local function grab(p)
-if not p or not p:IsA("BasePart")or p:IsA("Terrain")then say("Nothing to grab")return end
+function M.folder()
+if not CP.fold or not CP.fold.Parent then
+CP.fold=tagged("Folder")
+CP.fold.Name="rvCP"
+CP.fold.Parent=workspace
+end
+return CP.fold
+end
+function M.yawOf(cf)local l=cf.LookVector return math.atan2(-l.X,-l.Z)end
+function M.root()
+local c,h,r=H.me()
+if r and h and h.Health>0 then return r,h,c end
+end
+function M.filter(c)
+local f={}
+if c then f[#f+1]=c end
+if CP.fold then f[#f+1]=CP.fold end
+return f
+end
+function M.feetY(r,h,c)
+local rp=RaycastParams.new()
+rp.FilterType=Enum.RaycastFilterType.Exclude
+rp.FilterDescendantsInstances=M.filter(c)
+local res=workspace:Raycast(r.Position,Vector3.new(0,-30,0),rp)
+if res then return res.Position.Y end
+return r.Position.Y - 3
+end
+function M.collide()return CP.shape=="Stairs" or CP.shape=="Carpet" or CP.collide end
+function M.size()
+if CP.shape=="Stairs" then return Vector3.new(CP.stW,CP.stT,CP.stD)end
+if CP.shape=="Carpet" then return Vector3.new(CP.cpS,CP.cpT,CP.cpS)end
+return Vector3.new(CP.pw,CP.ph,CP.pd)
+end
+local gcache={}
+function M.colorAt(i,n,h)
+h=h or CP.col
+if h=="RB" then return Color3.fromHSV((os.clock()*0.25+i/math.max(n,1))%1,0.85,1)end
+if type(h)=="string" and h:sub(1,2)=="G:" then
+local st=gcache[h]
+if not st then
+st={}
+for x in h:sub(3):gmatch("%x%x%x%x%x%x")do st[#st+1]=C3n(tonumber(x:sub(1,2),16),tonumber(x:sub(3,4),16),tonumber(x:sub(5,6),16))end
+gcache[h]=st
+end
+if#st==0 then return C3n(255,255,255)end
+if#st==1 then return st[1]end
+local t=(((i/math.max(n,1))+os.clock()*0.2)%1)*#st
+local a=math.floor(t)
+return st[a%#st+1]:Lerp(st[(a+1)%#st+1],t - a)
+end
+return U.colorAt(h)or C3n(255,255,255)
+end
+function M.mkPart()
+local p=tagged("Part")
+p.Name="rvcp"
+p.Anchored,p.CanTouch,p.CanQuery,p.CastShadow=true,false,false,false
+p.TopSurface,p.BottomSurface=Enum.SurfaceType.Smooth,Enum.SurfaceType.Smooth
+p.Size=M.size()
+p.Parent=M.folder()
+return p
+end
+function M.ensure(n)
+local L=CP.own
+while#L<n do L[#L+1]=M.mkPart()CP.dirty=true end
+while#L>n do local p=table.remove(L)pcall(function()p:Destroy()end)end
+end
+function M.clearOwn()
+for _,p in ipairs(CP.own)do pcall(function()p:Destroy()end)end
+CP.own={}
+end
+function M.trailSet(p,on,col)
+local tr=p:FindFirstChild("rvTr")
+if not on then
+if tr then tr:Destroy()pcall(function()p.rvA0:Destroy()p.rvA1:Destroy()end)end
+return
+end
+if not tr then
+local a0=Instance.new("Attachment")a0.Name="rvA0" a0.Parent=p
+local a1=Instance.new("Attachment")a1.Name="rvA1" a1.Parent=p
+tr=Instance.new("Trail")tr.Name="rvTr"
+tr.Attachment0,tr.Attachment1=a0,a1
+tr.Lifetime=0.55
+tr.LightEmission=0.8
+tr.Transparency=NumberSequence.new(0.2,1)
+tr.Parent=p
+end
+local hy=math.max(p.Size.Y,0.4)/2
+pcall(function()p.rvA0.Position=Vector3.new(0,hy,0)p.rvA1.Position=Vector3.new(0,-hy,0)end)
+tr.Color=ColorSequence.new(col)
+end
+function M.adopt(p)
+if not p or not p:IsA("BasePart")or p:IsA("Terrain")then M.say("Nothing to grab")return false end
 local tool=p:FindFirstAncestorWhichIsA("Tool")
 if tool and tool:FindFirstChild("Handle")then p=tool.Handle end
-if isChar(p)then say("Cannot grab a character part")return end
-if p.Anchored then say("That part is anchored - telekinesis only works on unanchored / dropped parts")return end
-release()
-T.part,T.cc=p,p.CanCollide
-pcall(function()p.CanCollide=false end)
-say("Holding: " .. p.Name)
-T.conn=RunService.Heartbeat:Connect(function(dt)
-local q=T.part
-if not q or not q.Parent then release()say("Part gone")return end
-local cam=workspace.CurrentCamera
-local want=cam.CFrame.Position+cam.CFrame.LookVector*T.dist
+if isChar(p)then M.say("Cannot grab a character part")return false end
+if p.Anchored then M.say("That part is anchored - only loose (unanchored / dropped) parts work")return false end
+if CP.saved[p]then return true end
+CP.saved[p]={cc=p.CanCollide}
+CP.world[#CP.world+1]=p
+CP.dirty=true
+return true
+end
+function M.release(vel)
+for _,p in ipairs(CP.world)do
+local s=CP.saved[p]
+if p.Parent then
 pcall(function()
-q.CFrame=(q.Position - want).Magnitude>300 and CFrame.new(want)or q.CFrame:Lerp(CFrame.new(want)*(q.CFrame - q.Position),math.clamp(dt*T.pull,0,1))
-q.AssemblyLinearVelocity,q.AssemblyAngularVelocity=Vector3.zero,Vector3.zero
+if s then p.CanCollide=s.cc end
+p.AssemblyLinearVelocity=vel or Vector3.zero
+p.AssemblyAngularVelocity=Vector3.zero
 end)
-if os.clock()- T.lastC>0.35 then
-T.lastC=os.clock()
+end
+end
+CP.world,CP.saved={},{}
+end
+function M.list()
+if CP.src=="own" then
+M.ensure(CP.count)
+return CP.own
+end
+local L=CP.world
+for i=#L,1,-1 do
+if not L[i].Parent then CP.saved[L[i]]=nil table.remove(L,i)end
+end
+return L
+end
+function M.mousePos(cam)
+local ray
+if UIS.MouseEnabled then
+local mp=UIS:GetMouseLocation()
+ray=cam:ViewportPointToRay(mp.X,mp.Y)
+elseif CP.tpos then
+ray=cam:ScreenPointToRay(CP.tpos.X,CP.tpos.Y)
+else
+ray=Ray.new(cam.CFrame.Position,cam.CFrame.LookVector)
+end
+local rp=RaycastParams.new()
+rp.FilterType=Enum.RaycastFilterType.Exclude
+rp.FilterDescendantsInstances=M.filter(player.Character)
+local res=workspace:Raycast(ray.Origin,ray.Direction*2000,rp)
+if res then return res.Position+Vector3.new(0,2.5,0)end
+return ray.Origin+ray.Direction*CP.camDist
+end
+function M.anchor()
+local f=CP.follow
+local r,h,c=M.root()
+local cam=workspace.CurrentCamera
+if f=="Camera" and cam then
+return cam.CFrame.Position+cam.CFrame.LookVector*CP.camDist,M.yawOf(cam.CFrame),r,h,c
+elseif f=="Player" then
+local pl=CP.pick and CP.pick.get()
+local tr=pl and H.root(pl)
+if tr then return tr.Position,M.yawOf(tr.CFrame),r,h,c end
+if os.clock()-(CP.warnT or 0)>3 then CP.warnT=os.clock()M.say("Target player not found - following you")end
+elseif f=="Mouse" and cam then
+return M.mousePos(cam),CP.fixedYaw,r,h,c
+elseif f=="Freeze" then
+if CP.frz then return CP.frz,CP.fixedYaw,r,h,c end
+end
+if r then return r.Position,M.yawOf(r.CFrame),r,h,c end
+end
+function M.freezeHere()
+local cam=workspace.CurrentCamera
+local r=M.root()
+CP.frz=CP.cen or(r and r.Position)or(cam and cam.CFrame.Position)
+CP.fixedYaw=cam and M.yawOf(cam.CFrame)or 0
+end
+SH.Orbit=function(i,n,R,tau)
+local a=i/n*TAU+tau
+return Vector3.new(math.cos(a)*R,0,math.sin(a)*R),CFrame.Angles(0,-a,0)
+end
+SH.Ring=function(i,n,R,tau)
+local a=i/n*TAU+tau
+return Vector3.new(math.cos(a)*R,math.sin(a)*R,0),CFrame.Angles(0,0,a)
+end
+SH.Sphere=function(i,n,R,tau)
+local y=1 - 2*(i+0.5)/n
+local r=math.sqrt(math.max(0,1 - y*y))
+local th=i*2.399963+tau
+return Vector3.new(math.cos(th)*r*R,y*R,math.sin(th)*r*R),nil
+end
+SH.Heart=function(i,n,R,tau)
+local t=i/n*TAU
+local x=16*math.sin(t)^3
+local y=13*math.cos(t)- 5*math.cos(2*t)- 2*math.cos(3*t)- math.cos(4*t)
+local k=R/16
+local sp=tau*0.5
+return Vector3.new(x*k*math.cos(sp),y*k,x*k*math.sin(sp)),nil
+end
+SH.Tornado=function(i,n,R,tau)
+local k=(i/n+tau*0.08)%1
+local a=k*TAU*3+tau*2
+local r=R*(0.12+0.88*k)
+return Vector3.new(math.cos(a)*r,k*R*1.8 - R*0.4,math.sin(a)*r),nil
+end
+SH.Helix=function(i,n,R,tau)
+local strand=i%2
+local m=math.max(1,math.ceil(n/2))
+local k=math.floor(i/2)/m
+local a=k*TAU*3+strand*math.pi+tau
+return Vector3.new(math.cos(a)*R*0.6,(k - 0.5)*R*2,math.sin(a)*R*0.6),nil
+end
+SH.Wings=function(i,n,R,tau)
+local side=(i%2==0)and 1 or -1
+local j=math.floor(i/2)
+local m=math.max(1,math.ceil(n/2))
+local d=(j+1)/m
+local flap=math.sin(tau*3)*0.45
+local px,py=d*R*0.9,d*R*0.35 - d*d*R*0.25
+local c,s=math.cos(flap),math.sin(flap)
+local x=px*c - py*s+1
+local y=px*s+py*c+1.5
+return Vector3.new(side*x,y,1.2),CFrame.Angles(0,0,side*(0.5+flap))
+end
+function M.drawPts(n)
+local P=CP.draw
+if not P or#P<2 then return nil end
+if not CP.dLen then
+local cum,tot={0},0
+for k=2,#P do
+tot+=math.sqrt((P[k][1]- P[k - 1][1])^2+(P[k][2]- P[k - 1][2])^2)
+cum[k]=tot
+end
+CP.dLen,CP.dTot=cum,math.max(tot,1e-4)
+end
+local cum,tot=CP.dLen,CP.dTot
+local out={}
+for i=0,n - 1 do
+local u
+if CP.move then u=(i/n+CP.phase*0.05)%1 else u=i/math.max(n - 1,1)end
+local d=u*tot
+local k=1
+while k<#P - 1 and cum[k+1]<d do k+=1 end
+local seg=math.max(cum[k+1]- cum[k],1e-6)
+local f=math.clamp((d - cum[k])/seg,0,1)
+local x=P[k][1]+(P[k+1][1]- P[k][1])*f
+local y=P[k][2]+(P[k+1][2]- P[k][2])*f
+out[i+1]=Vector3.new(x*CP.drawSize,y*CP.drawSize,0)
+end
+return out
+end
+function M.place()
+local r,h,c=M.root()
+if not r then return end
+local fy=M.feetY(r,h,c)
+CP.baseY=fy
+CP.sOrigin=Vector3.new(r.Position.X,fy,r.Position.Z)
+local cam=workspace.CurrentCamera
+local l=cam and cam.CFrame.LookVector or r.CFrame.LookVector
+local flat=Vector3.new(l.X,0,l.Z)
+if flat.Magnitude<1e-3 then flat=Vector3.new(0,0,-1)end
+CP.sDir=flat.Unit
+CP.level=0
+end
+function M.stairs(n,r)
+if not CP.sOrigin then M.place()end
+if not CP.sOrigin then return nil end
+local o,d=CP.sOrigin,CP.sDir
+local depth=math.max(CP.stD,0.5)
+local rise=(CP.stDir=="Down" and -CP.stR)or(CP.stDir=="Flat" and 0)or CP.stR
+local kc=math.floor((r.Position - o):Dot(d)/depth+0.5)
+local back=(n>=3)and 1 or 0
+local cfs={}
+for k=kc - back,kc - back+n - 1 do
+local ctr=o+d*(k*depth)+Vector3.new(0,k*rise+CP.level - CP.stT/2,0)
+cfs[(k%n)+1]=CFrame.lookAt(ctr,ctr+d)
+end
+return cfs
+end
+function M.carpet(n,apos)
+if not CP.baseY then M.place()end
+local s=CP.cpS
+local cols=math.ceil(math.sqrt(n))
+local rows=math.ceil(n/cols)
+local y=(CP.baseY or apos.Y)+CP.level - CP.cpT/2
+local cfs={}
+for i=0,n - 1 do
+local c,rr=i%cols,math.floor(i/cols)
+cfs[i+1]=CFrame.new(apos.X+(c -(cols - 1)/2)*s,y,apos.Z+(rr -(rows - 1)/2)*s)
+end
+return cfs
+end
+function M.apply(list,cfs,n)
+CP.lastList,CP.lastCfs=list,cfs
+local own=CP.src=="own"
+if own then
+local ok=pcall(function()workspace:BulkMoveTo(list,cfs,Enum.BulkMoveMode.FireCFrameChanged)end)
+if not ok then for i=1,n do pcall(function()list[i].CFrame=cfs[i]end)end end
+else
+for i=1,n do
+local p=list[i]
+pcall(function()p.CFrame=cfs[i]p.AssemblyLinearVelocity=Vector3.zero p.AssemblyAngularVelocity=Vector3.zero end)
+end
+local now=os.clock()
+if now - CP.simT>0.35 then
+CP.simT=now
 pcall(function()player.SimulationRadius=1e9 player.MaximumSimulationRadius=1e9 end)
 H.shp(player,"SimulationRadius",1e9)
-if isnetworkowner and not isnetworkowner(q)then say("Holding (visual only - server owns it): " .. q.Name)end
 end
+end
+local now=os.clock()
+local dyn=U.isDynColor(CP.col)
+if CP.dirty or(own and dyn and now - CP.ct>0.07)then
+CP.ct=now
+CP.dirty=false
+local sz,col=M.size(),M.collide()
+for i=1,n do
+local p=list[i]
+pcall(function()
+if own then
+if p.Size~=sz then p.Size=sz end
+p.Material=CP.neon and Enum.Material.Neon or Enum.Material.SmoothPlastic
+p.Transparency=CP.tr
+local cl=M.colorAt(i - 1,n)
+p.Color=cl
+M.trailSet(p,CP.trail,cl)
+end
+p.CanCollide=col
 end)
 end
-H.header(sc,2,"GRAB")
-H.toggle(sc,3,"Tap a part in the world to grab it",false,function(v)T.tap=v if v then say("Tap a part...")end end)
-bind(UserInputService.InputBegan,function(input,gp)
-if gp or not T.tap then return end
+end
+end
+function M.pre()
+if not CP.on or CP.src~="world" or not CP.lastList or CP.lastList~=CP.world then return end
+local L,C=CP.lastList,CP.lastCfs
+for i=1,#L do
+local p,cf=L[i],C[i]
+if p and cf and p.Parent then pcall(function()p.CFrame=cf p.AssemblyLinearVelocity=Vector3.zero end)end
+end
+end
+function M.robDestroy()
+local r=CP.rob
+if r then
+pcall(function()if r.track then r.track:Stop(0)end end)
+pcall(function()r.model:Destroy()end)
+end
+CP.rob=nil
+end
+function M.bodyCols(c)
+local m=CP.rbody
+local g=C3n(163,162,165)
+if m=="Dummy" then return g,g,g,g end
+if m=="Custom" then local k=U.colorAt(CP.rcol)or C3n(255,255,255)return k,k,k,k end
+if m=="Mine" and c then
+local function pc(a,b)
+local x=c:FindFirstChild(a)or(b and c:FindFirstChild(b))
+return(x and x:IsA("BasePart"))and x.Color or g
+end
+return pc("Head"),pc("Torso","UpperTorso"),pc("Right Arm","RightUpperArm"),pc("Right Leg","RightUpperLeg")
+end
+return C3n(245,205,48),C3n(13,105,172),C3n(245,205,48),C3n(164,189,71)
+end
+function M.robBuild(c)
+local S=CP.rs
+local m=tagged("Model")
+m.Name="rvbot"
+local hc,tc,ac,lc=M.bodyCols(c)
+local function part(name,size,col)
+local p=tagged("Part")
+p.Name=name
+p.Size=size*S
+p.Color=col
+p.Material=Enum.Material.SmoothPlastic
+p.Anchored,p.CanCollide,p.CanTouch,p.CanQuery,p.CastShadow=false,false,false,false,false
+p.TopSurface,p.BottomSurface=Enum.SurfaceType.Smooth,Enum.SurfaceType.Smooth
+p.Parent=m
+return p
+end
+local hrp=part("HumanoidRootPart",Vector3.new(2,2,1),tc)
+hrp.Transparency=1
+local torso=part("Torso",Vector3.new(2,2,1),tc)
+local head=part("Head",Vector3.new(2,1,1),hc)
+local la=part("Left Arm",Vector3.new(1,2,1),ac)
+local ra=part("Right Arm",Vector3.new(1,2,1),ac)
+local ll=part("Left Leg",Vector3.new(1,2,1),lc)
+local rl=part("Right Leg",Vector3.new(1,2,1),lc)
+local fc=Instance.new("Decal")
+fc.Name="face" fc.Texture="rbxasset://textures/face.png" fc.Face=Enum.NormalId.Front fc.Parent=head
+local function CF(x,y,z,a,b,c2,d,e,f,g,h,i)return CFrame.new(x*S,y*S,z*S,a,b,c2,d,e,f,g,h,i)end
+local function J(name,p0,p1,c0,c1)
+local mo=Instance.new("Motor6D")
+mo.Name=name mo.Part0=p0 mo.Part1=p1 mo.C0=c0 mo.C1=c1
+mo.Parent=p0
+return mo
+end
+local mt={
+rj=J("RootJoint",hrp,torso,CF(0,0,0,-1,0,0,0,0,1,0,1,0),CF(0,0,0,-1,0,0,0,0,1,0,1,0)),
+nk=J("Neck",torso,head,CF(0,1,0,-1,0,0,0,0,1,0,1,0),CF(0,-0.5,0,-1,0,0,0,0,1,0,1,0)),
+rs=J("Right Shoulder",torso,ra,CF(1,0.5,0,0,0,1,0,1,0,-1,0,0),CF(-0.5,0.5,0,0,0,1,0,1,0,-1,0,0)),
+ls=J("Left Shoulder",torso,la,CF(-1,0.5,0,0,0,-1,0,1,0,1,0,0),CF(0.5,0.5,0,0,0,-1,0,1,0,1,0,0)),
+rh=J("Right Hip",torso,rl,CF(1,-1,0,0,0,1,0,1,0,-1,0,0),CF(0.5,1,0,0,0,1,0,1,0,-1,0,0)),
+lh=J("Left Hip",torso,ll,CF(-1,-1,0,0,0,-1,0,1,0,1,0,0),CF(-0.5,1,0,0,0,-1,0,1,0,1,0,0)),
+}
+local hum=Instance.new("Humanoid")
+pcall(function()hum.RigType=Enum.HumanoidRigType.R6 end)
+pcall(function()hum.DisplayDistanceType=Enum.HumanoidDisplayDistanceType.None end)
+pcall(function()hum.HealthDisplayType=Enum.HumanoidHealthDisplayType.AlwaysOff end)
+pcall(function()hum.EvaluateStateMachine=false end)
+pcall(function()hum.RequiresNeck=false end)
+pcall(function()hum.BreakJointsOnDeath=false end)
+hum.Parent=m
+local an=Instance.new("Animator")
+an.Parent=hum
+m.PrimaryPart=hrp
+hrp.Anchored=true
+m.Parent=M.folder()
+return{model=m,hrp=hrp,motors=mt,hum=hum,animator=an,body=CP.rbody,scale=CP.rs,yaw=0,pn=0,parts={hrp,torso,head,la,ra,ll,rl}}
+end
+function M.mirror(rob,c)
+local torso=c:FindFirstChild("UpperTorso")or c:FindFirstChild("Torso")
+local root=c:FindFirstChild("HumanoidRootPart")
+if not torso or not root then return false end
+local function limb(a,b)return c:FindFirstChild(a)or c:FindFirstChild(b)end
+local function rel(prt)return torso.CFrame:ToObjectSpace(prt.CFrame).Rotation end
+local function put(mo,prt,relCF)
+if not prt then return end
+local c0,c1=mo.C0.Rotation,mo.C1.Rotation
+mo.Transform=c0:Inverse()*relCF*c1
+end
+local mt=rob.motors
+put(mt.rs,limb("Right Arm","RightUpperArm"),nil or(limb("Right Arm","RightUpperArm")and rel(limb("Right Arm","RightUpperArm"))))
+put(mt.ls,limb("Left Arm","LeftUpperArm"),(limb("Left Arm","LeftUpperArm")and rel(limb("Left Arm","LeftUpperArm"))))
+put(mt.rh,limb("Right Leg","RightUpperLeg"),(limb("Right Leg","RightUpperLeg")and rel(limb("Right Leg","RightUpperLeg"))))
+put(mt.lh,limb("Left Leg","LeftUpperLeg"),(limb("Left Leg","LeftUpperLeg")and rel(limb("Left Leg","LeftUpperLeg"))))
+local hd=c:FindFirstChild("Head")
+put(mt.nk,hd,hd and rel(hd))
+local rr=root.CFrame:ToObjectSpace(torso.CFrame).Rotation
+put(mt.rj,torso,rr)
+return true
+end
+function M.punch()
+local rob=CP.rob
+if not rob then M.say("Select shape Robot and turn ON first")return end
+rob.act={name="Punch",t0=os.clock(),dur=0.5,side=rob.pn%2}
+rob.pn+=1
+end
+function M.kick()
+local rob=CP.rob
+if not rob then M.say("Select shape Robot and turn ON first")return end
+rob.act={name="Kick",t0=os.clock(),dur=0.65}
+end
+function M.pose(rob,now,moving)
+local A,I=CFrame.Angles,CFrame.identity
+local P={rj=I,nk=I,rs=I,ls=I,rh=I,lh=I,lift=0,yaw=0,lunge=0}
+local b=CP.rbase
+if moving and b=="Idle" then b="Walk" end
+if b=="Idle" then
+local s=math.sin(now*2)
+P.rs,P.ls,P.lift=A(0,0,s*0.05),A(0,0,-s*0.05),s*0.03
+elseif b=="Walk" then
+local s=math.sin(now*7)
+P.rh,P.lh=A(0,0,s*0.9),A(0,0,s*0.9)
+P.rs,P.ls=A(0,0,-s*0.9),A(0,0,-s*0.9)
+P.lift=math.abs(s)*0.12
+elseif b=="Wave" then
+P.rs=A(-math.pi*0.85,0,math.sin(now*9)*0.45)
+elseif b=="TPose" then
+P.rs,P.ls=A(-math.pi/2,0,0),A(-math.pi/2,0,0)
+elseif b=="Sit" then
+P.rh,P.lh,P.lift=A(0,0,math.pi/2),A(0,0,-math.pi/2),-1.5
+elseif b=="Dance" then
+local s=math.sin(now*6)
+P.rs,P.ls=A(-math.pi*0.8+s*0.4,0,0),A(-math.pi*0.8 - s*0.4,0,0)
+P.rh,P.lh=A(0,0,s*0.4),A(0,0,s*0.4)
+P.lift=math.abs(s)*0.7
+P.yaw=s*0.5
+elseif b=="Spin" then
+P.yaw=now*8
+P.rs,P.ls=A(-math.pi/2,0,0),A(-math.pi/2,0,0)
+end
+local a=rob.act
+if a then
+local u=(now - a.t0)/a.dur
+if u>=1 then
+rob.act=nil
+elseif a.name=="Punch" then
+local ang
+if u<0.3 then ang=-0.9*(u/0.3)
+elseif u<0.5 then ang=-0.9+(1.571+0.9)*((u - 0.3)/0.2)
+else ang=1.571*(1 -(u - 0.5)/0.5)end
+if a.side==0 then P.rs=A(0,0,ang)else P.ls=A(0,0,-ang)end
+P.lunge=math.max(0,ang)/1.571*1.8
+elseif a.name=="Kick" then
+local k=math.sin(math.pi*u)
+P.rh=A(0,0,k*1.5)
+P.lunge=k*0.8
+P.rs,P.ls=A(0,0,-k*0.6),A(0,0,-k*0.6)
+end
+end
+return P
+end
+function M.animPlay()
+local rob=CP.rob
+if not rob then M.say("Select shape Robot and turn ON first")return end
+local id=tostring(CP.aid or ""):match("%d+")
+if not id then M.say("Type a numeric animation ID first")return end
+pcall(function()if rob.track then rob.track:Stop(0.1)end end)
+local a=Instance.new("Animation")
+a.AnimationId="rbxassetid://" .. id
+local ok,tr=pcall(function()return rob.animator:LoadAnimation(a)end)
+if not ok or not tr then M.say("Could not load that animation")return end
+rob.track=tr
+pcall(function()tr.Priority=Enum.AnimationPriority.Action4 end)
+pcall(function()tr.Looped=CP.aloop end)
+pcall(function()tr:Play(0.15,1,CP.aspd)end)
+M.say("Playing animation " .. id .. " (R6 animations only)")
+task.delay(2.5,function()
+if rob.track==tr and tr.Length==0 then M.say("Animation did not load. Use a public R6 animation ID.")end
+end)
+end
+function M.animStop()
+local rob=CP.rob
+if rob and rob.track then pcall(function()rob.track:Stop(0.15)end)rob.track=nil M.say("Animation stopped")end
+end
+function M.robFrame(dt)
+local apos,yaw,r,h,c=M.anchor()
+if not apos then return end
+local rob=CP.rob
+if rob and(rob.body~=CP.rbody or rob.scale~=CP.rs or not rob.model.Parent)then M.robDestroy()rob=nil end
+if not rob then rob=M.robBuild(c)CP.rob=rob end
+local S=CP.rs
+local now=os.clock()
+local feet=apos.Y - 3
+if CP.follow=="Me" and r then feet=M.feetY(r,h,c)end
+local face=CFrame.Angles(0,yaw,0)
+local off=face*Vector3.new(CP.rbx,0,CP.rbz)
+local want=Vector3.new(apos.X+off.X,feet+3*S+CP.rby+CP.level,apos.Z+off.Z)
+if not rob.pos then rob.pos=want end
+local mode=CP.rmode
+local moving=false
+if mode=="Mirror" then
+rob.pos=want
+elseif mode=="Follow" then
+local d=want - rob.pos
+local flat=Vector3.new(d.X,0,d.Z)
+if d.Magnitude>250 then rob.pos=want
+else
+if flat.Magnitude>0.5 then
+local stp=math.min(flat.Magnitude,CP.rsp*dt)
+rob.dir=flat.Unit
+rob.pos=rob.pos+rob.dir*stp
+moving=true
+end
+rob.pos=Vector3.new(rob.pos.X,rob.pos.Y+(want.Y - rob.pos.Y)*math.min(1,dt*8),rob.pos.Z)
+end
+end
+local fyaw
+if mode=="Mirror" then fyaw=yaw
+elseif CP.rface=="Target" then
+local pl=CP.pick and CP.pick.get()
+local tr=pl and H.root(pl)
+if tr then local dd=tr.Position - rob.pos fyaw=math.atan2(-dd.X,-dd.Z)end
+elseif CP.rface=="Me" then fyaw=yaw
+elseif moving and rob.dir then fyaw=math.atan2(-rob.dir.X,-rob.dir.Z)end
+if fyaw then
+local dy=(fyaw - rob.yaw+math.pi)%TAU - math.pi
+rob.yaw+=dy*math.min(1,dt*10)
+end
+if CP.apOn and now -(rob.lastAp or 0)>CP.apRate then rob.lastAp=now M.punch()end
+local playing=false
+pcall(function()playing=rob.track~=nil and rob.track.IsPlaying end)
+local P={lift=0,yaw=0,lunge=0}
+if not playing then
+if mode=="Mirror" and c and M.mirror(rob,c)then
+if rob.act then P=M.pose(rob,now,false)P.lift,P.yaw=0,0 end
+else
+P=M.pose(rob,now,moving)
+local mt=rob.motors
+mt.rj.Transform,mt.nk.Transform,mt.rs.Transform,mt.ls.Transform,mt.rh.Transform,mt.lh.Transform=P.rj,P.nk,P.rs,P.ls,P.rh,P.lh
+end
+end
+local base=CFrame.new(rob.pos+Vector3.new(0,P.lift*S,0))*CFrame.Angles(0,rob.yaw+P.yaw,0)
+if mode=="Mirror" and r and not playing then base=CFrame.new(rob.pos)*r.CFrame.Rotation end
+if P.lunge~=0 then base=base*CFrame.new(0,0,-P.lunge*S)end
+rob.hrp.CFrame=base
+if CP.rbody=="Custom" and U.isDynColor(CP.rcol)and now - CP.ct>0.08 then
+CP.ct=now
+for i,p in ipairs(rob.parts)do if p.Name~="HumanoidRootPart" then p.Color=M.colorAt(i,#rob.parts,CP.rcol)end end
+end
+end
+function M.frame(dt)
+if not CP.on then return end
+local dv=((CP.kUp or CP.bUp)and 1 or 0)-((CP.kDown or CP.bDown)and 1 or 0)
+if dv~=0 then CP.level=math.clamp(CP.level+dv*CP.hspeed*dt,-500,5000)end
+if CP.move then CP.phase+=dt*CP.speed end
+if CP.shape=="Robot" then
+if#CP.own>0 then M.clearOwn()end
+M.robFrame(dt)
+return
+end
+if CP.rob then M.robDestroy()end
+local list=M.list()
+local n=#list
+if n==0 then return end
+local apos,yaw,r=M.anchor()
+if not apos then return end
+local sh=CP.shape
+local plat=(sh=="Stairs" or sh=="Carpet")
+if plat or not CP.cen or(CP.cen - apos).Magnitude>150 then CP.cen=apos
+else CP.cen=CP.cen:Lerp(apos,1 - math.exp(-CP.smooth*dt))end
+local cfs
+if sh=="Stairs" then
+if not r then return end
+cfs=M.stairs(n,r)
+if not cfs then return end
+elseif sh=="Carpet" then
+cfs=M.carpet(n,apos)
+else
+cfs={}
+local ay=(sh=="Draw")and CP.drawYaw or yaw
+local base=CFrame.new(CP.cen+Vector3.new(0,CP.level,0))*CFrame.Angles(0,ay,0)*CFrame.new(CP.ox,CP.oy,CP.oz)*CFrame.Angles(math.rad(CP.rx),math.rad(CP.ry),math.rad(CP.rz))
+if sh=="Draw" then
+local pts=M.drawPts(n)
+if not pts then M.say("Draw a shape first (DRAW button below)")return end
+for i=1,n do cfs[i]=base*CFrame.new(pts[i].X*CP.sx,pts[i].Y*CP.sy,0)end
+else
+local f=SH[sh]or SH.Orbit
+for i=1,n do
+local o,rot=f(i - 1,n,CP.rad,CP.phase)
+cfs[i]=base*CFrame.new(o.X*CP.sx,o.Y*CP.sy,o.Z*CP.sz)*(rot or CFrame.identity)
+end
+end
+end
+M.apply(list,cfs,n)
+end
+function M.off()
+CP.on=false
+M.clearOwn()
+M.robDestroy()
+M.release()
+CP.lastList,CP.lastCfs=nil,nil
+CP.cen=nil
+pcall(function()if CP.fold then CP.fold:Destroy()CP.fold=nil end end)
+end
+bind(RunService.Heartbeat,M.frame)
+bind(RunService.Stepped,M.pre)
+local function TOG(text,key,after)
+local set=H.toggle(sc,O(),text,CP[key],function(v)CP[key]=v CP.dirty=true if after then after(v)end end)
+RF[#RF+1]=function()set(CP[key])end
+return set
+end
+local function NUM(text,key,lo,hi,step,dec)
+local f=H.num(sc,O(),text,function()return CP[key]end,function(v)CP[key]=v CP.dirty=true if key=="drawSize" then CP.dLen=nil end end,lo,hi,step,dec)
+if f then RF[#RF+1]=f end
+end
+local function CHIPS(list,key,after)
+local paint=H.chips(sc,O(),list,function()return CP[key]end,function(v)CP[key]=v CP.dirty=true if after then after(v)end end)
+RF[#RF+1]=paint
+return paint
+end
+local function HDR(t)H.header(sc,O(),t)end
+local function colorRow(text,key)
+local f=mk("Frame",{Size=UDim2.new(1,0,0,30),BackgroundColor3=SURF,LayoutOrder=O()},sc)
+corner(f,8)
+lab(f,text,11,FONTB,TXT,UDim2.fromOffset(10,0),UDim2.new(1,-100,1,0))
+local pv=mk("TextButton",{AnchorPoint=Vector2.new(1,0.5),Position=UDim2.new(1,-8,0.5,0),Size=UDim2.fromOffset(70,22),BorderSizePixel=0,Text="",Font=FONTK,TextSize=9,TextColor3=WHITE,AutoButtonColor=false},f)
+corner(pv,7)
+local function sh()
+pv.BackgroundColor3=U.colorAt(CP[key])or WHITE
+pv.Text=(CP[key]=="RB" and "RAINBOW")or(tostring(CP[key]):sub(1,2)=="G:" and "GRADIENT")or ""
+end
+pv.MouseButton1Click:Connect(function()
+click()
+if U.openPicker then U.openPicker(text,CP[key],function(h)CP[key]=h CP.dirty=true CP.dLen=CP.dLen sh()end)end
+end)
+task.spawn(function()while alive()and f.Parent do task.wait(0.15)if U.isDynColor(CP[key])then sh()end end end)
+sh()
+RF[#RF+1]=sh
+end
+local function keyBtn(label,key)
+local b
+b=H.button(sc,O(),label .. ": " .. CP[key].Name .. "  (tap to change)",function()
+b.Text=label .. ": press a key..."
+local cn
+cn=UIS.InputBegan:Connect(function(i)
+if i.UserInputType==Enum.UserInputType.Keyboard then
+cn:Disconnect()
+CP[key]=i.KeyCode
+b.Text=label .. ": " .. i.KeyCode.Name .. "  (tap to change)"
+end
+end)
+task.delay(6,function()pcall(function()cn:Disconnect()end)b.Text=label .. ": " .. CP[key].Name .. "  (tap to change)" end)
+end)
+end
+local setOnUI
+local function refreshAll()for _,f in ipairs(RF)do pcall(f)end end
+function M.setShape(s)
+CP.shape=s
+CP.dirty=true
+CP.cen=nil
+if s=="Stairs" or s=="Carpet" then M.place()end
+if s=="Robot" then
+if CP.src~="own" then CP.src="own" M.release()refreshAll()end
+else
+M.robDestroy()
+end
+if s=="Draw" and not CP.draw then M.say("Press DRAW below, then drag on the screen to draw your shape")end
+if s=="Stairs" then M.say("Stairs: walk forward / jump. The rear step jumps to the front. Min 2 parts. Press PLACE HERE to re-aim.")end
+if s=="Carpet" then M.say("Carpet: stand on it. Raise / lower with your keys. PLACE HERE re-levels it to your feet.")end
+end
+HDR("POWER")
+setOnUI=TOG("ON","on",function(v)if not v then M.off()else CP.cen=nil if CP.shape=="Stairs" or CP.shape=="Carpet" then M.place()end end end)
+CHIPS({{"own","Own parts (always works)"},{"world","World parts (loose)"}},"src",function(v)if v=="own" then M.release()else M.clearOwn()M.say("World parts: add parts below (tap / grab nearest).")end end)
+CHIPS({{"Me","Follow me"},{"Player","Follow player"},{"Mouse","Mouse"},{"Freeze","Freeze"},{"Camera","In front of camera"}},"follow",function(v)
+if v=="Freeze" then M.freezeHere()elseif v=="Mouse" then local cam=workspace.CurrentCamera CP.fixedYaw=cam and M.yawOf(cam.CFrame)or 0 end
+CP.cen=nil
+end)
+HDR("TARGET PLAYER (type a name, or PICK / NEXT)")
+CP.pick=H.picker(sc,O())
+H.button(sc,O(),"FREEZE HERE (keep the formation where it is now)",function()
+M.freezeHere()
+CP.follow="Freeze"
+refreshAll()
+M.say("Frozen at this spot")
+end)
+NUM("Camera distance (Follow: in front of camera)","camDist",3,300,2,0)
+local PRE={
+{"Halo",{shape="Orbit",count=10,rad=2.6,oy=3.7,pw=0.5,ph=0.5,pd=0.5,col="FFD76A",speed=1.5}},
+{"Orbit",{shape="Orbit",count=8,rad=7,col="6EC8FF",speed=2,trail=true}},
+{"Wings",{shape="Wings",count=26,rad=9,pw=0.7,ph=0.7,pd=0.7,col="FFFFFF",speed=1}},
+{"Shield",{shape="Sphere",count=48,rad=6,pw=0.6,ph=0.6,pd=0.6,tr=0.35,col="5BE3B8",speed=0.8}},
+{"Tornado",{shape="Tornado",count=48,rad=7,pw=0.7,ph=0.7,pd=0.7,col="B8C4D6",speed=1.5}},
+{"Heart",{shape="Heart",count=40,rad=7,oz=-9,oy=3,pw=0.7,ph=0.7,pd=0.7,col="FF4D7D",speed=1.2}},
+{"Rainbow",{shape="Orbit",count=14,rad=5,col="RB",trail=true,speed=3,pw=0.7,ph=0.7,pd=0.7}},
+{"Galaxy",{shape="Helix",count=40,rad=7,col="G:7B5CFF,2EC8FF,FF5CC8",speed=1.2,pw=0.6,ph=0.6,pd=0.6,trail=true}},
+}
+HDR("AURA PRESETS (one tap)")
+local plist={}
+for _,p in ipairs(PRE)do plist[#plist+1]={p[1],p[1]}end
+local ppaint=H.chips(sc,O(),plist,function()return CP.presetSel end,function(name)
+for _,p in ipairs(PRE)do
+if p[1]==name then
+for k,v in pairs(DEF)do CP[k]=v end
+for k,v in pairs(p[2])do CP[k]=v end
+CP.presetSel=name
+CP.src="own"
+M.release()
+M.setShape(p[2].shape)
+if not CP.on then CP.on=true setOnUI(true)end
+refreshAll()
+end
+end
+end)
+RF[#RF+1]=ppaint
+HDR("SHAPE")
+CHIPS({{"Orbit","Orbit"},{"Ring","Ring"},{"Sphere","Sphere"},{"Heart","Love"},{"Tornado","Tornado"},{"Helix","Helix"},{"Wings","Wings"},{"Stairs","Stairs"},{"Carpet","Carpet"},{"Draw","Draw"},{"Robot","Robot"}},"shape",function(v)CP.presetSel=nil M.setShape(v)end)
+NUM("Part count","count",1,300,1,0)
+NUM("Radius / size of shape","rad",1,120,1,1)
+NUM("Scale X (width)","sx",0.1,10,0.1,1)
+NUM("Scale Y (height)","sy",0.1,10,0.1,1)
+NUM("Scale Z (depth)","sz",0.1,10,0.1,1)
+NUM("Tilt X (deg)","rx",-180,180,15,0)
+NUM("Tilt Y (deg)","ry",-180,180,15,0)
+NUM("Tilt Z (deg)","rz",-180,180,15,0)
+NUM("Offset X (right)","ox",-150,150,1,1)
+NUM("Offset Y (up)","oy",-150,150,1,1)
+NUM("Offset Z (back / - = front)","oz",-150,150,1,1)
+NUM("Part size X","pw",0.2,40,0.2,1)
+NUM("Part size Y","ph",0.2,40,0.2,1)
+NUM("Part size Z","pd",0.2,40,0.2,1)
+HDR("MOTION")
+TOG("Parts move (off = static / frozen shape)","move")
+NUM("Move speed","speed",0,20,0.5,1)
+NUM("Follow smoothness (higher = tighter)","smooth",2,60,1,0)
+HDR("HEIGHT (raise / lower the parts)")
+NUM("Raise / lower speed (studs per sec)","hspeed",1,120,1,0)
+do
+local row=mk("Frame",{Size=UDim2.new(1,0,0,30),BackgroundTransparency=1,LayoutOrder=O()},sc)
+local function hold(txt,pos,key)
+local b=mk("TextButton",{Size=UDim2.new(0.5,-3,1,0),Position=pos,BackgroundColor3=SURF2,Text=txt,Font=FONTK,TextSize=11,TextColor3=TXT,AutoButtonColor=false},row)
+corner(b,8)
+b.MouseButton1Down:Connect(function()CP[key]=true end)
+b.MouseButton1Up:Connect(function()CP[key]=false end)
+b.MouseLeave:Connect(function()CP[key]=false end)
+end
+hold("RAISE (hold)  \u{25B2}",UDim2.new(0,0,0,0),"bUp")
+hold("LOWER (hold)  \u{25BC}",UDim2.new(0.5,3,0,0),"bDown")
+end
+keyBtn("Raise key","upKey")
+keyBtn("Lower key","downKey")
+H.button(sc,O(),"RESET HEIGHT",function()CP.level=0 end)
+HDR("LOOK")
+colorRow("Part color","col")
+TOG("Neon glow","neon")
+NUM("Transparency","tr",0,1,0.05,2)
+TOG("Trail behind each part","trail")
+TOG("Solid (you can stand on parts / they collide)","collide")
+HDR("STAIRS / CARPET")
+CHIPS({{"Up","Up"},{"Down","Down"},{"Flat","Flat bridge"}},"stDir")
+NUM("Step width","stW",1,40,1,1)
+NUM("Step depth","stD",1,20,0.5,1)
+NUM("Step rise (height per step)","stR",0,6,0.1,1)
+NUM("Step thickness","stT",0.2,4,0.1,1)
+NUM("Carpet tile size","cpS",1,30,1,1)
+H.button(sc,O(),"PLACE HERE (aim the camera where stairs should go)",function()
+M.place()
+CP.dirty=true
+M.say("Placed at your feet, facing where the camera looks")
+end,true)
+HDR("DRAW YOUR OWN SHAPE")
+NUM("Drawing size (studs)","drawSize",2,120,1,0)
+function M.startDraw()
+local g
+pcall(function()g=Instance.new("ScreenGui")g.Name="RVdraw" g.ResetOnSpawn=false g.IgnoreGuiInset=true g.DisplayOrder=200 g.Parent=(gethui and gethui())or game:GetService("CoreGui")end)
+if not g then g=Instance.new("ScreenGui")g.Name="RVdraw" g.ResetOnSpawn=false g.IgnoreGuiInset=true g.DisplayOrder=200 g.Parent=player:WaitForChild("PlayerGui")end
+local ov=mk("TextButton",{Size=UDim2.fromScale(1,1),BackgroundColor3=C3n(0,0,0),BackgroundTransparency=0.55,Text="Draw with your finger / mouse, release to finish",Font=FONTK,TextSize=16,TextColor3=WHITE,AutoButtonColor=false,Active=true},g)
+local cancel=mk("TextButton",{Position=UDim2.new(1,-100,0,14),Size=UDim2.fromOffset(86,32),BackgroundColor3=C3n(220,70,70),Text="CANCEL",Font=FONTK,TextSize=12,TextColor3=WHITE,ZIndex=5},ov)
+corner(cancel,8)
+local pts,dots,down={},{},false
+local function add(pos)
+local last=pts[#pts]
+if last and(pos.X - last[1])^2+(pos.Y - last[2])^2<64 then return end
+if#pts>=400 then return end
+pts[#pts+1]={pos.X,pos.Y}
+local d=mk("Frame",{Size=UDim2.fromOffset(7,7),Position=UDim2.fromOffset(pos.X - 3,pos.Y - 3),BackgroundColor3=C3n(255,255,255),BorderSizePixel=0},ov)
+corner(d,4)
+end
+local function close()pcall(function()g:Destroy()end)end
+cancel.MouseButton1Click:Connect(function()close()end)
+local function finish()
+if#pts<4 then close()M.say("Drawing too short - try again")return end
+local x0,x1,y0,y1=1e9,-1e9,1e9,-1e9
+for _,p in ipairs(pts)do x0,x1,y0,y1=math.min(x0,p[1]),math.max(x1,p[1]),math.min(y0,p[2]),math.max(y1,p[2])end
+local ext=math.max(x1 - x0,y1 - y0,1)
+local cx,cy=(x0+x1)/2,(y0+y1)/2
+local out={}
+for i,p in ipairs(pts)do out[i]={(p[1]- cx)/(ext/2),-(p[2]- cy)/(ext/2)}end
+CP.draw,CP.dLen=out,nil
+local cam=workspace.CurrentCamera
+CP.drawYaw=cam and M.yawOf(cam.CFrame)or 0
+CP.shape="Draw"
+CP.dirty,CP.cen,CP.presetSel=true,nil,nil
+if not CP.on then CP.on=true setOnUI(true)end
+refreshAll()
+close()
+M.say("Shape drawn (" ..#out .. " points). Change Part count / Drawing size to refine.")
+end
+ov.InputBegan:Connect(function(i)
+if i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch then down=true add(i.Position)end
+end)
+ov.InputChanged:Connect(function(i)
+if down and(i.UserInputType==Enum.UserInputType.MouseMovement or i.UserInputType==Enum.UserInputType.Touch)then add(i.Position)end
+end)
+ov.InputEnded:Connect(function(i)
+if down and(i.UserInputType==Enum.UserInputType.MouseButton1 or i.UserInputType==Enum.UserInputType.Touch)then down=false finish()end
+end)
+task.delay(60,close)
+end
+H.button(sc,O(),"DRAW SHAPE (drag on the screen)",function()M.startDraw()end,true)
+H.button(sc,O(),"CLEAR DRAWING",function()CP.draw,CP.dLen=nil,nil M.say("Drawing cleared")end)
+HDR("ROBOT (shape: Robot - R6 dummy made of parts)")
+CHIPS({{"Follow","Follow me (walks)"},{"Mirror","Mirror my moves"},{"Stay","Stay (manual)"}},"rmode")
+CHIPS({{"Noob","Noob"},{"Dummy","Dummy"},{"Mine","My colors"},{"Custom","Custom"}},"rbody")
+colorRow("Robot custom color","rcol")
+NUM("Robot scale","rs",0.3,8,0.1,1)
+NUM("Robot offset X (right)","rbx",-60,60,1,1)
+NUM("Robot offset Y (up)","rby",-30,60,1,1)
+NUM("Robot offset Z (back)","rbz",-60,60,1,1)
+NUM("Robot walk speed","rsp",2,80,2,0)
+CHIPS({{"Move","Face movement"},{"Me","Face like me"},{"Target","Face target"}},"rface")
+CHIPS({{"Idle","Idle / walk"},{"Wave","Wave"},{"Dance","Dance"},{"TPose","T-Pose"},{"Sit","Sit"},{"Spin","Spin"}},"rbase")
+H.button(sc,O(),"PUNCH (alternates arms)",function()M.punch()end,true)
+H.button(sc,O(),"KICK",function()M.kick()end)
+keyBtn("Punch key","punchKey")
+TOG("Auto punch","apOn")
+NUM("Auto punch every (sec)","apRate",0.3,10,0.1,1)
+H.button(sc,O(),"PLACE ROBOT AT MY SPOT (Stay mode)",function()if CP.rob then CP.rob.pos=nil end end)
+HDR("ROBOT ANIMATION BY ID (R6 animation)")
+do
+local row=mk("Frame",{Size=UDim2.new(1,0,0,30),BackgroundTransparency=1,LayoutOrder=O()},sc)
+local box=mk("TextBox",{Size=UDim2.new(1,-130,1,0),BackgroundColor3=SURF,Text="",PlaceholderText="animation ID (numbers)",PlaceholderColor3=DIM,Font=FONTB,TextSize=11,TextColor3=TXT,ClearTextOnFocus=false,TextXAlignment=Enum.TextXAlignment.Left},row)
+corner(box,8)
+mk("UIPadding",{PaddingLeft=UDim.new(0,8)},box)
+box:GetPropertyChangedSignal("Text"):Connect(function()CP.aid=box.Text end)
+local pb=mk("TextButton",{AnchorPoint=Vector2.new(1,0),Position=UDim2.new(1,-64,0,0),Size=UDim2.fromOffset(60,30),BackgroundColor3=TXT,Text="PLAY",Font=FONTK,TextSize=10,TextColor3=INK,AutoButtonColor=false},row)
+corner(pb,8)
+local sb=mk("TextButton",{AnchorPoint=Vector2.new(1,0),Position=UDim2.new(1,0,0,0),Size=UDim2.fromOffset(60,30),BackgroundColor3=SURF2,Text="STOP",Font=FONTK,TextSize=10,TextColor3=TXT,AutoButtonColor=false},row)
+corner(sb,8)
+pb.MouseButton1Click:Connect(function()click()CP.aid=box.Text M.animPlay()end)
+sb.MouseButton1Click:Connect(function()click()M.animStop()end)
+local presets={{"128777973","Wave"},{"182435998","Dance"},{"129423131","Laugh"},{"129423030","Cheer"},{"128853357","Point"}}
+local pl2={}
+for _,p in ipairs(presets)do pl2[#pl2+1]={p[1],p[2]}end
+H.chips(sc,O(),pl2,function()return nil end,function(id)box.Text=id CP.aid=id M.animPlay()end)
+end
+NUM("Animation speed","aspd",0.1,5,0.1,1)
+TOG("Loop animation","aloop")
+HDR("WORLD PARTS (loose / dropped parts)")
+local function useWorld()
+if CP.src~="world" then CP.src="world" M.clearOwn()end
+if not CP.on then CP.on=true setOnUI(true)end
+if CP.shape=="Robot" then CP.shape="Orbit" end
+refreshAll()
+end
+TOG("Tap parts in the world to add them","tap",function(v)if v then M.say("Tap loose parts to add them one by one")end end)
+bind(UIS.InputBegan,function(input,gp)
+if input.UserInputType==Enum.UserInputType.Touch then CP.tpos=input.Position end
+if gp then return end
+if input.KeyCode==CP.upKey then CP.kUp=true elseif input.KeyCode==CP.downKey then CP.kDown=true end
+if input.KeyCode==CP.punchKey and CP.on and CP.shape=="Robot" then M.punch()end
+if not CP.tap then return end
 if input.UserInputType~=Enum.UserInputType.MouseButton1 and input.UserInputType~=Enum.UserInputType.Touch then return end
 local cam=workspace.CurrentCamera
 local ray=cam:ScreenPointToRay(input.Position.X,input.Position.Y)
 local rp=RaycastParams.new()
 rp.FilterType=Enum.RaycastFilterType.Exclude
-rp.FilterDescendantsInstances={player.Character}
+rp.FilterDescendantsInstances=M.filter(player.Character)
 local res=workspace:Raycast(ray.Origin,ray.Direction*3000,rp)
-if res and res.Instance then grab(res.Instance)end
+if res and res.Instance and M.adopt(res.Instance)then useWorld()M.say("Added: " .. res.Instance.Name .. " (" ..#CP.world .. " parts)")end
 end)
-H.button(sc,4,"GRAB NEAREST DROPPED TOOL",function()
-local _,_,r=H.me()
+bind(UIS.InputEnded,function(input)
+if input.KeyCode==CP.upKey then CP.kUp=false elseif input.KeyCode==CP.downKey then CP.kDown=false end
+end)
+bind(UIS.InputChanged,function(i)
+if i.UserInputType==Enum.UserInputType.Touch then CP.tpos=i.Position end
+if CP.on and CP.follow=="Camera" and i.UserInputType==Enum.UserInputType.MouseWheel then
+CP.camDist=math.clamp(CP.camDist+i.Position.Z*3,3,300)
+end
+end)
+NUM("Grab how many nearby loose parts","gn",1,300,1,0)
+NUM("Grab radius (studs)","gr",5,500,5,0)
+H.button(sc,O(),"GRAB NEARBY LOOSE PARTS",function()
+local r=M.root()
+if not r then return end
+local rp=OverlapParams.new()
+rp.FilterType=Enum.RaycastFilterType.Exclude
+rp.FilterDescendantsInstances=M.filter(player.Character)
+local found={}
+local ok,parts=pcall(function()return workspace:GetPartBoundsInRadius(r.Position,CP.gr,rp)end)
+if not ok then parts=workspace:GetDescendants()end
+for _,d in ipairs(parts)do
+if d:IsA("BasePart")and not d:IsA("Terrain")and not d.Anchored and d.Size.Magnitude<40 and not isChar(d)and not CP.saved[d]then
+found[#found+1]={d,(d.Position - r.Position).Magnitude}
+end
+end
+table.sort(found,function(a,b)return a[2]<b[2]end)
+local got=0
+for i=1,math.min(CP.gn,#found)do if M.adopt(found[i][1])then got+=1 end end
+if got>0 then useWorld()M.say("Grabbed " .. got .. " parts (" ..#CP.world .. " total)")else M.say("No loose parts found nearby")end
+end,true)
+H.button(sc,O(),"GRAB NEAREST DROPPED TOOL",function()
+local r=M.root()
 if not r then return end
 local best,bd
 for _,d in ipairs(workspace:GetChildren())do
-local h=d:IsA("Tool")and d:FindFirstChild("Handle")
-if h and not h.Anchored then
-local m=(h.Position - r.Position).Magnitude
-if not bd or m<bd then best,bd=h,m end
+local hd=d:IsA("Tool")and d:FindFirstChild("Handle")
+if hd and not hd.Anchored then
+local m=(hd.Position - r.Position).Magnitude
+if not bd or m<bd then best,bd=hd,m end
 end
 end
-if best then grab(best)else say("No dropped tool found")end
+if best and M.adopt(best)then useWorld()M.say("Grabbed tool: " .. best.Parent.Name)else M.say("No dropped tool found")end
 end)
-H.button(sc,5,"GRAB NEAREST LOOSE PART",function()
-local _,_,r=H.me()
-if not r then return end
-local best,bd
-for _,d in ipairs(workspace:GetDescendants())do
-if d:IsA("BasePart")and not d.Anchored and d.Size.Magnitude<40 and not isChar(d)then
-local m=(d.Position - r.Position).Magnitude
-if not bd or m<bd then best,bd=d,m end
-end
-end
-if best then grab(best)else say("No loose part found")end
-end)
-H.header(sc,6,"CONTROL")
-H.num(sc,7,"Distance (pull / push)",function()return T.dist end,function(v)T.dist=v end,3,300,2,nil,5000)
-H.num(sc,8,"Follow speed",function()return T.pull end,function(v)T.pull=v end,2,60,2)
-H.num(sc,9,"Throw power",function()return T.power end,function(v)T.power=v end,20,5000,50,nil,100000)
-H.button(sc,10,"THROW (where the camera looks)",function()
-if not T.part then say("Nothing held")return end
+NUM("Throw power","power",20,5000,50,0)
+H.button(sc,O(),"THROW (where the camera looks)",function()
+if#CP.world==0 then M.say("No world parts held")return end
 local cam=workspace.CurrentCamera
-release(cam.CFrame.LookVector*T.power)
-say("Thrown")
+M.release(cam.CFrame.LookVector*CP.power)
+M.say("Thrown")
 end,true)
-local tp=H.picker(sc,11)
-H.button(sc,12,"THROW AT TARGET PLAYER",function()
-local q=T.part
-local pl=tp.get()
+H.button(sc,O(),"THROW AT TARGET PLAYER",function()
+if#CP.world==0 then M.say("No world parts held")return end
+local pl=CP.pick and CP.pick.get()
 local tr=pl and H.root(pl)
-if not q then say("Nothing held")return end
-if not tr then say("Pick a target")return end
-local d=(tr.Position - q.Position).Unit
-release(d*T.power)
-say("Thrown at " .. pl.DisplayName)
+if not tr then M.say("Pick a target player first")return end
+local cen=CP.cen or tr.Position
+M.release((tr.Position - cen).Unit*CP.power)
+M.say("Thrown at " .. pl.DisplayName)
 end)
-H.button(sc,13,"DROP",function()release()say("Dropped")end)
-bind(UserInputService.InputChanged,function(i)
-if T.part and i.UserInputType==Enum.UserInputType.MouseWheel then
-T.dist=math.clamp(T.dist+i.Position.Z*3,3,300)
-end
+H.button(sc,O(),"DROP ALL / REMOVE ALL",function()
+M.release()
+M.clearOwn()
+M.robDestroy()
+M.say("Dropped / removed")
 end)
-task.spawn(function()while alive()do task.wait(1)end pcall(release)end)
+task.spawn(function()while alive()do task.wait(1)end pcall(M.off)pcall(function()local g=(gethui and gethui()or game:GetService("CoreGui")):FindFirstChild("RVdraw")if g then g:Destroy()end end)end)
 end
 end
 do
@@ -30426,6 +31324,24 @@ local function bounce(ch)
 local an=ch and ch:FindFirstChild("Animate")
 if an then an.Disabled=true task.wait()an.Disabled=false end
 end
+local function ghostApply()
+local cl=IV.clone
+if not cl then return end
+local tr=tonumber(state.ghostTr)or 0.5
+IV.orig=IV.orig or{}
+for _,d in ipairs(cl:GetDescendants())do
+if d:IsA("BasePart")or d:IsA("Decal")then
+if d.Name~="HumanoidRootPart" then
+local o=IV.orig[d]
+if o==nil then o=d.Transparency IV.orig[d]=o end
+if o<0.99 then
+local want=math.max(o,tr)
+if d.Transparency~=want then d.Transparency=want end
+end
+end
+end
+end
+end
 local function off(kill)
 if not IV.on or IV.busy then return end
 IV.busy=true
@@ -30451,7 +31367,7 @@ pcall(bounce,real)
 if kill then local h=real:FindFirstChildOfClass("Humanoid")if h then h.Health=0 end end
 end
 if clone then pcall(function()clone:Destroy()end)end
-IV.real,IV.clone=nil,nil
+IV.real,IV.clone,IV.orig=nil,nil,nil
 task.delay(0.5,function()IV.flag=false end)
 IV.busy=false
 setStatus("Visible")
@@ -30486,7 +31402,15 @@ if cr then cr.CFrame=IV.cf end
 player.Character=clone
 camTo(clone)
 pcall(bounce,clone)
-IV.on,IV.real,IV.clone,IV.conns=true,real,clone,{}
+IV.on,IV.real,IV.clone,IV.conns,IV.orig=true,real,clone,{},{}
+pcall(ghostApply)
+do
+local acc=0
+IV.conns[#IV.conns+1]=RunService.Heartbeat:Connect(function(dt)
+acc+=dt
+if acc>=0.25 then acc=0 pcall(ghostApply)end
+end)
+end
 local ch=clone:FindFirstChildOfClass("Humanoid")
 if ch then IV.conns[#IV.conns+1]=ch.Died:Connect(function()off(true)end)end
 IV.conns[#IV.conns+1]=RunService.Stepped:Connect(function()
@@ -30515,6 +31439,7 @@ switchRow(sc,nxt(),"Invisible (R6 / R15)","invisOn",function(v)
 if v then task.spawn(function()on()if not IV.on then state.invisOn=false pcall(function()syncAll()end)end end)else off(false)end
 end)
 U.invRefresh=function()state.invisOn=IV.on pcall(function()syncAll()end)end
+sliderRow(sc,nxt(),"Ghost transparency while invisible",0,0.9,function()return tonumber(state.ghostTr)or 0.5 end,function(v)state.ghostTr=v saveSoon()end,function(v)return math.floor(v*100+0.5).. "%" end,sc)
 statL=stat("inv")
 note("Infinite-Yield style: your real body is sent far into the sky and frozen, you play a local copy. Others cannot see you. Turn off to return to the same spot. If a game kicks for position, turn off.",40)
 end)()
