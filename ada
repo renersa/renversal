@@ -352,7 +352,7 @@ local state = {
 	-- crosshair (chKind: "plus" / "dot" / ID gambar) + cursor (curKind: "default" / ID gambar)
 	chOn = false, chStyle = 1, chCustom = "", chSize = 24, chX = 0, chY = 0, chColor = "FFFFFF", chKind = "plus", chSaved = {},
 	curOn = false, curStyle = 1, curCustom = "", curSize = 32, curColor = "FFFFFF", curKind = "default", curSaved = {},
-	musicSpeed = 1, shine = 1, lastReqSeen = 0, lastHistSeen = 0, espCustom = false, espCol = "FF5050", saveMode = "device", ckMulti = false, hk = {}, cmdPrefix = ";", cmdAlias = {}, presets = {}, wl = {}, bl = {}, wlMode = "off", antiKick = true, akRejoin = true, chatSpy = true, instPP = false, antiSit = false, renderOn = false, renderDist = 0, invDist = 20000000, invClient = false, invPct = 50, afkRender = true, modWarn = false, dodge = "Off", spyAuto = true, skyMode = "off", skyIds = "", polish = false, polishAmt = 25, polishStyle = 2, polishFuture = false, fflList = {}, fflAuto = false, phys = false, physThr = 120, cdZero = false, cdWait = false, cdMin = 0.6, abRec = false, abGap = 0.5, microFx = true, secOpen = {},
+	musicSpeed = 1, shine = 1, lastReqSeen = 0, lastHistSeen = 0, espCustom = false, espCol = "FF5050", saveMode = "device", ckMulti = false, hk = {}, cmdPrefix = ";", cmdAlias = {}, presets = {}, wl = {}, bl = {}, wlMode = "off", antiKick = true, akRejoin = true, chatSpy = true, instPP = false, antiSit = false, renderOn = false, renderDist = 0, invDist = 20000000, invClient = false, invPct = 50, afkRender = true, modWarn = false, dodge = "Off", spyAuto = true, skyMode = "off", skyIds = "", polish = false, polishAmt = 25, polishStyle = 2, polishFuture = false, fflList = {}, fflAuto = false, phys = false, physThr = 120, cdZero = false, cdWait = false, cdMin = 0.6, abRec = false, abGap = 0.5, microFx = true, secOpen = {}, mapScripts = true, mapLight = false, mapCap = 60000,
 	emotes = { r15 = {}, r6 = {}, packs = {} }, vkKeys = "Q", vkScale = 1,
 }
 local MODES = { "My kills", "Nearby", "Everywhere", "None" }
@@ -367,7 +367,7 @@ local SAVE_FILE = "ucb20ce_" .. tostring(game:GetService("Players").LocalPlayer.
 local OLD_FILE = "vcb20ce.json"
 local custom, favs = {}, {}
 local SAVE_KEYS = { "theme", "range", "volSfx", "volClick", "volMusic", "music", "intensity", "sound", "shake", "cinema", "banner", "feedOn", "blur", "random", "mode", "musicCustom", "musicId", "musicSaved", "ytKey", "audPl", "outAuto", "outA", "outB", "outThick", "outAnim", "bgCustom", "bgA", "bgB", "bgRot", "bgTrans", "fbLast", "uiScale", "uiX", "uiY", "lang", "scripts", "execIdx", "notes", "selected", "cat", "kills", "hud", "aura", "daytime", "dayDate", "clock12", "weather", "lastAnn", "autoExec", "watch", "joinNote", "lookHist", "lookSaved", "lookSeen", "scanSpeed", "scanInstant", "autoTr", "scanCrossN", "fov", "grav", "zoomFree", "hopSess", "perf", "afk", "hopMode", "hopMax", "hopLow", "hopRegion", "fullbright", "nofog", "ctp", "ctpMode", "shader", "shMode", "wpAuto", "wp", "fly", "flySpeed", "noclip", "moveOn", "walk", "jump", "infJump", "esp", "espName", "espDist", "espHp", "hudX", "hudY", "uiW", "uiH", "aiProv", "aiModel", "aiUsed", "aiLock", "aiDay", "themePack", "kbOpen", "kbQuick", "kbTest", "kbFly", "macroOn", "targetNotes", "quickItems", "bgImageId", "bgShine", "titleShine", "logoOld", "slOn", "antiFall", "themeSet", "accFollow", "themeNote", "chOn", "chStyle", "chCustom", "chSize", "chX", "chY", "chColor", "curOn", "curStyle", "curCustom", "curSize", "curColor", "chKind", "chSaved", "curKind", "curSaved", "musicSpeed", "shine", "lastReqSeen", "ccatCustom" }
-for _, k in ipairs({ "aiCount", "wxLoc", "lastHistSeen", "espCustom", "espCol", "ckMulti", "hk", "peerNote", "tpAfter", "antiFling", "flingReturn", "ccatSaves", "ccatFav", "chatDev", "chatSeen", "chatNotif", "chatGSeen", "exPromoOff", "ccatT", "ccatLast", "ccatAuto", "flingPose", "espIcon", "espHl", "espTeam", "espTeamCol", "animSaved", "flingMode", "thirdPerson", "fpAsk", "geoShare", "cfgAuto", "cfgLast", "emotes", "vkKeys", "vkScale", "quickOn", "fbName", "showcase", "cmdPrefix", "cmdAlias", "presets", "wl", "bl", "wlMode", "antiKick", "akRejoin", "chatSpy", "instPP", "antiSit", "renderOn", "renderDist", "invDist", "invClient", "invPct", "afkRender", "modWarn", "dodge", "spyAuto", "skyMode", "skyIds", "polish", "polishAmt", "polishStyle", "polishFuture", "fflList", "fflAuto", "phys", "physThr", "cdZero", "cdWait", "cdMin", "abRec", "abGap", "microFx", "secOpen" }) do SAVE_KEYS[#SAVE_KEYS + 1] = k end
+for _, k in ipairs({ "aiCount", "wxLoc", "lastHistSeen", "espCustom", "espCol", "ckMulti", "hk", "peerNote", "tpAfter", "antiFling", "flingReturn", "ccatSaves", "ccatFav", "chatDev", "chatSeen", "chatNotif", "chatGSeen", "exPromoOff", "ccatT", "ccatLast", "ccatAuto", "flingPose", "espIcon", "espHl", "espTeam", "espTeamCol", "animSaved", "flingMode", "thirdPerson", "fpAsk", "geoShare", "cfgAuto", "cfgLast", "emotes", "vkKeys", "vkScale", "quickOn", "fbName", "showcase", "cmdPrefix", "cmdAlias", "presets", "wl", "bl", "wlMode", "antiKick", "akRejoin", "chatSpy", "instPP", "antiSit", "renderOn", "renderDist", "invDist", "invClient", "invPct", "afkRender", "modWarn", "dodge", "spyAuto", "skyMode", "skyIds", "polish", "polishAmt", "polishStyle", "polishFuture", "fflList", "fflAuto", "phys", "physThr", "cdZero", "cdWait", "cdMin", "abRec", "abGap", "microFx", "secOpen", "mapScripts", "mapLight", "mapCap", "sbHit", "sbLoop", "sbAnti", "sbHl", "sbView", "sbReset", "sbKill" }) do SAVE_KEYS[#SAVE_KEYS + 1] = k end
 local U -- (diisi nanti) dipakai saveCfg untuk sinkron akun
 local function cfgTable()
 	local d = { custom = custom, favs = favs }
@@ -8812,13 +8812,14 @@ U.boot = function()
 			while alive() and not killed and state.esp do
 				local mine = myRoot()
 				for _, pl in ipairs(Players:GetPlayers()) do
+					local okp = pcall(function()
 					local ch = pl ~= player and pl.Character
-					local head = ch and ch:FindFirstChild("Head")
+					local head = ch and (ch:FindFirstChild("Head") or ch:FindFirstChild("HumanoidRootPart") or ch.PrimaryPart)
 					local o = espObj[pl]
 					local mate = pl.Team ~= nil and pl.Team == player.Team
 					if mate and state.espTeam == false then head = nil end
 					if ch and head then
-						if not o or not o.hl.Parent or o.ch ~= ch then
+						if not o or not o.hl.Parent or not o.bb.Parent or o.ch ~= ch or o.bb.Parent ~= head or o.hl.Parent ~= ch or not o.bb:FindFirstChild("L") then
 							if o then pcall(function() o.hl:Destroy() o.bb:Destroy() end) end
 							local hl = tagged("Highlight")
 							hl.FillColor, hl.OutlineColor = C3(255, 60, 60), WHITE
@@ -8900,8 +8901,17 @@ U.boot = function()
 						pcall(function() o.hl:Destroy() o.bb:Destroy() end)
 						espObj[pl] = nil
 					end
+					end)
+					if not okp then
+						-- one broken player must never stop ESP for everyone: drop this entry, it is rebuilt next tick
+						local o2 = espObj[pl]
+						if o2 then pcall(function() o2.hl:Destroy() o2.bb:Destroy() end) espObj[pl] = nil end
+					end
 				end
-				task.wait(0.3)
+				for pl2, o2 in pairs(espObj) do
+					if not pl2.Parent then pcall(function() o2.hl:Destroy() o2.bb:Destroy() end) espObj[pl2] = nil end
+				end
+				task.wait(0.25)
 			end
 			espClear()
 			espOn = false
@@ -18742,7 +18752,7 @@ local function buildUI()
 	-- ===== TOOLS: kalkulator, tic tac toe, executor =====
 	local function __buildTools()
 		pageTools = mk("Frame", { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Visible = false }, body)
-		local TOOLS = { "Kalkulator", "Tic Tac Toe", "Reaction", "Memory", "RPS", "Guess Number", "Simon", "Arena", "Whack", "Executor", "Search script", "Catatan", "Timer", "Info", "Chat", "Pemain", "Cepat", "UI Detector", "AI", "Translate", "Weather", "Audio", "Images", "Video", "YouTube", "Fling", "Animation", "Macro", "Visual", "ESP Part", "Bring Part", "Control Part", "Combat", "Annoy", "Extras" }
+		local TOOLS = { "Kalkulator", "Tic Tac Toe", "Reaction", "Memory", "RPS", "Guess Number", "Simon", "Arena", "Whack", "Executor", "Search script", "Catatan", "Timer", "Info", "Chat", "Pemain", "Cepat", "UI Detector", "AI", "Translate", "Weather", "Audio", "Images", "Video", "YouTube", "Fling", "Seat Bring", "Animation", "Macro", "Visual", "ESP Part", "Bring Part", "Control Part", "Combat", "Annoy", "Extras" }
 		local function say(t) if U.note then U.note(t) end end
 		local tPages, tPills, tCur = {}, {}, "Kalkulator"
 		local function styleTools()
@@ -18752,7 +18762,7 @@ local function buildUI()
 			end
 		end
 		restyle[#restyle + 1] = styleTools
-		local TW = { ["Weather"] = 62, ["Kalkulator"] = 84, ["Tic Tac Toe"] = 82, ["Executor"] = 72, ["Search script"] = 100, ["Catatan"] = 70, ["Timer"] = 58, ["Info"] = 50, ["Chat"] = 50, ["Pemain"] = 72, ["Cepat"] = 58, ["UI Detector"] = 84, ["AI"] = 40, ["Translate"] = 70, ["Audio"] = 58, ["Images"] = 62, ["Video"] = 58, ["YouTube"] = 66, ["Fling"] = 58, ["Animation"] = 72, ["Macro"] = 58, ["Theme"] = 58, ["Profil"] = 58, ["Reaction"] = 72, ["Memory"] = 64, ["RPS"] = 48, ["Guess Number"] = 90, ["Simon"] = 58, ["Arena"] = 58, ["Whack"] = 58, ["Visual"] = 62, ["ESP Part"] = 70, ["Bring Part"] = 80, ["Control Part"] = 84, ["Combat"] = 62, ["Annoy"] = 58, ["Extras"] = 58 }
+		local TW = { ["Weather"] = 62, ["Kalkulator"] = 84, ["Tic Tac Toe"] = 82, ["Executor"] = 72, ["Search script"] = 100, ["Catatan"] = 70, ["Timer"] = 58, ["Info"] = 50, ["Chat"] = 50, ["Pemain"] = 72, ["Cepat"] = 58, ["UI Detector"] = 84, ["AI"] = 40, ["Translate"] = 70, ["Audio"] = 58, ["Images"] = 62, ["Video"] = 58, ["YouTube"] = 66, ["Fling"] = 58, ["Seat Bring"] = 76, ["Animation"] = 72, ["Macro"] = 58, ["Theme"] = 58, ["Profil"] = 58, ["Reaction"] = 72, ["Memory"] = 64, ["RPS"] = 48, ["Guess Number"] = 90, ["Simon"] = 58, ["Arena"] = 58, ["Whack"] = 58, ["Visual"] = 62, ["ESP Part"] = 70, ["Bring Part"] = 80, ["Control Part"] = 84, ["Combat"] = 62, ["Annoy"] = 58, ["Extras"] = 58 }
 		-- bar tab bisa digeser kiri/kanan (tidak perlu lebarkan UI)
 		local toolBar = mk("ScrollingFrame", {
 			Position = UDim2.fromOffset(0, 28),
@@ -18798,7 +18808,7 @@ local function buildUI()
 			local CATS = {
 				{ "All", nil },
 				{ "Mini games", { "Tic Tac Toe", "Reaction", "Memory", "RPS", "Guess Number", "Simon", "Arena", "Whack", "Kalkulator" } },
-				{ "Troll", { "Fling", "Annoy", "Extras", "Animation", "Bring Part", "Control Part" } },
+				{ "Troll", { "Fling", "Seat Bring", "Annoy", "Extras", "Animation", "Bring Part", "Control Part" } },
 				{ "Combat", { "Combat", "Fling", "Bring Part" } },
 				{ "Utility", { "Weather", "Kalkulator", "Executor", "Search script", "Catatan", "Timer", "Info", "Cepat", "UI Detector", "AI", "Translate", "Macro" } },
 				{ "Social", { "Chat", "Pemain", "Arena" } },
@@ -19602,6 +19612,939 @@ local function buildUI()
 					end
 				end)
 			end
+		end
+
+		-- ---------- Seat Bring (port dari SeatBring v2: ambil pemain pakai tool Seat, antar ke spot / void; UI = UI RV) ----------
+		do
+			U.stage()
+			local pg = tPages["Seat Bring"]
+			local okSB, errSB = pcall(function()
+				if not pg then return end
+				local Workspace = workspace
+				local TEAL, AMB, REDC = C3(45, 212, 191), C3(255, 181, 71), C3(214, 76, 70)
+				local DARK = C3(30, 22, 6)
+				local HIT_MIN, HIT_MAX = 4, 40
+				local SEAT_TIMEOUT = 6 -- detik mencoba mendudukkan satu target
+				local VOID_DROP_ABOVE = 60 -- FALL: stud di atas FallenPartsDestroyHeight
+				local VOID_KILL_ABOVE = 8 -- KILL: lepas sedekat ini ke garis kill
+				local ACQUIRE_TIMEOUT = 30 -- detik untuk seluruh pencarian tool seat
+
+				if type(state.sbHit) ~= "number" then state.sbHit = 16 end
+				state.sbHit = math.clamp(math.floor(state.sbHit), HIT_MIN, HIT_MAX)
+				for _, k in ipairs({ "sbLoop", "sbAnti", "sbHl", "sbView", "sbReset", "sbKill" }) do
+					if type(state[k]) ~= "boolean" then state[k] = false end
+				end
+
+				local mode = "spot" -- "spot" | "custom" | "void"
+				local customCF = nil
+				local queue = {} -- userId yang dipilih, urut pilih
+				local rowsW = {} -- [userId] = { frame, badge, stroke }
+				local busy, cancelled, picking = false, false, false
+				local marker = nil
+				local saved = {} -- properti asli seat
+				local currentTarget = nil
+				local viewActive = false
+				local history, lastRescue = {}, 0
+				local highlights = {} -- [userId] = { h = Highlight, cur = bool }
+
+				-- ======================= UI (gaya RV) =======================
+				local sc = mk("ScrollingFrame", { Size = UDim2.new(1, 0, 1, -62), BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 3, CanvasSize = UDim2.new(), AutomaticCanvasSize = Enum.AutomaticSize.Y }, pg)
+				lab(sc, "Seat Bring", 14, FONTK, TXT, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 20))
+
+				local function tbtn(txt, x, w, y, col, tcol, parent)
+					local b = mk("TextButton", { Position = UDim2.new(x, 0, 0, y), Size = UDim2.new(w, -4, 0, 28), BackgroundColor3 = col, Text = txt, Font = FONTB, TextSize = 11, TextColor3 = tcol or TXT, AutoButtonColor = false, TextTruncate = Enum.TextTruncate.AtEnd }, parent or sc)
+					corner(b, 8)
+					return b
+				end
+				local function styleOn(b, on, col)
+					b.BackgroundColor3 = on and col or SURF2
+					b.TextColor3 = on and DARK or TXT
+				end
+
+				local sBox = mk("TextBox", { Position = UDim2.fromOffset(0, 22), Size = UDim2.new(1, -128, 0, 26), BackgroundColor3 = SURF, Text = "", PlaceholderText = "Cari pemain (display / username)...", PlaceholderColor3 = DIM, Font = FONT, TextSize = 11, TextColor3 = TXT, ClearTextOnFocus = false, TextXAlignment = Enum.TextXAlignment.Left }, sc)
+				corner(sBox, 8)
+				mk("UIPadding", { PaddingLeft = UDim.new(0, 8) }, sBox)
+				local allB = mk("TextButton", { Position = UDim2.new(1, -122, 0, 22), Size = UDim2.fromOffset(58, 26), BackgroundColor3 = SURF2, Text = "SEMUA", Font = FONTB, TextSize = 10, TextColor3 = TEAL, AutoButtonColor = false }, sc)
+				corner(allB, 8)
+				local noneB = mk("TextButton", { Position = UDim2.new(1, -62, 0, 22), Size = UDim2.fromOffset(58, 26), BackgroundColor3 = SURF2, Text = "BATAL", Font = FONTB, TextSize = 10, TextColor3 = REDC, AutoButtonColor = false }, sc)
+				corner(noneB, 8)
+
+				local list = mk("ScrollingFrame", { Position = UDim2.fromOffset(0, 52), Size = UDim2.new(1, -4, 0, 116), BackgroundColor3 = SURF, BorderSizePixel = 0, ScrollBarThickness = 3, CanvasSize = UDim2.new(), AutomaticCanvasSize = Enum.AutomaticSize.Y }, sc)
+				corner(list, 8)
+				mk("UIListLayout", { Padding = UDim.new(0, 3), SortOrder = Enum.SortOrder.LayoutOrder }, list)
+				mk("UIPadding", { PaddingTop = UDim.new(0, 3), PaddingLeft = UDim.new(0, 3), PaddingRight = UDim.new(0, 3), PaddingBottom = UDim.new(0, 3) }, list)
+				local emptyL = lab(sc, "Belum ada pemain lain di server ini.", 10, FONT, DIM, UDim2.fromOffset(0, 100), UDim2.new(1, -4, 0, 20), Enum.TextXAlignment.Center)
+
+				lab(sc, "TUJUAN", 10, FONTB, DIM, UDim2.fromOffset(0, 174), UDim2.new(1, 0, 0, 12))
+				local chipDefs = { { id = "spot", text = "SPOTKU" }, { id = "custom", text = "SPOT PILIHAN" }, { id = "void", text = "VOID" } }
+				local chips = {}
+				for i, d in ipairs(chipDefs) do
+					chips[d.id] = tbtn(d.text, (i - 1) / 3, 1 / 3, 188, SURF2, TXT)
+				end
+				local destInfo = lab(sc, "", 10, FONT, DIM, UDim2.fromOffset(0, 220), UDim2.new(1, -134, 0, 30))
+				destInfo.TextWrapped = true
+				destInfo.TextYAlignment = Enum.TextYAlignment.Top
+				local pickB = mk("TextButton", { Position = UDim2.new(1, -130, 0, 220), Size = UDim2.fromOffset(126, 28), BackgroundColor3 = SURF2, Text = "KLIK UNTUK PILIH", Font = FONTB, TextSize = 10, TextColor3 = TEAL, AutoButtonColor = false }, sc)
+				corner(pickB, 8)
+				local fallB = mk("TextButton", { Position = UDim2.new(1, -130, 0, 220), Size = UDim2.fromOffset(62, 28), BackgroundColor3 = SURF2, Text = "FALL", Font = FONTB, TextSize = 11, TextColor3 = TXT, AutoButtonColor = false, Visible = false }, sc)
+				corner(fallB, 8)
+				local killB = mk("TextButton", { Position = UDim2.new(1, -64, 0, 220), Size = UDim2.fromOffset(60, 28), BackgroundColor3 = SURF2, Text = "KILL", Font = FONTB, TextSize = 11, TextColor3 = TXT, AutoButtonColor = false, Visible = false }, sc)
+				corner(killB, 8)
+
+				lab(sc, "HITBOX SEAT", 10, FONTB, DIM, UDim2.fromOffset(0, 254), UDim2.new(0.5, 0, 0, 12))
+				local hitL = lab(sc, "", 10, FONTB, AMB, UDim2.new(0.5, 0, 0, 254), UDim2.new(0.5, -8, 0, 12), Enum.TextXAlignment.Right)
+				local sliderHit = mk("TextButton", { Text = "", AutoButtonColor = false, BackgroundTransparency = 1, Position = UDim2.fromOffset(0, 270), Size = UDim2.new(1, -8, 0, 22) }, sc)
+				local bar = mk("Frame", { BackgroundColor3 = SURF2, BorderSizePixel = 0, Size = UDim2.new(1, 0, 0, 8), Position = UDim2.new(0, 0, 0.5, -4) }, sliderHit)
+				corner(bar, 4)
+				local fill = mk("Frame", { BackgroundColor3 = TEAL, BorderSizePixel = 0, Size = UDim2.new(0.3, 0, 1, 0) }, bar)
+				corner(fill, 4)
+				local knob = mk("Frame", { BackgroundColor3 = WHITE, BorderSizePixel = 0, AnchorPoint = Vector2.new(0.5, 0.5), Size = UDim2.fromOffset(16, 16), Position = UDim2.new(0.3, 0, 0.5, 0), ZIndex = 2 }, sliderHit)
+				corner(knob, 8)
+
+				local loopB = tbtn("LOOP", 0, 1 / 3, 298, SURF2, TXT)
+				local antiB = tbtn("ANTI SIT", 1 / 3, 1 / 3, 298, SURF2, TXT)
+				local hlB = tbtn("HIGHLIGHT", 2 / 3, 1 / 3, 298, SURF2, TXT)
+				local viewB = tbtn("VIEW", 0, 1 / 3, 330, SURF2, TXT)
+				local getB = tbtn("AMBIL TOOL", 1 / 3, 1 / 3, 330, SURF2, AMB)
+				local resetB = tbtn("RESET FALLBACK", 2 / 3, 1 / 3, 330, SURF2, TXT)
+				lab(sc, "ANTI SIT di sini = kalau ada yang mendudukkanmu, kamu dibebaskan dan dikembalikan ke posisi sebelumnya. RESET FALLBACK = respawn untuk ambil tool seat dari StarterPack bila tool tidak ditemukan.", 9, FONT, DIM, UDim2.fromOffset(0, 362), UDim2.new(1, -8, 0, 38)).TextWrapped = true
+
+				-- bar bawah tetap: BRING / STOP + status
+				local bringB = mk("TextButton", { Position = UDim2.new(0, 0, 1, -58), Size = UDim2.new(1, -4, 0, 30), BackgroundColor3 = AMB, Text = "BRING", Font = FONTK, TextSize = 13, TextColor3 = DARK, AutoButtonColor = false }, pg)
+				corner(bringB, 8)
+				local stat = lab(pg, "Siap. Pilih pemain lalu tekan BRING.", 10, FONT, DIM, UDim2.new(0, 0, 1, -26), UDim2.new(1, -4, 0, 24))
+				stat.TextWrapped = true
+				stat.TextYAlignment = Enum.TextYAlignment.Top
+				local function setStatus(t, c)
+					stat.Text = t
+					stat.TextColor3 = c or DIM
+				end
+
+				-- ======================= GAME HELPERS =======================
+				local function getChar()
+					local char = player.Character
+					if not char then return end
+					local hum = char:FindFirstChildOfClass("Humanoid")
+					local root = char:FindFirstChild("HumanoidRootPart")
+					if not hum or not root or hum.Health <= 0 then return end
+					return char, hum, root
+				end
+				local function seatIn(tool)
+					return tool:FindFirstChildWhichIsA("Seat", true) or tool:FindFirstChildWhichIsA("VehicleSeat", true)
+				end
+				local function findSeatTool() -- tool yang dipegang dulu, lalu Backpack
+					local char = player.Character
+					if char then
+						for _, c in ipairs(char:GetChildren()) do
+							if c:IsA("Tool") then
+								local s = seatIn(c)
+								if s then return c, s end
+							end
+						end
+					end
+					local bp = player:FindFirstChildOfClass("Backpack")
+					if bp then
+						for _, c in ipairs(bp:GetChildren()) do
+							if c:IsA("Tool") then
+								local s = seatIn(c)
+								if s then return c, s end
+							end
+						end
+					end
+				end
+				local function applyHitbox(seat)
+					if not saved[seat] then
+						saved[seat] = { Size = seat.Size, CanCollide = seat.CanCollide, CanTouch = seat.CanTouch, Massless = seat.Massless }
+					end
+					local s = state.sbHit
+					seat.Size = Vector3.new(s, s, s)
+					seat.CanCollide = false
+					seat.CanTouch = true
+					seat.Massless = true
+					pcall(function() seat.Disabled = false end)
+				end
+				local function restoreHitbox()
+					for seat, s in pairs(saved) do
+						if seat and seat.Parent then
+							pcall(function()
+								seat.Size = s.Size
+								seat.CanCollide = s.CanCollide
+								seat.CanTouch = s.CanTouch
+								seat.Massless = s.Massless
+							end)
+						end
+					end
+					saved = {}
+				end
+				local function voidCFrame(base, kill)
+					local h = Workspace.FallenPartsDestroyHeight
+					if h ~= h or h < -5000 then h = -5000 end -- jaga dari NaN / -inf
+					return CFrame.new(base.X, h + (kill and VOID_KILL_ABOVE or VOID_DROP_ABOVE), base.Z)
+				end
+				local function leadTime() -- kompensasi lag replikasi untuk target yang bergerak
+					local ok, ping = pcall(function() return player:GetNetworkPing() end)
+					if not ok or type(ping) ~= "number" then ping = 0.05 end
+					return math.clamp(ping + 0.06, 0.04, 0.35)
+				end
+				local function stopped() return cancelled or not alive() end
+
+				local function setMarker(pos)
+					if marker then marker:Destroy() marker = nil end
+					if not pos then return end
+					marker = mk("Part", { Name = "RVSeatMarker", Shape = Enum.PartType.Ball, Size = Vector3.new(2.2, 2.2, 2.2), Material = Enum.Material.Neon, Color = TEAL, Transparency = 0.35, Anchored = true, CanCollide = false, CanQuery = false, CanTouch = false, CastShadow = false, Position = pos }, Workspace.CurrentCamera or Workspace)
+				end
+
+				-- ======================= HIGHLIGHT + VIEW =======================
+				local function refreshHighlights()
+					local want = {}
+					if state.sbHl then
+						for _, uid in ipairs(queue) do want[uid] = true end
+						if currentTarget then want[currentTarget] = true end
+					end
+					for uid, e in pairs(highlights) do
+						local p = Players:GetPlayerByUserId(uid)
+						local char = p and p.Character
+						if not want[uid] or not char or e.h.Parent ~= char or e.cur ~= (uid == currentTarget) then
+							pcall(function() e.h:Destroy() end)
+							highlights[uid] = nil
+						end
+					end
+					for uid in pairs(want) do
+						local p = Players:GetPlayerByUserId(uid)
+						local char = p and p.Character
+						if char and not highlights[uid] then
+							local isCur = uid == currentTarget
+							local h = mk("Highlight", { Name = "RVSeatHL", Adornee = char, FillColor = isCur and TEAL or AMB, OutlineColor = isCur and TEAL or REDC, FillTransparency = isCur and 0.35 or 0.6, OutlineTransparency = 0, DepthMode = Enum.HighlightDepthMode.AlwaysOnTop }, char)
+							highlights[uid] = { h = h, cur = isCur }
+						end
+					end
+				end
+				local function refreshView()
+					local cam = Workspace.CurrentCamera
+					if not cam then return end
+					local _, myHum = getChar()
+					local subject = nil
+					if state.sbView then
+						local uid = currentTarget or queue[1]
+						local p = uid and Players:GetPlayerByUserId(uid)
+						local c = p and p.Character
+						subject = c and c:FindFirstChildOfClass("Humanoid")
+					end
+					if subject then
+						if cam.CameraSubject ~= subject then cam.CameraSubject = subject end
+						viewActive = true
+					elseif viewActive then
+						if myHum then cam.CameraSubject = myHum end
+						viewActive = false
+					end
+				end
+
+				-- ======================= ANTI SIT (balik ke posisi sebelumnya) + VIEW tick =======================
+				local runBusyFlag = function() return busy end
+				bind(RunService.Heartbeat, function()
+					if state.sbView then pcall(refreshView) end
+					local char, hum, root = getChar()
+					if not char then
+						history = {}
+						return
+					end
+					local now = os.clock()
+					local sp = hum.SeatPart
+					if sp ~= nil and not sp:IsDescendantOf(char) then
+						if state.sbAnti and now - lastRescue > 0.4 then
+							lastRescue = now
+							local back = history[1]
+							for i = #history, 1, -1 do
+								if history[i].t <= now - 0.6 then
+									back = history[i]
+									break
+								end
+							end
+							hum.Sit = false
+							pcall(function() hum:ChangeState(Enum.HumanoidStateType.Jumping) end)
+							if back then
+								root.CFrame = back.cf
+								root.AssemblyLinearVelocity = Vector3.zero
+							end
+							if not runBusyFlag() then setStatus("Anti sit: dibebaskan dan dikembalikan.", TEAL) end
+						end
+						return -- jangan catat posisi saat duduk
+					end
+					history[#history + 1] = { t = now, cf = root.CFrame }
+					while #history > 0 and history[1].t < now - 1.5 do table.remove(history, 1) end
+				end)
+
+				-- ======================= AUTO-GET TOOL SEAT =======================
+				local SEAT_WORDS = { "seat", "chair", "sofa", "couch", "bench", "stool", "throne" }
+				local GIVER_WORDS = { "tool", "giver", "gear", "item", "weapon", "shop" }
+				local function hasAny(s, words)
+					s = string.lower(tostring(s or ""))
+					for _, w in ipairs(words) do
+						if string.find(s, w, 1, true) then return true end
+					end
+					return false
+				end
+				local function gotTool() return findSeatTool() ~= nil end
+				local function heldByAPlayer(inst)
+					for _, p in ipairs(Players:GetPlayers()) do
+						if p.Character and inst:IsDescendantOf(p.Character) then return true end
+						local bp = p:FindFirstChildOfClass("Backpack")
+						if bp and inst:IsDescendantOf(bp) then return true end
+					end
+					return false
+				end
+				local function positionOf(inst)
+					if not inst then return nil end
+					if inst:IsA("BasePart") then return inst.Position end
+					if inst:IsA("Attachment") then return inst.WorldPosition end
+					local h = inst:FindFirstChild("Handle")
+					if h and h:IsA("BasePart") then return h.Position end
+					if inst:IsA("Model") then return inst:GetPivot().Position end
+					return nil
+				end
+				local function scanWorkspace() -- tool seat lepas + ProximityPrompt aktif
+					local tools, prompts = {}, {}
+					local n = 0
+					for _, d in ipairs(Workspace:GetDescendants()) do
+						n = n + 1
+						if n % 4000 == 0 then task.wait() end
+						if d:IsA("Tool") then
+							if seatIn(d) and not heldByAPlayer(d) then tools[#tools + 1] = d end
+						elseif d:IsA("ProximityPrompt") and d.Enabled then
+							prompts[#prompts + 1] = d
+						end
+					end
+					return tools, prompts
+				end
+				local function templateNames() -- nama tool seat di StarterPack dll: petunjuk untuk giver
+					local names = {}
+					for _, svcName in ipairs({ "StarterPack", "ReplicatedStorage", "ReplicatedFirst" }) do
+						local ok, svc = pcall(game.GetService, game, svcName)
+						if ok and svc then
+							for _, d in ipairs(svc:GetDescendants()) do
+								if d:IsA("Tool") and seatIn(d) then names[#names + 1] = string.lower(d.Name) end
+							end
+						end
+					end
+					return names
+				end
+				local function starterHasSeatTool()
+					local containers = {}
+					local ok, sp = pcall(game.GetService, game, "StarterPack")
+					if ok and sp then containers[#containers + 1] = sp end
+					local sg = player:FindFirstChild("StarterGear")
+					if sg then containers[#containers + 1] = sg end
+					for _, c in ipairs(containers) do
+						for _, d in ipairs(c:GetChildren()) do
+							if d:IsA("Tool") and seatIn(d) then return true end
+						end
+					end
+					return false
+				end
+				local function pickupLoose(tool) -- berdiri di handle supaya engine memungut
+					local handle = tool:FindFirstChild("Handle") or seatIn(tool)
+					if not handle then return false end
+					local t0 = os.clock()
+					while os.clock() - t0 < 2 do
+						if stopped() then return false end
+						if gotTool() then return true end
+						if heldByAPlayer(tool) or tool.Parent == nil then break end
+						local _, _, root = getChar()
+						if not root then return false end
+						root.CFrame = handle.CFrame
+						root.AssemblyLinearVelocity = Vector3.zero
+						RunService.Heartbeat:Wait()
+					end
+					return gotTool()
+				end
+				local function triggerPrompt(prompt)
+					local pos = positionOf(prompt.Parent)
+					if not pos then return false end
+					local _, _, root = getChar()
+					if not root then return false end
+					root.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
+					root.AssemblyLinearVelocity = Vector3.zero
+					task.wait(0.2)
+					if fireproximityprompt then
+						pcall(fireproximityprompt, prompt)
+					else
+						pcall(function() prompt:InputHoldBegin() end)
+						task.wait((prompt.HoldDuration or 0) + 0.25)
+						pcall(function() prompt:InputHoldEnd() end)
+					end
+					local t0 = os.clock()
+					while os.clock() - t0 < 1.2 do
+						if gotTool() then return true end
+						task.wait(0.1)
+					end
+					return gotTool()
+				end
+				-- 2 = sebut kata seat / nama tool seat yang dikenal, 1 = kata giver umum, 0 = abaikan
+				local function promptScore(pr, extraWords)
+					local texts = { pr.ActionText, pr.ObjectText, pr.Name }
+					local a = pr.Parent
+					for _ = 1, 4 do
+						if not a or a == Workspace then break end
+						texts[#texts + 1] = a.Name
+						a = a.Parent
+					end
+					for _, s in ipairs(texts) do
+						if hasAny(s, SEAT_WORDS) or hasAny(s, extraWords) then return 2 end
+					end
+					for _, s in ipairs(texts) do
+						if hasAny(s, GIVER_WORDS) then return 1 end
+					end
+					return 0
+				end
+				local function respawnForTool()
+					local oldChar, hum = getChar()
+					if not hum then return false end
+					setStatus("Reset untuk ambil tool seat dari starter...", AMB)
+					hum.Health = 0
+					local t0 = os.clock()
+					while os.clock() - t0 < 15 do
+						if stopped() then return false end
+						if player.Character and player.Character ~= oldChar and getChar() then break end
+						task.wait(0.1)
+					end
+					local t1 = os.clock()
+					while os.clock() - t1 < 5 do
+						if gotTool() then return true end
+						task.wait(0.1)
+					end
+					return gotTool()
+				end
+				-- return found:boolean, message:string
+				local function acquireSeatTool()
+					if gotTool() then return true end
+					local t0 = os.clock()
+					local function timedOut() return stopped() or os.clock() - t0 > ACQUIRE_TIMEOUT end
+					setStatus("Tidak ada tool seat. Mencari di map...", AMB)
+					local tools, prompts = scanWorkspace()
+					local _, _, root0 = getChar()
+					local function dist(inst)
+						local pos = positionOf(inst)
+						if not pos or not root0 then return math.huge end
+						return (pos - root0.CFrame.Position).Magnitude
+					end
+					table.sort(tools, function(a, b) return dist(a) < dist(b) end)
+					for i = 1, math.min(#tools, 5) do
+						if timedOut() then break end
+						setStatus("Mengambil tool lepas: " .. tools[i].Name, AMB)
+						if pickupLoose(tools[i]) then return true end
+					end
+					local names = templateNames()
+					local scored = {}
+					for _, pr in ipairs(prompts) do
+						local s = promptScore(pr, names)
+						if s > 0 then scored[#scored + 1] = { pr = pr, s = s, d = dist(pr.Parent) } end
+					end
+					table.sort(scored, function(a, b)
+						if a.s ~= b.s then return a.s > b.s end
+						return a.d < b.d
+					end)
+					for i = 1, math.min(#scored, 6) do
+						if timedOut() then break end
+						local label = scored[i].pr.ActionText
+						if label == nil or label == "" then label = scored[i].pr.Name end
+						setStatus("Mencoba prompt: " .. tostring(label), AMB)
+						if triggerPrompt(scored[i].pr) then return true end
+					end
+					local hint = ""
+					if not timedOut() and starterHasSeatTool() then
+						if state.sbReset then
+							if respawnForTool() then return true end
+						else
+							hint = " Ada tool seat di starter: nyalakan RESET FALLBACK untuk respawn."
+						end
+					end
+					if stopped() then return false, "Dihentikan." end
+					return false, "Tool seat tidak ditemukan (inventori, tool lepas, prompt)." .. hint
+				end
+
+				-- ======================= CORE: antar satu target =======================
+				local function deliver(target, origin)
+					if not gotTool() then
+						local found, why = acquireSeatTool()
+						local _, _, r0 = getChar()
+						if r0 then
+							r0.CFrame = origin
+							r0.AssemblyLinearVelocity = Vector3.zero
+						end
+						if not found then return false, why end
+					end
+					local char, hum, root = getChar()
+					if not char then return false, "Karaktermu belum siap." end
+					local tool, seat = findSeatTool()
+					if not tool then return false, "Tidak ada tool dengan Seat di inventorimu." end
+
+					local function abort(msg)
+						local _, h, r = getChar()
+						if h then h:UnequipTools() end
+						if r then
+							r.CFrame = origin
+							r.AssemblyLinearVelocity = Vector3.zero
+						end
+						return false, msg
+					end
+
+					if tool.Parent ~= char then
+						hum:EquipTool(tool)
+						local e0 = os.clock()
+						while tool.Parent ~= char and os.clock() - e0 < 2 do task.wait() end
+						if tool.Parent ~= char then return false, "Gagal equip tool seat." end
+					end
+					applyHitbox(seat)
+
+					-- 1) pusatkan hitbox seat di target sampai dia duduk
+					local t0 = os.clock()
+					local seated = false
+					local flip = 1
+					while os.clock() - t0 < SEAT_TIMEOUT do
+						if stopped() then return abort("Dihentikan.") end
+						char, hum, root = getChar()
+						if not char then return false, "Kamu mati." end
+						if tool.Parent ~= char then hum:EquipTool(tool) end
+						if seat.Size.X ~= state.sbHit then applyHitbox(seat) end
+
+						local tChar = target.Character
+						local tHum = tChar and tChar:FindFirstChildOfClass("Humanoid")
+						local tRoot = tChar and tChar:FindFirstChild("HumanoidRootPart")
+						if not tHum or not tRoot or tHum.Health <= 0 then return abort("Target tidak tersedia.") end
+						if tHum.SeatPart == seat then
+							seated = true
+							break
+						end
+						if tHum.SeatPart ~= nil then return abort("Target sedang duduk di tempat lain.") end
+
+						flip = -flip -- geser vertikal kecil supaya Touched terus terpicu
+						local base = tRoot.CFrame
+						if flip > 0 then -- tiap frame ke-2 bidik arah gerak target
+							local vel = tRoot.AssemblyLinearVelocity or Vector3.zero
+							base = CFrame.new(base.Position + vel * leadTime())
+						end
+						local want = base * CFrame.new(0, 0.25 * flip, 0)
+						root.CFrame = want * seat.CFrame:ToObjectSpace(root.CFrame)
+						root.AssemblyLinearVelocity = Vector3.zero
+						RunService.PreSimulation:Wait()
+					end
+
+					char, hum, root = getChar()
+					if not char then return false, "Kamu mati." end
+					if not seated then return abort("Gagal mendudukkan target (seat nonaktif / terhalang).") end
+
+					-- 2) bawa
+					local destCF = origin
+					if mode == "void" then
+						destCF = voidCFrame(origin.Position, state.sbKill)
+					elseif mode == "custom" and customCF then
+						destCF = customCF
+					end
+					local nearDist = state.sbHit / 2 + 14
+					local c0 = os.clock()
+					local frames = 0
+					while os.clock() - c0 < 1.2 do
+						if stopped() then return abort("Dihentikan.") end
+						char, hum, root = getChar()
+						if not char then return false, "Kamu mati." end
+						local tChar = target.Character
+						local tHum = tChar and tChar:FindFirstChildOfClass("Humanoid")
+						local tRoot = tChar and tChar:FindFirstChild("HumanoidRootPart")
+						if not tHum or not tRoot or tHum.SeatPart ~= seat then return abort("Target lolos.") end
+						root.CFrame = destCF
+						root.AssemblyLinearVelocity = Vector3.zero
+						RunService.PreSimulation:Wait()
+						frames = frames + 1
+						if frames >= 2 and (tRoot.CFrame.Position - destCF.Position).Magnitude <= nearDist then break end
+					end
+
+					-- 3) lepas (unequip memindahkan seat keluar dunia -> target terlepas)
+					char, hum, root = getChar()
+					if hum then hum:UnequipTools() end
+					local r0 = os.clock()
+					while os.clock() - r0 < 0.7 do
+						local _, _, r = getChar()
+						if r then
+							r.CFrame = destCF -- tetap aman di titik drop sampai target bebas
+							r.AssemblyLinearVelocity = Vector3.zero
+						end
+						local tChar = target.Character
+						local tHum = tChar and tChar:FindFirstChildOfClass("Humanoid")
+						if not tHum or tHum.SeatPart ~= seat then break end
+						RunService.Heartbeat:Wait()
+					end
+
+					-- 4) kembali ke posisi awal
+					local _, _, r = getChar()
+					if r then
+						r.CFrame = origin
+						r.AssemblyLinearVelocity = Vector3.zero
+					end
+					return true, "Terantar " .. target.DisplayName
+				end
+
+				-- ======================= QUEUE RUNNER =======================
+				local function updateBring()
+					if busy then
+						bringB.Text = "STOP"
+						bringB.BackgroundColor3 = REDC
+						bringB.TextColor3 = WHITE
+					else
+						bringB.Text = #queue > 0 and ("BRING  (" .. #queue .. ")") or "BRING"
+						bringB.BackgroundColor3 = AMB
+						bringB.TextColor3 = DARK
+					end
+				end
+				local function runQueue()
+					if busy then
+						cancelled = true
+						setStatus("Menghentikan...", AMB)
+						return
+					end
+					if #queue == 0 then setStatus("Pilih minimal satu pemain.", REDC) return end
+					if mode == "custom" and not customCF then setStatus("Pilih spot dulu: tekan KLIK UNTUK PILIH.", REDC) return end
+					local char, hum, root = getChar()
+					if not char then setStatus("Karaktermu belum siap.", REDC) return end
+
+					busy, cancelled = true, false
+					updateBring()
+					local origin = root.CFrame -- "spotku": tempat kamu berdiri sebelum mulai
+
+					local good, bad, lastErr = 0, 0, ""
+					local round = 0
+					repeat
+						round = round + 1
+						local ids = {}
+						for _, uid in ipairs(queue) do ids[#ids + 1] = uid end
+						if #ids == 0 then break end
+						local prefix = state.sbLoop and ("[Loop " .. round .. "] ") or ""
+						for i, uid in ipairs(ids) do
+							if stopped() then break end
+							local target = Players:GetPlayerByUserId(uid)
+							if target then
+								setStatus(string.format("%s(%d/%d) Mengambil %s...", prefix, i, #ids, target.DisplayName), AMB)
+								currentTarget = uid
+								refreshHighlights()
+								refreshView()
+								local ok, success, msg = pcall(deliver, target, origin)
+								currentTarget = nil
+								if not ok then success, msg = false, tostring(success) end
+								if success then
+									good = good + 1
+								else
+									bad = bad + 1
+									lastErr = target.DisplayName .. ": " .. tostring(msg)
+								end
+								task.wait(0.05)
+							else
+								bad = bad + 1
+								lastErr = "Ada target yang keluar dari server."
+							end
+						end
+						if state.sbLoop and not stopped() then task.wait(0.15) end
+					until not state.sbLoop or stopped()
+
+					currentTarget = nil
+					refreshHighlights()
+					refreshView()
+					restoreHitbox()
+					local _, h, r = getChar()
+					if h then h:UnequipTools() end
+					if r then
+						r.CFrame = origin
+						r.AssemblyLinearVelocity = Vector3.zero
+					end
+					local wasCancelled = cancelled
+					busy = false
+					updateBring()
+					if wasCancelled then
+						setStatus(string.format("Dihentikan. %d terantar.", good), AMB)
+					elseif bad == 0 then
+						setStatus(string.format("Selesai. %d terantar.", good), TEAL)
+					else
+						setStatus(string.format("%d terantar, %d gagal. %s", good, bad, lastErr), AMB)
+					end
+				end
+				local function getToolOnly()
+					if busy then cancelled = true return end
+					local _, _, root = getChar()
+					if not root then setStatus("Karaktermu belum siap.", REDC) return end
+					busy, cancelled = true, false
+					updateBring()
+					local origin = root.CFrame
+					local ok, found, msg = pcall(acquireSeatTool)
+					local _, _, r = getChar()
+					if r then
+						r.CFrame = origin
+						r.AssemblyLinearVelocity = Vector3.zero
+					end
+					busy = false
+					updateBring()
+					local tool = findSeatTool()
+					if tool then
+						setStatus("Dapat tool seat: " .. tool.Name, TEAL)
+					else
+						setStatus(ok and tostring(msg or "Tool seat tidak ditemukan.") or ("Error: " .. tostring(found)), REDC)
+					end
+				end
+
+				-- ======================= UI LOGIC =======================
+				local function refreshToggles()
+					loopB.Text = state.sbLoop and "LOOP: ON" or "LOOP: OFF"
+					styleOn(loopB, state.sbLoop, TEAL)
+					antiB.Text = state.sbAnti and "ANTI SIT: ON" or "ANTI SIT: OFF"
+					styleOn(antiB, state.sbAnti, TEAL)
+					hlB.Text = state.sbHl and "HIGHLIGHT: ON" or "HIGHLIGHT: OFF"
+					styleOn(hlB, state.sbHl, AMB)
+					viewB.Text = state.sbView and "VIEW: ON" or "VIEW: OFF"
+					styleOn(viewB, state.sbView, TEAL)
+					resetB.Text = state.sbReset and "RESET FB: ON" or "RESET FB: OFF"
+					styleOn(resetB, state.sbReset, AMB)
+					styleOn(fallB, not state.sbKill, AMB)
+					styleOn(killB, state.sbKill, REDC)
+				end
+				local function updateDestInfo()
+					if mode == "spot" then
+						destInfo.Text = "Diturunkan di tempatmu berdiri sebelum mulai."
+						destInfo.TextColor3 = DIM
+					elseif mode == "void" then
+						destInfo.Text = state.sbKill and "Dibunuh di garis void. Kamu tetap aman." or "Dijatuhkan dari tinggi di void, lalu kamu kembali."
+						destInfo.TextColor3 = state.sbKill and REDC or DIM
+					elseif customCF then
+						local p = customCF.Position
+						destInfo.Text = string.format("Spot: %d, %d, %d", math.floor(p.X + 0.5), math.floor(p.Y + 0.5), math.floor(p.Z + 0.5))
+						destInfo.TextColor3 = TEAL
+					else
+						destInfo.Text = "Belum ada spot. Tekan KLIK UNTUK PILIH."
+						destInfo.TextColor3 = AMB
+					end
+				end
+				local function setMode(id)
+					mode = id
+					local isVoid = id == "void"
+					pickB.Visible = not isVoid
+					fallB.Visible = isVoid
+					killB.Visible = isVoid
+					for cid, b in pairs(chips) do
+						styleOn(b, cid == id, TEAL)
+					end
+					refreshToggles()
+					updateDestInfo()
+				end
+				local function setHitbox(alpha)
+					alpha = math.clamp(alpha, 0, 1)
+					state.sbHit = math.floor(HIT_MIN + (HIT_MAX - HIT_MIN) * alpha + 0.5)
+					fill.Size = UDim2.new(alpha, 0, 1, 0)
+					knob.Position = UDim2.new(alpha, 0, 0.5, 0)
+					hitL.Text = state.sbHit .. " stud"
+				end
+				setHitbox((state.sbHit - HIT_MIN) / (HIT_MAX - HIT_MIN))
+
+				local function refreshBadges()
+					for uid, r in pairs(rowsW) do
+						local idx = nil
+						for i, id in ipairs(queue) do
+							if id == uid then idx = i break end
+						end
+						r.badge.Visible = idx ~= nil
+						if idx then r.badge.Text = tostring(idx) end
+						r.stroke.Enabled = idx ~= nil
+						r.frame.BackgroundColor3 = idx and SURF2 or SURF
+					end
+					updateBring()
+					refreshHighlights()
+					refreshView()
+				end
+				local function toggleSelect(uid)
+					for i, id in ipairs(queue) do
+						if id == uid then
+							table.remove(queue, i)
+							refreshBadges()
+							return
+						end
+					end
+					queue[#queue + 1] = uid
+					refreshBadges()
+				end
+
+				local sig = ""
+				local function refreshList()
+					local arr, ids = {}, {}
+					local fq = sBox.Text:lower()
+					for _, pl in ipairs(Players:GetPlayers()) do
+						if pl ~= player and (fq == "" or pl.DisplayName:lower():find(fq, 1, true) or pl.Name:lower():find(fq, 1, true)) then
+							arr[#arr + 1] = pl
+						end
+					end
+					table.sort(arr, function(a, b) return a.DisplayName:lower() < b.DisplayName:lower() end)
+					for _, pl in ipairs(arr) do ids[#ids + 1] = pl.UserId end
+					-- buang target yang sudah keluar dari antrean
+					for i = #queue, 1, -1 do
+						if not Players:GetPlayerByUserId(queue[i]) then table.remove(queue, i) end
+					end
+					local s = table.concat(ids, ",") .. "|" .. fq
+					if s ~= sig then
+						sig = s
+						for _, c in ipairs(list:GetChildren()) do
+							if c:IsA("TextButton") then c:Destroy() end
+						end
+						rowsW = {}
+						for i, pl in ipairs(arr) do
+							local uid = pl.UserId
+							local r = mk("TextButton", { Size = UDim2.new(1, -2, 0, 34), BackgroundColor3 = SURF, Text = "", AutoButtonColor = false, BorderSizePixel = 0, LayoutOrder = i }, list)
+							corner(r, 8)
+							local st = mk("UIStroke", { Color = AMB, Thickness = 1.5, Enabled = false }, r)
+							local av = mk("ImageLabel", { Position = UDim2.fromOffset(5, 3), Size = UDim2.fromOffset(28, 28), BackgroundColor3 = SURF2, Image = "rbxthumb://type=AvatarHeadShot&id=" .. uid .. "&w=100&h=100", BorderSizePixel = 0 }, r)
+							corner(av, 14)
+							local n = lab(r, pl.DisplayName, 12, FONTB, TXT, UDim2.fromOffset(40, 2), UDim2.new(1, -80, 0, 16))
+							n.TextTruncate = Enum.TextTruncate.AtEnd
+							lab(r, "@" .. pl.Name, 10, FONT, DIM, UDim2.fromOffset(40, 18), UDim2.new(1, -80, 0, 14)).TextTruncate = Enum.TextTruncate.AtEnd
+							local badge = mk("TextLabel", { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -6, 0.5, 0), Size = UDim2.fromOffset(22, 22), BackgroundColor3 = AMB, Text = "", Font = FONTK, TextSize = 12, TextColor3 = DARK, Visible = false }, r)
+							corner(badge, 11)
+							rowsW[uid] = { frame = r, badge = badge, stroke = st }
+							r.MouseButton1Click:Connect(function()
+								click()
+								toggleSelect(uid)
+							end)
+						end
+						emptyL.Visible = #arr == 0
+					end
+					refreshBadges()
+				end
+
+				-- ======================= WIRING =======================
+				sBox:GetPropertyChangedSignal("Text"):Connect(function() sig = "" pcall(refreshList) end)
+				allB.MouseButton1Click:Connect(function()
+					click()
+					local have = {}
+					for _, id in ipairs(queue) do have[id] = true end
+					local vis = {}
+					for uid, r in pairs(rowsW) do vis[#vis + 1] = { uid = uid, o = r.frame.LayoutOrder } end
+					table.sort(vis, function(a, b) return a.o < b.o end)
+					for _, v in ipairs(vis) do
+						if not have[v.uid] then queue[#queue + 1] = v.uid end
+					end
+					refreshBadges()
+				end)
+				noneB.MouseButton1Click:Connect(function()
+					click()
+					queue = {}
+					refreshBadges()
+				end)
+				for id, b in pairs(chips) do
+					b.MouseButton1Click:Connect(function() click() if picking then picking = false pickB.Text = "KLIK UNTUK PILIH" end setMode(id) end)
+				end
+				fallB.MouseButton1Click:Connect(function() click() state.sbKill = false saveSoon() refreshToggles() updateDestInfo() end)
+				killB.MouseButton1Click:Connect(function() click() state.sbKill = true saveSoon() refreshToggles() updateDestInfo() end)
+				loopB.MouseButton1Click:Connect(function() click() state.sbLoop = not state.sbLoop saveSoon() refreshToggles() end)
+				antiB.MouseButton1Click:Connect(function() click() state.sbAnti = not state.sbAnti saveSoon() refreshToggles() end)
+				resetB.MouseButton1Click:Connect(function() click() state.sbReset = not state.sbReset saveSoon() refreshToggles() end)
+				hlB.MouseButton1Click:Connect(function() click() state.sbHl = not state.sbHl saveSoon() refreshToggles() refreshHighlights() end)
+				viewB.MouseButton1Click:Connect(function() click() state.sbView = not state.sbView saveSoon() refreshToggles() refreshView() end)
+				getB.MouseButton1Click:Connect(function() click() task.spawn(getToolOnly) end)
+				bringB.MouseButton1Click:Connect(function() click() task.spawn(runQueue) end)
+
+				-- klik dunia untuk pilih spot
+				local function stopPicking(msg, color)
+					picking = false
+					pickB.Text = "KLIK UNTUK PILIH"
+					if msg then setStatus(msg, color) end
+				end
+				pickB.MouseButton1Click:Connect(function()
+					click()
+					if busy then return end
+					if picking then stopPicking("Pemilihan dibatalkan.", DIM) return end
+					picking = true
+					setMode("custom")
+					pickB.Text = "KLIK DUNIA..."
+					setStatus("Klik / ketuk dunia untuk set spot. Esc membatalkan.", AMB)
+				end)
+				bind(UserInputService.InputBegan, function(io, processed)
+					if not picking then return end
+					if io.KeyCode == Enum.KeyCode.Escape then stopPicking("Pemilihan dibatalkan.", DIM) return end
+					if processed then return end
+					if io.UserInputType == Enum.UserInputType.MouseButton1 or io.UserInputType == Enum.UserInputType.Touch then
+						local cam = Workspace.CurrentCamera
+						if not cam then return end
+						local ray = cam:ScreenPointToRay(io.Position.X, io.Position.Y)
+						local ignore = {}
+						if player.Character then ignore[#ignore + 1] = player.Character end
+						if marker then ignore[#ignore + 1] = marker end
+						local params = RaycastParams.new()
+						params.FilterType = Enum.RaycastFilterType.Exclude
+						params.FilterDescendantsInstances = ignore
+						local hit = Workspace:Raycast(ray.Origin, ray.Direction * 2000, params)
+						if hit then
+							customCF = CFrame.new(hit.Position + Vector3.new(0, 3.5, 0))
+							setMarker(hit.Position + Vector3.new(0, 1.2, 0))
+							setMode("custom")
+							stopPicking("Spot tersimpan.", TEAL)
+						else
+							setStatus("Tidak ada apa-apa di sana. Klik tanah atau dinding.", REDC)
+						end
+					end
+				end)
+
+				-- slider hitbox (scroll dikunci saat menggeser supaya tidak ikut tergulung)
+				do
+					local sliding = false
+					local function fromInput(io)
+						local w = bar.AbsoluteSize.X
+						if w > 0 then setHitbox((io.Position.X - bar.AbsolutePosition.X) / w) end
+					end
+					sliderHit.InputBegan:Connect(function(io)
+						if io.UserInputType == Enum.UserInputType.MouseButton1 or io.UserInputType == Enum.UserInputType.Touch then
+							sliding = true
+							sc.ScrollingEnabled = false
+							fromInput(io)
+						end
+					end)
+					bind(UserInputService.InputChanged, function(io)
+						if sliding and (io.UserInputType == Enum.UserInputType.MouseMovement or io.UserInputType == Enum.UserInputType.Touch) then fromInput(io) end
+					end)
+					bind(UserInputService.InputEnded, function(io)
+						if sliding and (io.UserInputType == Enum.UserInputType.MouseButton1 or io.UserInputType == Enum.UserInputType.Touch) then
+							sliding = false
+							sc.ScrollingEnabled = true
+							saveSoon()
+						end
+					end)
+				end
+
+				-- loop ringan: sinkron daftar pemain + highlight
+				task.spawn(function()
+					while alive() do
+						if pg.Visible then pcall(refreshList) end
+						if state.sbHl or next(highlights) then pcall(refreshHighlights) end
+						task.wait(1)
+					end
+				end)
+
+				-- bersih-bersih saat RV dimatikan
+				local prevCleanup = U.cleanup
+				U.cleanup = function()
+					cancelled = true
+					currentTarget = nil
+					pcall(restoreHitbox)
+					for uid, e in pairs(highlights) do
+						pcall(function() e.h:Destroy() end)
+						highlights[uid] = nil
+					end
+					pcall(function() if marker then marker:Destroy() marker = nil end end)
+					pcall(function()
+						local cam = Workspace.CurrentCamera
+						local _, h = getChar()
+						if viewActive and cam and h then cam.CameraSubject = h end
+					end)
+					if prevCleanup then return prevCleanup() end
+				end
+
+				setMode("spot")
+				refreshToggles()
+				updateBring()
+				pcall(refreshList)
+			end)
+			if not okSB then warn("[RV] Seat Bring gagal dibuat: " .. tostring(errSB)) end
 		end
 
 		-- ---------- Troll (kecil, digabung di Tools; hanya tampil untuk yang punya izin 'troll'; dioptimalkan untuk layar HP) ----------
@@ -34521,6 +35464,403 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 			abRender()
 			note("Fire plays the saved animation and the remote together (some abilities only work when the animation runs).", 28)
 
+			-- ---------- MAP SAVE / LOAD ----------
+			hdr("MAP SAVE / LOAD")
+			note("Save = whole map as an RV share code (parts, meshes, decals, lights, client scripts) + optional .rbxl via saveinstance. Load needs RenVersal; the .rbxl opens in Studio without it. Terrain only goes into the .rbxl.", 52)
+			local MAPS = { busy = false }
+			local MPS = stat("mapstat")
+			local function mapSay(t) MPS.Text = t end
+			mapSay("Ready.")
+			local MAPDIR = "RVMaps"
+			local function fsOk() return writefile and readfile and isfolder and makefolder end
+			local function ensureDir() if fsOk() and not isfolder(MAPDIR) then pcall(makefolder, MAPDIR) end end
+			local T64 = {}
+			do
+				local A = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+				for i = 0, 63 do T64[i] = A:sub(i + 1, i + 1) end
+			end
+			local D64 = {}
+			for i = 0, 63 do D64[T64[i]:byte()] = i end
+			local function b64enc(s)
+				local f = (crypt and crypt.base64encode) or (crypt and crypt.base64 and crypt.base64.encode) or base64encode or base64_encode
+				if f then local ok, r = pcall(f, s) if ok and type(r) == "string" and #r > 0 then return r end end
+				local out, n = {}, 0
+				for i = 1, #s, 3 do
+					local a, b, c = s:byte(i, i + 2)
+					local v = a * 65536 + (b or 0) * 256 + (c or 0)
+					n += 1
+					out[n] = T64[bit32.rshift(v, 18) % 64] .. T64[bit32.rshift(v, 12) % 64] .. (b and T64[bit32.rshift(v, 6) % 64] or "=") .. (c and T64[v % 64] or "=")
+					if n % 20000 == 0 then task.wait() end
+				end
+				return table.concat(out)
+			end
+			local function b64dec(s)
+				local f = (crypt and crypt.base64decode) or (crypt and crypt.base64 and crypt.base64.decode) or base64decode or base64_decode
+				if f then local ok, r = pcall(f, s) if ok and type(r) == "string" then return r end end
+				s = s:gsub("[^%w%+/=]", "")
+				local out, n = {}, 0
+				for i = 1, #s, 4 do
+					local c1, c2, c3, c4 = s:byte(i, i + 3)
+					local v = (D64[c1] or 0) * 262144 + (D64[c2] or 0) * 4096 + ((c3 and c3 ~= 61 and D64[c3] or 0) * 64) + ((c4 and c4 ~= 61 and D64[c4]) or 0)
+					local ch = string.char(bit32.rshift(v, 16) % 256)
+					if c3 and c3 ~= 61 then ch = ch .. string.char(bit32.rshift(v, 8) % 256) end
+					if c4 and c4 ~= 61 then ch = ch .. string.char(v % 256) end
+					n += 1
+					out[n] = ch
+					if n % 20000 == 0 then task.wait() end
+				end
+				return table.concat(out)
+			end
+			local function nf(n) local s = string.format("%.4f", n) s = s:gsub("0+$", "") s = s:gsub("%.$", "") if s == "" or s == "-0" then s = "0" end return s end
+			local function clean(s) return (tostring(s):gsub("[|\r\n]", "_")) end
+			local function fullName(o) local ok, r = pcall(function() return o:GetFullName() end) return ok and r or tostring(o) end
+
+			local function dec(sc)
+				if not decompile then return nil end
+				local res
+				local th = task.spawn(function() local ok, r = pcall(decompile, sc) res = (ok and type(r) == "string") and r or false end)
+				local t0 = os.clock()
+				while res == nil and os.clock() - t0 < 8 do task.wait(0.05) end
+				if res == nil then pcall(task.cancel, th) end
+				return type(res) == "string" and res or nil
+			end
+
+			local function mapName(n)
+				n = tostring(n or ""):gsub("[^%w%-_ ]", ""):gsub("^%s+", ""):gsub("%s+$", "")
+				if n == "" then n = (tostring(U.gameName or "map"):gsub("[^%w%-_ ]", ""):gsub("%s+$", "")) end
+				if n == "" then n = "map" end
+				return n:sub(1, 40) .. "_" .. os.date("%H%M%S")
+			end
+
+			local function buildCode(name)
+				local lines, pidx, pmap = {}, 0, {}
+				lines[1] = table.concat({ "H", "RVMAP1", clean(name), tostring(game.PlaceId), clean(U.gameName or ""), tostring(os.time()) }, "|")
+				local skip = {}
+				for _, pl in ipairs(Players:GetPlayers()) do if pl.Character then skip[pl.Character] = true end end
+				local cap = math.clamp(tonumber(state.mapCap) or 60000, 1000, 400000)
+				local n = 0
+				for _, d in ipairs(workspace:GetDescendants()) do
+					n += 1
+					if n % 1500 == 0 then task.wait() mapSay("Scanning workspace... " .. n) end
+					if pidx >= cap then break end
+					if d:IsA("BasePart") and not d:IsA("Terrain") then
+						local bad = false
+						local a = d
+						while a and a ~= workspace do
+							if skip[a] or (a.Name and a.Name:sub(1, 6) == "RVMap_") then bad = true break end
+							a = a.Parent
+						end
+						if not bad and not (isMine and isMine(d)) then
+							pidx += 1
+							pmap[d] = pidx
+							local cls = d.ClassName
+							local cf = { d.CFrame:GetComponents() }
+							for i = 1, #cf do cf[i] = nf(cf[i]) end
+							local c = d.Color
+							local flags = (d.Anchored and 1 or 0) + (d.CanCollide and 2 or 0) + (d.CanQuery and 4 or 0) + (d.CastShadow and 8 or 0)
+							local shape, mesh, tex, msz = 1, "", "", ""
+							if cls == "Part" then shape = d.Shape.Value
+							elseif cls == "MeshPart" then
+								pcall(function() mesh = d.MeshId tex = d.TextureID local ms = d.MeshSize msz = nf(ms.X) .. "," .. nf(ms.Y) .. "," .. nf(ms.Z) end)
+							end
+							lines[#lines + 1] = table.concat({ "P", clean(d.Name), cls, table.concat(cf, ","), nf(d.Size.X) .. "," .. nf(d.Size.Y) .. "," .. nf(d.Size.Z),
+								math.floor(c.R * 255 + 0.5) .. "," .. math.floor(c.G * 255 + 0.5) .. "," .. math.floor(c.B * 255 + 0.5), d.Material.Value, nf(d.Transparency), nf(d.Reflectance), flags, shape, clean(mesh), clean(tex), msz }, "|")
+							for _, ch in ipairs(d:GetChildren()) do
+								if ch:IsA("Decal") or ch:IsA("Texture") then
+									local cc = ch.Color3
+									lines[#lines + 1] = table.concat({ "D", pidx, ch.ClassName, ch.Face.Value, clean(ch.Texture), nf(ch.Transparency), math.floor(cc.R * 255 + 0.5) .. "," .. math.floor(cc.G * 255 + 0.5) .. "," .. math.floor(cc.B * 255 + 0.5), ch:IsA("Texture") and (nf(ch.StudsPerTileU) .. "," .. nf(ch.StudsPerTileV)) or "" }, "|")
+								elseif ch:IsA("Light") then
+									local cc = ch.Color
+									lines[#lines + 1] = table.concat({ "G", pidx, ch.ClassName, nf(ch.Brightness), ch:IsA("SurfaceLight") and nf(ch.Range) or nf(ch.Range), math.floor(cc.R * 255 + 0.5) .. "," .. math.floor(cc.G * 255 + 0.5) .. "," .. math.floor(cc.B * 255 + 0.5), ch:IsA("PointLight") and "0" or nf(ch.Angle) }, "|")
+								elseif ch:IsA("SpecialMesh") then
+									local sc2 = ch.Scale
+									lines[#lines + 1] = table.concat({ "M", pidx, clean(ch.MeshId), clean(ch.TextureId), nf(sc2.X) .. "," .. nf(sc2.Y) .. "," .. nf(sc2.Z), ch.MeshType.Value }, "|")
+								end
+							end
+						end
+					end
+				end
+				local L = game:GetService("Lighting")
+				local lp = {}
+				for _, k in ipairs({ "Brightness", "ClockTime", "FogEnd", "FogStart", "GlobalShadows", "ExposureCompensation" }) do pcall(function() lp[#lp + 1] = k .. "=" .. tostring(L[k]) end) end
+				for _, k in ipairs({ "Ambient", "OutdoorAmbient", "FogColor" }) do pcall(function() local c = L[k] lp[#lp + 1] = k .. "=" .. math.floor(c.R * 255 + 0.5) .. "," .. math.floor(c.G * 255 + 0.5) .. "," .. math.floor(c.B * 255 + 0.5) end) end
+				lines[#lines + 1] = "L|" .. table.concat(lp, ";")
+				local scripts = {}
+				if state.mapScripts ~= false then
+					local roots = { workspace, game:GetService("ReplicatedStorage"), game:GetService("ReplicatedFirst"), game:GetService("StarterGui"), game:GetService("StarterPack"), game:GetService("StarterPlayer"), L }
+					local cnt = 0
+					for _, r in ipairs(roots) do
+						for _, d in ipairs(r:GetDescendants()) do
+							if (d:IsA("LocalScript") or d:IsA("ModuleScript") or d:IsA("Script")) and cnt < 600 then
+								cnt += 1
+								mapSay("Decompiling scripts... " .. cnt .. "  " .. d.Name)
+								local src = dec(d)
+								if src and #src > 0 and #src < 400000 then
+									scripts[#scripts + 1] = { path = fullName(d), cls = d.ClassName, src = src }
+									lines[#lines + 1] = table.concat({ "S", d.ClassName, clean(fullName(d)), b64enc(src) }, "|")
+								end
+							end
+						end
+					end
+				end
+				local raw = table.concat(lines, "\n")
+				local code
+				if lz4compress and lz4decompress then
+					local ok, z = pcall(lz4compress, raw)
+					if ok and type(z) == "string" then code = "RVMAP1:1:" .. #raw .. ":" .. b64enc(z) end
+				end
+				if not code then code = "RVMAP1:0:" .. #raw .. ":" .. b64enc(raw) end
+				return code, pidx, scripts
+			end
+
+			local function saveRbxl(name)
+				local fn = saveinstance or (syn and syn.saveinstance)
+				if not fn then return false, "saveinstance is not supported by this executor" end
+				local tries = {
+					function() return fn({ FileName = name, Decompile = true, DecompileTimeout = 10, NilInstances = false, SavePlayers = false }) end,
+					function() return fn({ FilePath = name }) end,
+					function() return fn() end,
+				}
+				local lastE
+				for _, t in ipairs(tries) do
+					local ok, e = pcall(t)
+					if ok then return true end
+					lastE = e
+				end
+				return false, tostring(lastE)
+			end
+
+			local mapList
+			local function mapRefresh() if mapList and mapList.refresh then mapList.refresh() end end
+			local function doSave(name, mode)
+				if MAPS.busy then mapSay("Already working...") return end
+								MAPS.busy = true
+				name = mapName(name)
+				task.spawn(function()
+					local okAll, err = pcall(function()
+						local msg = {}
+						if mode == "code" or mode == "all" then
+							local code, parts, scripts = buildCode(name)
+							ensureDir()
+							local saved = false
+							if fsOk() then saved = pcall(writefile, MAPDIR .. "/" .. name .. ".rvmap", code) end
+							if saved and #scripts > 0 then
+								local sd = MAPDIR .. "/" .. name .. "_scripts"
+								pcall(makefolder, sd)
+								for i, s in ipairs(scripts) do
+									pcall(writefile, sd .. "/" .. string.format("%03d_", i) .. (s.path:gsub("[^%w%._%-]", "_")):sub(1, 90) .. ".lua", "-- " .. s.path .. " (" .. s.cls .. ")\n" .. s.src)
+								end
+							end
+							local copied = false
+							if setclipboard and #code < 3000000 then copied = pcall(setclipboard, code) end
+							msg[#msg + 1] = string.format("%d parts, %d scripts, code %.1f KB%s%s", parts, #scripts, #code / 1024, saved and (" -> " .. MAPDIR .. "/" .. name .. ".rvmap") or " (no file API)", copied and ", copied to clipboard" or (", too big/no clipboard: share the file"))
+						end
+						if mode == "rbxl" or mode == "all" then
+							mapSay("Running saveinstance...")
+							local ok, e = saveRbxl(name)
+							msg[#msg + 1] = ok and ("rbxl saved as " .. name .. ".rbxl (executor workspace)") or ("rbxl failed: " .. tostring(e))
+						end
+						mapSay(table.concat(msg, "  |  "))
+					end)
+					if not okAll then mapSay("Save failed: " .. tostring(err)) end
+					MAPS.busy = false
+					mapRefresh()
+				end)
+			end
+
+			local MATV, SHAPEV = {}, {}
+			for _, m in ipairs(Enum.Material:GetEnumItems()) do MATV[m.Value] = m end
+			for _, m in ipairs(Enum.PartType:GetEnumItems()) do SHAPEV[m.Value] = m end
+			local FACEV, MESHV = {}, {}
+			for _, m in ipairs(Enum.NormalId:GetEnumItems()) do FACEV[m.Value] = m end
+			for _, m in ipairs(Enum.MeshType:GetEnumItems()) do MESHV[m.Value] = m end
+			local PARTCLS = { Part = true, WedgePart = true, CornerWedgePart = true, TrussPart = true, Seat = true, VehicleSeat = true, SpawnLocation = true }
+			local loadedFolder
+			local function unloadMap()
+				if loadedFolder then pcall(function() loadedFolder:Destroy() end) loadedFolder = nil mapSay("Map removed.") end
+				for _, c in ipairs(workspace:GetChildren()) do if c.Name:sub(1, 6) == "RVMap_" then pcall(function() c:Destroy() end) end end
+			end
+			local function rgb(s) local r, g, b = tostring(s):match("(%d+),(%d+),(%d+)") return Color3.fromRGB(tonumber(r) or 255, tonumber(g) or 255, tonumber(b) or 255) end
+			local function vec(s) local x, y, z = tostring(s):match("([%-%d%.eE]+),([%-%d%.eE]+),([%-%d%.eE]+)") return tonumber(x), tonumber(y), tonumber(z) end
+			local function loadCode(code, tag)
+				if MAPS.busy then mapSay("Already working...") return end
+								MAPS.busy = true
+				task.spawn(function()
+					local ok, err = pcall(function()
+						code = tostring(code):gsub("%s+", "")
+						local mode, size, payload = code:match("^RVMAP1:(%d):(%d+):(.+)$")
+						if not mode then mapSay("Not a RenVersal map code.") return end
+						mapSay("Decoding...")
+						local raw = b64dec(payload)
+						if mode == "1" then
+							if not lz4decompress then mapSay("This code is lz4-compressed but your executor has no lz4decompress.") return end
+							local ok2, r = pcall(lz4decompress, raw, tonumber(size))
+							if not ok2 or type(r) ~= "string" then mapSay("lz4 decompress failed.") return end
+							raw = r
+						end
+						unloadMap()
+						local folder = Instance.new("Folder")
+						folder.Name = "RVMap_" .. tostring(tag or "loaded")
+						folder.Parent = workspace
+						loadedFolder = folder
+						local parts, n, cnt, sdir = {}, 0, 0, nil
+						local lightCfg
+						for line in raw:gmatch("[^\n]+") do
+							local f = string.split(line, "|")
+							local k = f[1]
+							if k == "P" then
+								local cls = PARTCLS[f[3]] and f[3] or "Part"
+								local p = Instance.new(cls)
+								p.Name = f[2]
+								pcall(function()
+									local sx, sy, sz = vec(f[5])
+									p.Size = Vector3.new(sx or 1, sy or 1, sz or 1)
+									local c = {}
+									for num in tostring(f[4]):gmatch("[^,]+") do c[#c + 1] = tonumber(num) or 0 end
+									if #c == 12 then p.CFrame = CFrame.new(table.unpack(c)) elseif #c >= 3 then p.CFrame = CFrame.new(c[1], c[2], c[3]) end
+									p.Color = rgb(f[6])
+									p.Material = MATV[tonumber(f[7])] or Enum.Material.Plastic
+									p.Transparency = tonumber(f[8]) or 0
+									p.Reflectance = tonumber(f[9]) or 0
+									local fl = tonumber(f[10]) or 3
+									p.Anchored = true
+									p.CanCollide = bit32.band(fl, 2) ~= 0
+									p.CanQuery = bit32.band(fl, 4) ~= 0
+									p.CastShadow = bit32.band(fl, 8) ~= 0
+									p.TopSurface = Enum.SurfaceType.Smooth
+									p.BottomSurface = Enum.SurfaceType.Smooth
+									if cls == "Part" and SHAPEV[tonumber(f[11])] then p.Shape = SHAPEV[tonumber(f[11])] end
+									if f[3] == "MeshPart" and f[12] and f[12] ~= "" then
+										local sm = Instance.new("SpecialMesh")
+										sm.MeshType = Enum.MeshType.FileMesh
+										sm.MeshId = f[12]
+										sm.TextureId = f[13] or ""
+										local mx, my, mz = vec(f[14])
+										if mx and mx > 0 and my > 0 and mz > 0 then sm.Scale = Vector3.new((sx or 1) / mx, (sy or 1) / my, (sz or 1) / mz) end
+										sm.Parent = p
+									end
+								end)
+								p.Parent = folder
+								cnt += 1
+								parts[cnt] = p
+								if cnt % 250 == 0 then mapSay("Building parts... " .. cnt) task.wait() end
+							elseif k == "D" and parts[tonumber(f[2])] then
+								pcall(function()
+									local d = Instance.new(f[3] == "Texture" and "Texture" or "Decal")
+									d.Face = FACEV[tonumber(f[4])] or Enum.NormalId.Front
+									d.Texture = f[5] or ""
+									d.Transparency = tonumber(f[6]) or 0
+									d.Color3 = rgb(f[7])
+									if d.ClassName == "Texture" and f[8] and f[8] ~= "" then local u, v = tostring(f[8]):match("([%-%d%.]+),([%-%d%.]+)") d.StudsPerTileU = tonumber(u) or 2 d.StudsPerTileV = tonumber(v) or 2 end
+									d.Parent = parts[tonumber(f[2])]
+								end)
+							elseif k == "G" and parts[tonumber(f[2])] then
+								pcall(function()
+									local cl = (f[3] == "SpotLight" or f[3] == "SurfaceLight" or f[3] == "PointLight") and f[3] or "PointLight"
+									local l = Instance.new(cl)
+									l.Brightness = tonumber(f[4]) or 1
+									l.Range = tonumber(f[5]) or 8
+									l.Color = rgb(f[6])
+									if cl ~= "PointLight" then l.Angle = tonumber(f[7]) or 90 end
+									l.Parent = parts[tonumber(f[2])]
+								end)
+							elseif k == "M" and parts[tonumber(f[2])] then
+								pcall(function()
+									local sm = Instance.new("SpecialMesh")
+									sm.MeshType = MESHV[tonumber(f[6])] or Enum.MeshType.FileMesh
+									sm.MeshId = f[3] or ""
+									sm.TextureId = f[4] or ""
+									local sx, sy, sz = vec(f[5])
+									if sx then sm.Scale = Vector3.new(sx, sy, sz) end
+									sm.Parent = parts[tonumber(f[2])]
+								end)
+							elseif k == "L" then
+								lightCfg = f[2]
+							elseif k == "S" and fsOk() then
+								sdir = sdir or (MAPDIR .. "/" .. tostring(tag or "loaded") .. "_scripts")
+								if not isfolder(sdir) then pcall(makefolder, sdir) end
+								n += 1
+								pcall(writefile, sdir .. "/" .. string.format("%03d_", n) .. (tostring(f[3]):gsub("[^%w%._%-]", "_")):sub(1, 90) .. ".lua", "-- " .. tostring(f[3]) .. " (" .. tostring(f[2]) .. ")\n" .. b64dec(f[4] or ""))
+							end
+						end
+						if lightCfg and state.mapLight then
+							local L = game:GetService("Lighting")
+							for kv in tostring(lightCfg):gmatch("[^;]+") do
+								local key, val = kv:match("^(%w+)=(.+)$")
+								if key then
+									pcall(function()
+										if val:find(",") then L[key] = rgb(val)
+										elseif val == "true" or val == "false" then L[key] = (val == "true")
+										else L[key] = tonumber(val) end
+									end)
+								end
+							end
+						end
+						mapSay(string.format("Loaded %d parts into workspace.%s  (client only; scripts are %s)", cnt, "", sdir and ("saved to " .. sdir .. ", not executed") or "not included"))
+					end)
+					if not ok then mapSay("Load failed: " .. tostring(err)) end
+					MAPS.busy = false
+				end)
+			end
+			local function readClip()
+				for _, nm in ipairs({ "getclipboard", "get_clipboard", "readclipboard", "fromclipboard" }) do
+					local f = getgenv and getgenv()[nm]
+					if type(f) == "function" then local ok, v = pcall(f) if ok and type(v) == "string" and v ~= "" then return v end end
+				end
+				if syn and type(syn.get_clipboard) == "function" then local ok, v = pcall(syn.get_clipboard) if ok then return v end end
+			end
+			local function fileCode(name)
+				if not fsOk() then return nil end
+				local p = MAPDIR .. "/" .. name .. ".rvmap"
+				if isfile and isfile(p) then local ok, r = pcall(readfile, p) if ok then return r end end
+				if isfile and isfile(name) then local ok, r = pcall(readfile, name) if ok then return r end end
+			end
+			local function loadAny(arg)
+				arg = tostring(arg or "")
+				if arg:sub(1, 7) == "RVMAP1:" then return loadCode(arg, "shared") end
+				if arg ~= "" then
+					local c = fileCode(arg)
+					if not c then mapSay("No saved map named '" .. arg .. "'.") return end
+					return loadCode(c, arg)
+				end
+				local c = readClip()
+				if not c then mapSay("Clipboard is empty or unreadable. Copy a map code first.") return end
+				loadCode(c, "clipboard")
+			end
+			U.mapSave, U.mapLoad, U.mapUnload = doSave, loadAny, unloadMap
+
+			local mapNameBox = textRow2("Map name (optional)", "", "auto: game name", function() end, 150)
+			button("Save map  (code + scripts + .rbxl)", function() doSave(mapNameBox.Text, "all") end, true)
+			button("Save code only (faster)", function() doSave(mapNameBox.Text, "code") end)
+			button("Save .rbxl only (saveinstance)", function() doSave(mapNameBox.Text, "rbxl") end)
+			button("Load map from clipboard code", function() loadAny("") end)
+			button("Remove loaded map", function() unloadMap() end)
+			switchRow(sc, nxt(), "Include client scripts (decompile)", "mapScripts", function() end)
+			switchRow(sc, nxt(), "Apply saved lighting on load", "mapLight", function() end)
+			sliderRow(sc, nxt(), "Max parts", 5000, 300000, function() return tonumber(state.mapCap) or 60000 end, function(v) state.mapCap = math.floor(v / 1000) * 1000 saveSoon() end, function(v) return math.floor(v / 1000) .. "k" end)
+			mapList = { holder = listHold() }
+			function mapList.refresh()
+				for _, c in ipairs(mapList.holder:GetChildren()) do if c:IsA("Frame") then c:Destroy() end end
+				if not (listfiles and isfolder and isfolder(MAPDIR)) then return end
+				local ok, files = pcall(listfiles, MAPDIR)
+				if not ok then return end
+				local i = 0
+				for _, fpath in ipairs(files) do
+					local nm = tostring(fpath):match("([^/\\]+)%.rvmap$")
+					if nm then
+						i += 1
+						local r = mk("Frame", { Size = UDim2.new(1, 0, 0, 32), BackgroundColor3 = SURF, LayoutOrder = i }, mapList.holder)
+						corner(r, 9)
+						lab(r, nm, 10, FONTK, TXT, UDim2.fromOffset(8, 0), UDim2.new(1, -150, 1, 0)).TextTruncate = Enum.TextTruncate.AtEnd
+						miniBtn(r, -88, 40, "Load", SURF2, function() loadAny(nm) end)
+						miniBtn(r, -46, 40, "Code", SURF2, function() local c = fileCode(nm) if c and setclipboard then pcall(setclipboard, c) mapSay("Code copied (" .. math.floor(#c / 1024) .. " KB)") end end)
+						miniBtn(r, -4, 36, "X", C3(150, 55, 62), function() if delfile then pcall(delfile, MAPDIR .. "/" .. nm .. ".rvmap") end mapList.refresh() end)
+					end
+				end
+			end
+			button("Refresh saved maps", function() mapList.refresh() end)
+			pcall(mapList.refresh)
+
 			-- ---------- UI micro interactions ----------
 			hdr("UI MICRO-INTERACTIONS")
 			local MF = { seen = setmetatable({}, { __mode = "k" }) }
@@ -34566,6 +35906,21 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 					local a = args[1] and args[1]:lower()
 					local on = (a == "on") or (a == nil and not state.polish)
 					U.polishSet(on) pcall(syncAll) say2("Polish " .. (on and "ON" or "OFF"))
+				end)
+				addCmd("savemap", ";savemap [all|code|rbxl] [name]", "save the whole map as RV code (+scripts) and/or .rbxl", function(args)
+					local mode = args[1] and args[1]:lower()
+					local nm
+					if mode == "all" or mode == "code" or mode == "rbxl" then nm = args[2] else nm = args[1] mode = "all" end
+					doSave(nm, mode) say2("Saving map... (see Settings > World Graphics > Map)")
+				end, { "save_map", "mapsave" })
+				addCmd("loadmap", ";loadmap [name|code]", "load a saved RV map (no arg = clipboard code)", function(args) loadAny(args[1]) say2("Loading map...") end, { "load_map", "maploadrv" })
+				addCmd("unloadmap", ";unloadmap", "remove the loaded RV map", function() unloadMap() say2("Map removed") end)
+				addCmd("maps", ";maps", "list saved maps", function()
+					local o = {}
+					if listfiles and isfolder and isfolder(MAPDIR) then
+						for _, fp in ipairs(listfiles(MAPDIR)) do local n2 = tostring(fp):match("([^/\\]+)%.rvmap$") if n2 then o[#o + 1] = n2 end end
+					end
+					say2(#o > 0 and table.concat(o, ", ") or "No saved maps")
 				end)
 				addCmd("physguard", ";physguard [on/off]", "physics fling safeguard", function(args)
 					local a = args[1] and args[1]:lower()
@@ -36862,161 +38217,41 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 			if pgE then pgE:GetPropertyChangedSignal("Visible"):Connect(function() if pgE.Visible then task.delay(0.1, vs) end end) end
 		end
 
-		-- ===================== COLLAPSIBLE SECTIONS ("TITLE ^" opens / closes its features) =====================
+		-- ===================== TIDY SECTION HEADERS (no collapsing; just a clean, consistent look) =====================
 		do
-			local REG = {} -- scroller -> { name = , heads = {} }
+			local REG = {}
 			local function isHead(o)
 				if not o:IsA("TextLabel") or o.Text == "" or #o.Text > 60 then return false end
 				if o.Size.Y.Scale ~= 0 or o.Size.Y.Offset < 14 or o.Size.Y.Offset > 26 or o.TextSize > 12 then return false end
 				if o.Font ~= FONTK and o.Font ~= FONTB then return false end
 				local letters = o.Text:gsub("[^%a]", "")
 				if #letters < 3 or letters ~= letters:upper() then return false end
-				if o:GetAttribute("rvnohead") then return false end
 				return true
 			end
-			local function keyOf(info, h) return info.name .. "|" .. h.Text end
-			local function applyGroup(rows, open)
-				for _, r in ipairs(rows) do
-					if open then
-						if r:GetAttribute("rvh") then r.Visible = r:GetAttribute("rvv") ~= false r:SetAttribute("rvh", nil) end
-					else
-						if not r:GetAttribute("rvh") then r:SetAttribute("rvv", r.Visible) r:SetAttribute("rvh", true) r.Visible = false end
-						if not r:GetAttribute("rvc") then
-							r:SetAttribute("rvc", true)
-							r:GetPropertyChangedSignal("Visible"):Connect(function()
-								if r:GetAttribute("rvh") and r.Visible then r:SetAttribute("rvv", true) r.Visible = false end
-							end)
-						end
+			local function decorate(sc)
+				for _, o in ipairs(sc:GetChildren()) do
+					if o:IsA("TextLabel") and not o:GetAttribute("rvdeco") and isHead(o) then
+						o:SetAttribute("rvdeco", true)
+						o.TextYAlignment = Enum.TextYAlignment.Bottom
+						local line = mk("Frame", { Name = ".rvline", AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 0, 1, 1), Size = UDim2.new(1, 0, 0, 1), BackgroundColor3 = DIM, BackgroundTransparency = 0.78, BorderSizePixel = 0 }, o)
+						line.ZIndex = o.ZIndex
 					end
 				end
-			end
-			local function build(sc, info)
-				local items = {}
-				for i, c in ipairs(sc:GetChildren()) do
-					if c:IsA("GuiObject") and not c:GetAttribute("rvtop") then items[#items + 1] = { o = c, i = i } end
-				end
-				table.sort(items, function(a, b) if a.o.LayoutOrder ~= b.o.LayoutOrder then return a.o.LayoutOrder < b.o.LayoutOrder end return a.i < b.i end)
-				local groups, cur = {}, nil
-				for _, it in ipairs(items) do
-					local o = it.o
-					if isHead(o) then
-						cur = { head = o, rows = {} }
-						groups[#groups + 1] = cur
-					elseif cur then
-						cur.rows[#cur.rows + 1] = o
-					end
-				end
-				return groups
-			end
-			local function refresh(sc, info)
-				if not sc.Parent then return end
-				local groups = build(sc, info)
-				local usable = 0
-				for _, g in ipairs(groups) do if #g.rows >= 2 then usable += 1 end end
-				if usable == 0 then return end
-				info.groups = groups
-				local busy = usable >= 6
-				for gi, g in ipairs(groups) do
-					local h = g.head
-					if #g.rows >= 2 then
-						local k = keyOf(info, h)
-						local st = state.secOpen[k]
-						if st == nil then st = (not busy) or gi == 1 end
-						h:SetAttribute("rvopen", st)
-						if not h:GetAttribute("rvbtn") then
-							h:SetAttribute("rvbtn", true)
-							local btn = mk("TextButton", { Name = ".rvsec", Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Text = "", AutoButtonColor = false, ZIndex = (h.ZIndex or 1) + 1 }, h)
-							local arrow = lab(h, "", 12, FONTK, DIM, UDim2.new(1, -22, 0, 0), UDim2.fromOffset(18, h.AbsoluteSize.Y > 0 and h.AbsoluteSize.Y or 16))
-							arrow.Size = UDim2.new(0, 18, 1, 0)
-							arrow.TextXAlignment = Enum.TextXAlignment.Center
-							arrow.Name = ".rvarrow"
-							arrow.ZIndex = (h.ZIndex or 1) + 1
-							btn.MouseEnter:Connect(function() arrow.TextColor3 = TXT end)
-							btn.MouseLeave:Connect(function() arrow.TextColor3 = DIM end)
-							btn.MouseButton1Click:Connect(function()
-								click()
-								local now = not h:GetAttribute("rvopen")
-								state.secOpen[k] = now saveSoon()
-								h:SetAttribute("rvopen", now)
-								arrow.Text = now and "^" or "v"
-								local gg
-								for _, g2 in ipairs(info.groups or {}) do if g2.head == h then gg = g2 end end
-								if gg then applyGroup(gg.rows, now) end
-							end)
-							h:SetAttribute("rvarrowobj", nil)
-							g.arrow = arrow
-							info.arrows = info.arrows or {}
-							info.arrows[h] = arrow
-						end
-						local arrow = info.arrows and info.arrows[h]
-						if arrow then arrow.Text = st and "^" or "v" end
-						applyGroup(g.rows, st)
-					end
-				end
-			end
-			local function addTop(sc, info)
-				if sc:FindFirstChild(".rvall") then return end
-				local b = mk("TextButton", { Name = ".rvall", Size = UDim2.new(1, 0, 0, 22), BackgroundColor3 = SURF2, Text = "Expand all  /  Collapse all", Font = FONTB, TextSize = 10, TextColor3 = DIM, AutoButtonColor = false, LayoutOrder = -1000 }, sc)
-				b:SetAttribute("rvtop", true)
-				corner(b, 8)
-				local openAll = false
-				b.MouseButton1Click:Connect(function()
-					click()
-					openAll = not openAll
-					for _, g in ipairs(info.groups or {}) do
-						if #g.rows >= 2 then
-							local k = keyOf(info, g.head)
-							state.secOpen[k] = openAll
-							g.head:SetAttribute("rvopen", openAll)
-							local ar = info.arrows and info.arrows[g.head]
-							if ar then ar.Text = openAll and "^" or "v" end
-							applyGroup(g.rows, openAll)
-						end
-					end
-					saveSoon()
-				end)
-			end
-			local function register(sc, name)
-				if not sc or REG[sc] then return end
-				REG[sc] = { name = name }
 			end
 			local function sweepAll()
 				for n, p in pairs(subs) do
-					if n == "Umum" or n == "Tampilan" or n == "Utilitas" or n == "World" then register(p, "S:" .. n) end
+					if n == "Umum" or n == "Tampilan" or n == "Utilitas" or n == "World" then REG[p] = true end
 				end
-				for n, pg in pairs(U.toolPages or {}) do
-					if pg:IsA("ScrollingFrame") then register(pg, "T:" .. n) end
+				for _, pg in pairs(U.toolPages or {}) do
+					if pg:IsA("ScrollingFrame") then REG[pg] = true end
 					for _, c in ipairs(pg:GetChildren()) do
-						if c:IsA("ScrollingFrame") then register(c, "T:" .. n) end
+						if c:IsA("ScrollingFrame") then REG[c] = true end
 					end
 				end
-				for sc, info in pairs(REG) do
-					pcall(refresh, sc, info)
-					if info.groups and #info.groups >= 2 then pcall(addTop, sc, info) end
-				end
-			end
-			U.secExpand = function(obj)
-				for sc, info in pairs(REG) do
-					if obj:IsDescendantOf(sc) and info.groups then
-						local row = obj
-						while row.Parent and row.Parent ~= sc do row = row.Parent end
-						for _, g in ipairs(info.groups) do
-							for _, r in ipairs(g.rows) do
-								if r == row and g.head:GetAttribute("rvopen") == false then
-									local k = keyOf(info, g.head)
-									state.secOpen[k] = true
-									g.head:SetAttribute("rvopen", true)
-									local ar = info.arrows and info.arrows[g.head]
-									if ar then ar.Text = "^" end
-									applyGroup(g.rows, true)
-								end
-							end
-						end
-					end
-				end
+				for sc in pairs(REG) do pcall(decorate, sc) end
 			end
 			for _, d in ipairs({ 2.5, 6, 14 }) do task.delay(d, function() if alive() then pcall(sweepAll) end end) end
-			for n, pg in pairs(U.toolPages or {}) do
+			for _, pg in pairs(U.toolPages or {}) do
 				pg:GetPropertyChangedSignal("Visible"):Connect(function() if pg.Visible then task.delay(0.3, function() pcall(sweepAll) end) end end)
 			end
 		end
