@@ -90,7 +90,7 @@ do
 		skipB.Size = UDim2.fromOffset(78, 28)
 		skipB.BackgroundColor3 = Color3.fromRGB(30, 34, 46)
 		skipB.BackgroundTransparency = 0.15
-		skipB.Text = "Skip  \u{25B6}\u{25B6}"
+		skipB.Text = "Skip  >>"
 		skipB.Font = Enum.Font.GothamBold
 		skipB.TextSize = 12
 		skipB.TextColor3 = Color3.new(1, 1, 1)
@@ -177,7 +177,7 @@ local ContentProvider = game:GetService("ContentProvider")
 local CONFIG = {
 	-- PRESENCE (siapa yang online): buat Firebase Realtime Database gratis, tempel URL-nya di sini, contoh "https://nama-project-default-rtdb.firebaseio.com" (tanpa "/" di akhir).
 	-- Rules database: { "rules": { ".read": true, ".write": true } }. Kosongkan (nil) = fitur online & siaran mati.
-	PRESENCE_URL = "https://rendrasy-1f3e4-default-rtdb.asia-southeast1.firebasedatabase.app",
+	PRESENCE_URL = "https://rendraversal-default-rtdb.asia-southeast1.firebasedatabase.app",
 	SELF_URL = "https://pastebin.com/raw/qhHDLLES", -- opsional: URL loader script ini, supaya ikut jalan otomatis setelah server hop
 	SELF_FILE = nil, -- opsional: nama file script ini di folder workspace executor (dipakai kalau SELF_URL kosong). Kosong = dicari otomatis (script*.lua / .txt)
 	-- sumber tambahan Search script (endpoint bisa kamu ubah). {q} = kata kunci, {slug} = id script untuk URL raw
@@ -190,6 +190,7 @@ local CONFIG = {
 	DISCORD = "https://discord.gg/NZJVrbXhup",
 	OWNER_ID = "1115418378711076905", -- id Discord yang di-ping saat ada feedback
 	USER_ID = 3546873847,
+	BATTERY_PAGE = "", -- alamat tempat battery-bridge.html di-host (isi sekali; dipakai tombol 'Salin link baterai')
 	USERNAME = "Nendra_052",
 	-- ID yang kamu kirim (134614588525362 / 72619945893791) adalah Decal; ID gambar aslinya sudah dicek bisa dimuat:
 	LOGO = 87779728185755, -- gambar tombol buka (ID Image dari decal 134614588525362)
@@ -367,7 +368,7 @@ local SAVE_FILE = "ucb20ce_" .. tostring(game:GetService("Players").LocalPlayer.
 local OLD_FILE = "vcb20ce.json"
 local custom, favs = {}, {}
 local SAVE_KEYS = { "theme", "range", "volSfx", "volClick", "volMusic", "music", "intensity", "sound", "shake", "cinema", "banner", "feedOn", "blur", "random", "mode", "musicCustom", "musicId", "musicSaved", "ytKey", "audPl", "outAuto", "outA", "outB", "outThick", "outAnim", "bgCustom", "bgA", "bgB", "bgRot", "bgTrans", "fbLast", "uiScale", "uiX", "uiY", "lang", "scripts", "execIdx", "notes", "selected", "cat", "kills", "hud", "aura", "daytime", "dayDate", "clock12", "weather", "lastAnn", "autoExec", "watch", "joinNote", "lookHist", "lookSaved", "lookSeen", "scanSpeed", "scanInstant", "autoTr", "scanCrossN", "fov", "grav", "zoomFree", "hopSess", "perf", "afk", "hopMode", "hopMax", "hopLow", "hopRegion", "fullbright", "nofog", "ctp", "ctpMode", "shader", "shMode", "wpAuto", "wp", "fly", "flySpeed", "noclip", "moveOn", "walk", "jump", "infJump", "esp", "espName", "espDist", "espHp", "hudX", "hudY", "uiW", "uiH", "aiProv", "aiModel", "aiUsed", "aiLock", "aiDay", "themePack", "kbOpen", "kbQuick", "kbTest", "kbFly", "macroOn", "targetNotes", "quickItems", "bgImageId", "bgShine", "titleShine", "logoOld", "slOn", "antiFall", "themeSet", "accFollow", "themeNote", "chOn", "chStyle", "chCustom", "chSize", "chX", "chY", "chColor", "curOn", "curStyle", "curCustom", "curSize", "curColor", "chKind", "chSaved", "curKind", "curSaved", "musicSpeed", "shine", "lastReqSeen", "ccatCustom" }
-for _, k in ipairs({ "aiCount", "wxLoc", "lastHistSeen", "espCustom", "espCol", "ckMulti", "hk", "peerNote", "tpAfter", "antiFling", "flingReturn", "ccatSaves", "ccatFav", "chatDev", "chatSeen", "chatNotif", "chatGSeen", "exPromoOff", "ccatT", "ccatLast", "ccatAuto", "flingPose", "espIcon", "espHl", "espTeam", "espTeamCol", "animSaved", "flingMode", "thirdPerson", "fpAsk", "geoShare", "cfgAuto", "cfgLast", "emotes", "vkKeys", "vkScale", "quickOn", "fbName", "showcase", "cmdPrefix", "cmdAlias", "presets", "wl", "bl", "wlMode", "antiKick", "akRejoin", "chatSpy", "instPP", "antiSit", "renderOn", "renderDist", "invDist", "invClient", "invPct", "afkRender", "modWarn", "dodge", "spyAuto", "skyMode", "skyIds", "polish", "polishAmt", "polishStyle", "polishFuture", "fflList", "fflAuto", "phys", "physThr", "cdZero", "cdWait", "cdMin", "abRec", "abGap", "microFx", "secOpen", "mapScripts", "mapLight", "mapCap", "sbHit", "sbLoop", "sbAnti", "sbHl", "sbView", "sbReset", "sbKill" }) do SAVE_KEYS[#SAVE_KEYS + 1] = k end
+for _, k in ipairs({ "aiCount", "wxLoc", "lastHistSeen", "espCustom", "espCol", "ckMulti", "hk", "peerNote", "tpAfter", "antiFling", "flingReturn", "ccatSaves", "ccatFav", "chatDev", "chatSeen", "chatNotif", "chatGSeen", "exPromoOff", "ccatT", "ccatLast", "ccatAuto", "flingPose", "espIcon", "espHl", "espTeam", "espTeamCol", "animSaved", "flingMode", "thirdPerson", "fpAsk", "geoShare", "cfgAuto", "cfgLast", "emotes", "vkKeys", "vkScale", "quickOn", "fbName", "showcase", "cmdPrefix", "cmdAlias", "presets", "wl", "bl", "wlMode", "antiKick", "akRejoin", "chatSpy", "instPP", "antiSit", "renderOn", "renderDist", "invDist", "invClient", "invPct", "afkRender", "modWarn", "dodge", "spyAuto", "skyMode", "skyIds", "polish", "polishAmt", "polishStyle", "polishFuture", "fflList", "fflAuto", "phys", "physThr", "cdZero", "cdWait", "cdMin", "abRec", "abGap", "microFx", "secOpen", "mapScripts", "mapLight", "mapCap", "sbHit", "sbLoop", "sbAnti", "sbHl", "sbView", "sbReset", "sbKill", "sbRemote", "tkSpeed", "sbMethod", "noEquip", "batKey" }) do SAVE_KEYS[#SAVE_KEYS + 1] = k end
 local U -- (diisi nanti) dipakai saveCfg untuk sinkron akun
 local function cfgTable()
 	local d = { custom = custom, favs = favs }
@@ -568,6 +569,199 @@ U = {}
 pcall(function() _G.__rvU = U if getgenv then getgenv().__rvU = U end end)
 U.state = state
 U.paidMap = {}
+	-- ===== IKON LUCIDE (lucide-roblox 0.363, sprite 48px): teks "{i:nama}" otomatis dirender jadi gambar ikon (ikut warna teks & bahasa) =====
+	-- Pakai: label.Text = "{i:star} FAV". Hanya ikon yang terdaftar di U.ICONS (nama + sprite sheet id + offset diambil dari lucide-roblox).
+	do
+		local TextService = game:GetService("TextService")
+		local IC = {
+		["anchor"] = { 16898612629, 306, 869 },
+		["apple"] = { 16898612629, 563, 869 },
+		["bird"] = { 16898612819, 869, 0 },
+		["bomb"] = { 16898612819, 257, 869 },
+		["building-2"] = { 16898612819, 967, 514 },
+		["check"] = { 16898612819, 710, 869 },
+		["cherry"] = { 16898612819, 612, 967 },
+		["chevron-down"] = { 16898612819, 196, 918 },
+		["chevron-up"] = { 16898612819, 710, 918 },
+		["circle-check"] = { 16898612819, 869, 955 },
+		["circle-dot"] = { 16898613044, 514, 771 },
+		["citrus"] = { 16898613044, 306, 820 },
+		["cloud-snow"] = { 16898613044, 98, 869 },
+		["coins"] = { 16898613044, 869, 612 },
+		["crosshair"] = { 16898613044, 453, 869 },
+		["diamond"] = { 16898613044, 196, 918 },
+		["dot"] = { 16898613044, 918, 808 },
+		["droplet"] = { 16898613044, 820, 955 },
+		["fast-forward"] = { 16898613353, 820, 49 },
+		["feather"] = { 16898613353, 771, 98 },
+		["flame"] = { 16898613353, 967, 306 },
+		["flower"] = { 16898613353, 820, 710 },
+		["flower-2"] = { 16898613353, 869, 661 },
+		["gamepad-2"] = { 16898613353, 710, 967 },
+		["gem"] = { 16898613353, 918, 857 },
+		["ghost"] = { 16898613353, 869, 906 },
+		["globe"] = { 16898613509, 771, 563 },
+		["grape"] = { 16898613509, 820, 49 },
+		["hammer"] = { 16898613509, 306, 820 },
+		["hand"] = { 16898613509, 563, 820 },
+		["heart"] = { 16898613509, 661, 771 },
+		["home"] = { 16898613509, 820, 147 },
+		["laptop"] = { 16898613509, 563, 967 },
+		["lock"] = { 16898613509, 918, 857 },
+		["lock-open"] = { 16898613509, 967, 808 },
+		["map-pin"] = { 16898613613, 820, 257 },
+		["moon"] = { 16898613613, 306, 918 },
+		["mountain"] = { 16898613613, 869, 612 },
+		["music"] = { 16898613613, 967, 563 },
+		["orbit"] = { 16898613613, 967, 612 },
+		["palette"] = { 16898613613, 453, 918 },
+		["party-popper"] = { 16898613613, 918, 955 },
+		["pause"] = { 16898613699, 0, 771 },
+		["pin"] = { 16898613699, 918, 0 },
+		["play"] = { 16898613699, 918, 257 },
+		["plug-zap"] = { 16898613699, 771, 404 },
+		["plus"] = { 16898613699, 257, 918 },
+		["radiation"] = { 16898613699, 771, 453 },
+		["refresh-cw"] = { 16898613699, 404, 869 },
+		["rocket"] = { 16898613699, 918, 147 },
+		["satellite"] = { 16898613699, 147, 967 },
+		["save"] = { 16898613699, 918, 453 },
+		["scan-search"] = { 16898613699, 710, 918 },
+		["search"] = { 16898613699, 918, 857 },
+		["server"] = { 16898613777, 771, 0 },
+		["skull"] = { 16898613777, 49, 869 },
+		["sparkle"] = { 16898613777, 967, 0 },
+		["sparkles"] = { 16898613777, 918, 49 },
+		["square"] = { 16898613777, 869, 710 },
+		["star"] = { 16898613777, 967, 147 },
+		["star-off"] = { 16898613777, 612, 967 },
+		["sun"] = { 16898613777, 967, 453 },
+		["sword"] = { 16898613777, 710, 967 },
+		["thumbs-up"] = { 16898613869, 771, 355 },
+		["tornado"] = { 16898613869, 771, 147 },
+		["trash-2"] = { 16898613869, 257, 918 },
+		["triangle-alert"] = { 16898613869, 967, 0 },
+		["tv"] = { 16898613869, 98, 869 },
+		["users"] = { 16898613869, 967, 98 },
+		["wand-sparkles"] = { 16898613869, 453, 918 },
+		["waves"] = { 16898613869, 820, 808 },
+		["wind"] = { 16898613869, 820, 857 },
+		["x"] = { 16898613869, 869, 906 },
+		["zap"] = { 16898613869, 918, 906 },
+		}
+		U.ICONS = IC
+		function U.icoStrip(t) return (string.gsub(tostring(t or ""), "{i:[%w%-]+}%s*", "")) end
+		function U.icoImage(name, parent, size, color)
+			local e = IC[name]
+			if not e then return nil end
+			local im = Instance.new("ImageLabel")
+			im.Name = "RVIcon"
+			im.BackgroundTransparency = 1
+			im.BorderSizePixel = 0
+			im.Image = "rbxassetid://" .. e[1]
+			im.ImageRectSize = Vector2.new(48, 48)
+			im.ImageRectOffset = Vector2.new(e[2], e[3])
+			im.Size = UDim2.fromOffset(size, size)
+			im.ImageColor3 = color or Color3.new(1, 1, 1)
+			im.Parent = parent
+			return im
+		end
+		local rec = setmetatable({}, { __mode = "k" })
+		local HUGE = Vector2.new(100000, 100000)
+		local function tw(s, ts, font)
+			-- spasi di ujung ikut dihitung (GetTextSize memangkasnya) lewat trik "|"
+			local a = TextService:GetTextSize(s .. "|", ts, font, HUGE).X
+			local b = TextService:GetTextSize("|", ts, font, HUGE).X
+			return math.max(0, a - b)
+		end
+		local function layout(o, r)
+			if not r.ims or not o.Parent then return end
+			local ts, font = o.TextSize, o.Font
+			local abs = o.AbsoluteSize
+			for _, im in ipairs(r.ims) do
+				im.ImageColor3 = o.TextColor3
+				im.ImageTransparency = o.TextTransparency
+			end
+			if r.pure then
+				local im = r.ims[1]
+				if im then im.AnchorPoint = Vector2.new(0.5, 0.5) im.Position = UDim2.fromScale(0.5, 0.5) end
+				return
+			end
+			local lineH = TextService:GetTextSize("Ag", ts, font, HUGE).Y
+			local nLines = #r.lines
+			local blockH = nLines * lineH
+			local ya = o.TextYAlignment
+			local y0 = (ya == Enum.TextYAlignment.Top) and 0 or ((ya == Enum.TextYAlignment.Bottom) and (abs.Y - blockH) or ((abs.Y - blockH) / 2))
+			local xa = o.TextXAlignment
+			for i, t in ipairs(r.toks) do
+				local im = r.ims[i]
+				if im then
+					local fullW = tw(r.lines[t.k], ts, font)
+					local base = 0
+					if xa == Enum.TextXAlignment.Center then base = (abs.X - fullW) / 2
+					elseif xa == Enum.TextXAlignment.Right then base = abs.X - fullW end
+					if base < 0 then base = 0 end
+					im.AnchorPoint = Vector2.new(0, 0)
+					im.Position = UDim2.fromOffset(math.floor(base + tw(t.pre, ts, font) + 1), math.floor(y0 + (t.k - 1) * lineH + (lineH - r.isz) / 2))
+				end
+			end
+		end
+		-- dipanggil dari bindText (mk) setiap teks berubah dari luar. write(teks) = tulis o.Text tanpa memicu terjemahan ulang.
+		function U.icoRender(o, write)
+			local txt = o.Text
+			local r = rec[o]
+			if not string.find(txt, "{i:", 1, true) then
+				if r and r.ims then
+					for _, im in ipairs(r.ims) do im:Destroy() end
+					r.ims, r.src = nil, nil
+				end
+				return
+			end
+			if not r then
+				r = {}
+				rec[o] = r
+				local function upd() local rr = rec[o] if rr and rr.ims then pcall(layout, o, rr) end end
+				for _, p in ipairs({ "AbsoluteSize", "TextColor3", "TextTransparency", "TextSize", "Font", "TextXAlignment", "TextYAlignment" }) do
+					o:GetPropertyChangedSignal(p):Connect(upd)
+				end
+			end
+			if r.ims then for _, im in ipairs(r.ims) do im:Destroy() end end
+			r.ims = {}
+			local ts, font = o.TextSize, o.Font
+			local isz = math.clamp(ts + 2, 10, 64)
+			r.isz = isz
+			local spW = TextService:GetTextSize(" ", ts, font, HUGE).X
+			if spW < 1 then spW = ts * 0.3 end
+			local pad = string.rep(" ", math.max(1, math.ceil((isz + 3) / spW)))
+			local display, toks = "", {}
+			local pos = 1
+			while true do
+				local a, b, nm = string.find(txt, "{i:([%w%-]+)}", pos)
+				if not a then display = display .. string.sub(txt, pos) break end
+				display = display .. string.sub(txt, pos, a - 1)
+				if IC[nm] then
+					toks[#toks + 1] = { nm = nm, before = display }
+					display = display .. pad
+				end
+				pos = b + 1
+			end
+			r.src = txt
+			r.pure = (#toks == 1) and (string.gsub(display, "%s", "") == "")
+			r.lines = string.split(r.pure and "" or display, "\n")
+			for _, t in ipairs(toks) do
+				local bl = string.split(t.before, "\n")
+				t.k = #bl
+				t.pre = bl[#bl]
+			end
+			r.toks = toks
+			for _, t in ipairs(toks) do
+				r.ims[#r.ims + 1] = U.icoImage(t.nm, o, isz, o.TextColor3)
+			end
+			for _, im in ipairs(r.ims) do im.ZIndex = o.ZIndex end
+			write(r.pure and "" or display)
+			layout(o, r)
+		end
+	end
 U.stageN = 0
 U.stage = function(t)
 	U.stageN = U.stageN + 1
@@ -785,6 +979,7 @@ do
 		return nil, false
 	end
 	U.fb = fb
+	U.fbUrl = PURL0
 
 	local function checkAccess()
 		if CONFIG.CREATORS[uid0] then return true, true end
@@ -1491,7 +1686,6 @@ local DICT = {
 	["Malam Bintang"] = { "Starry Night", "Malam Bintang", "Noche estrellada", "Noite estrelada", "Nuit étoilée", "Sternennacht", "Звёздная ночь", "Yıldızlı gece", "Đêm đầy sao" },
 	["Utilitas"] = { "Utilities", "Utilitas", "Utilidades", "Utilitários", "Utilitaires", "Werkzeuge", "Утилиты", "Yardımcılar", "Tiện ích" },
 	["PERFORMA"] = { "PERFORMANCE", "PERFORMA", "RENDIMIENTO", "DESEMPENHO", "PERFORMANCE", "LEISTUNG", "ПРОИЗВОДИТЕЛЬНОСТЬ", "PERFORMANS", "HIỆU NĂNG" },
-	["SERVER HOP"] = { "SERVER HOP", "SERVER HOP", "CAMBIO DE SERVIDOR", "TROCAR SERVIDOR", "CHANGER DE SERVEUR", "SERVERWECHSEL", "СМЕНА СЕРВЕРА", "SUNUCU DEĞİŞTİR", "ĐỔI SERVER" },
 	["WAYPOINT"] = { "WAYPOINT", "WAYPOINT", "PUNTOS", "PONTOS", "POINTS DE REPÈRE", "WEGPUNKTE", "ТОЧКИ", "YOL NOKTALARI", "ĐIỂM LƯU" },
 	["PENCAHAYAAN"] = { "LIGHTING", "PENCAHAYAAN", "ILUMINACIÓN", "ILUMINAÇÃO", "ÉCLAIRAGE", "BELEUCHTUNG", "ОСВЕЩЕНИЕ", "AYDINLATMA", "ÁNH SÁNG" },
 	["GERAK"] = { "MOVEMENT", "GERAK", "MOVIMIENTO", "MOVIMENTO", "MOUVEMENT", "BEWEGUNG", "ДВИЖЕНИЕ", "HAREKET", "DI CHUYỂN" },
@@ -1584,8 +1778,8 @@ local DICT = {
 	["LIGHT"] = { "LIGHT", "CAHAYA", "LUZ", "LUZ", "LUMIÈRE", "LICHT", "СВЕТ", "IŞIK", "ÁNH SÁNG" },
 	["TECH"] = { "TECH", "TEKNO", "TECNO", "TECNO", "TECH", "TECHNIK", "ТЕХНО", "TEKNO", "CÔNG NGHỆ" },
 	["FUN"] = { "FUN", "SERU", "DIVERTIDO", "DIVERTIDO", "FUN", "SPASS", "ВЕСЕЛЬЕ", "EĞLENCE", "VUI" },
-	["\u{2B50} FAV"] = { "\u{2B50} FAV", "\u{2B50} FAVORIT", "\u{2B50} FAV", "\u{2B50} FAV", "\u{2B50} FAV", "\u{2B50} FAV", "\u{2B50} ИЗБР", "\u{2B50} FAV", "\u{2B50} YÊU THÍCH" },
-	["\u{23E9}  TEST EFFECT"] = { "\u{23E9}  TEST EFFECT", "\u{23E9}  COBA EFEK", "\u{23E9}  PROBAR EFECTO", "\u{23E9}  TESTAR EFEITO", "\u{23E9}  TESTER L'EFFET", "\u{23E9}  EFFEKT TESTEN", "\u{23E9}  ТЕСТ ЭФФЕКТА", "\u{23E9}  EFEKTİ DENE", "\u{23E9}  THỬ HIỆU ỨNG" },
+	["{i:star} FAV"] = { "{i:star} FAV", "{i:star} FAVORIT", "{i:star} FAV", "{i:star} FAV", "{i:star} FAV", "{i:star} FAV", "{i:star} ИЗБР", "{i:star} FAV", "{i:star} YÊU THÍCH" },
+	["{i:fast-forward}  TEST EFFECT"] = { "{i:fast-forward}  TEST EFFECT", "{i:fast-forward}  COBA EFEK", "{i:fast-forward}  PROBAR EFECTO", "{i:fast-forward}  TESTAR EFEITO", "{i:fast-forward}  TESTER L'EFFET", "{i:fast-forward}  EFFEKT TESTEN", "{i:fast-forward}  ТЕСТ ЭФФЕКТА", "{i:fast-forward}  EFEKTİ DENE", "{i:fast-forward}  THỬ HIỆU ỨNG" },
 	["Target"] = { "Target", "Target", "Objetivo", "Alvo", "Cible", "Ziel", "Цель", "Hedef", "Mục tiêu" },
 	["MY KILLS"] = { "MY KILLS", "KILL SAYA", "MIS BAJAS", "MEUS ABATES", "MES KILLS", "MEINE KILLS", "МОИ УБИЙСТВА", "BENİM ÖLDÜRMELERİM", "HẠ GỤC CỦA TÔI" },
 	["NEARBY"] = { "NEARBY", "SEKITAR", "CERCANOS", "PERTO", "À PROXIMITÉ", "IN DER NÄHE", "РЯДОМ", "YAKINDA", "GẦN ĐÂY" },
@@ -1684,7 +1878,7 @@ local DICT = {
 	["Tutup"] = { "Close", "Tutup" },
 	["Semua UI, efek, aura, dan item catalog akan dihapus, dan koneksi script dimatikan. Untuk memakai lagi kamu harus execute script ulang."] = { "All UI, effects, auras and catalog items will be removed and the script connections shut down. Execute the script again to use it.", "Semua UI, efek, aura, dan item catalog akan dihapus, dan koneksi script dimatikan. Untuk memakai lagi kamu harus execute script ulang." },
 	["Aura belum tersedia"] = { "Aura not available yet", "Aura belum tersedia" },
-	["🔍 cari aura / tema…"] = { "🔍 search aura / theme…", "🔍 cari aura / tema…" },
+	["cari aura / tema…"] = { "{i:search} search aura / theme…", "cari aura / tema…" },
 	["Hanya terlihat di client kamu"] = { "Only visible on your client", "Hanya terlihat di client kamu" },
 	["Nama config..."] = { "Config name...", "Nama config..." },
 	["SIMPAN"] = { "SAVE", "SIMPAN" },
@@ -1695,7 +1889,7 @@ local DICT = {
 	["cari audio, atau tempel ID…"] = { "search audio, or paste an ID…", "cari audio, atau tempel ID…" },
 	["Cari"] = { "Search", "Cari" },
 	["Belum ada audio"] = { "No audio yet", "Belum ada audio" },
-	["pilih hasil lalu tekan ▶"] = { "pick a result then press ▶", "pilih hasil lalu tekan ▶" },
+	["pilih hasil lalu tekan {i:play}"] = { "pick a result then press {i:play}", "pilih hasil lalu tekan {i:play}" },
 	["memuat\u{2026}"] = { "loading…", "memuat\u{2026}" },
 	["gagal: audio tidak bisa diputar (private / dihapus / tidak diizinkan di game ini)"] = { "failed: audio cannot be played (private / deleted / not allowed in this game)", "gagal: audio tidak bisa diputar (private / dihapus / tidak diizinkan di game ini)" },
 	["selesai"] = { "done", "selesai" },
@@ -1713,7 +1907,7 @@ local DICT = {
 	["(kosong)"] = { "(empty)", "(kosong)" },
 	["Muat lebih"] = { "Load more", "Muat lebih" },
 	["Gagal memuat ("] = { "Failed to load (", "Gagal memuat (" },
-	["R15: ID emote katalog atau tombol bawaan. R6: animation ID. ★ = simpan ke favorit (bisa dicari). Animasi hanya jalan kalau asetnya milik Roblox / pembuat game / kamu. Lagu hanya terdengar olehmu."] = { "R15: catalog emote ID or built-in buttons. R6: animation ID. ★ = save to favorites (searchable). Animations only play if the asset belongs to Roblox / the game creator / you. Music is only heard by you.", "R15: ID emote katalog atau tombol bawaan. R6: animation ID. ★ = simpan ke favorit (bisa dicari). Animasi hanya jalan kalau asetnya milik Roblox / pembuat game / kamu. Lagu hanya terdengar olehmu." },
+	["R15: ID emote katalog atau tombol bawaan. R6: animation ID. {i:star} = simpan ke favorit (bisa dicari). Animasi hanya jalan kalau asetnya milik Roblox / pembuat game / kamu. Lagu hanya terdengar olehmu."] = { "R15: catalog emote ID or built-in buttons. R6: animation ID. {i:star} = save to favorites (searchable). Animations only play if the asset belongs to Roblox / the game creator / you. Music is only heard by you.", "R15: ID emote katalog atau tombol bawaan. R6: animation ID. {i:star} = simpan ke favorit (bisa dicari). Animasi hanya jalan kalau asetnya milik Roblox / pembuat game / kamu. Lagu hanya terdengar olehmu." },
 	["Pack animasi (idle/walk/run/jump/fall/climb/swim) untuk R15 atau R6. Pilih rig, pilih pack, unduh dulu, lalu pilih bagian mana yang dipakai."] = { "Animation packs (idle/walk/run/jump/fall/climb/swim) for R15 or R6. Pick a rig, pick a pack, download it first, then choose which parts to use.", "Pack animasi (idle/walk/run/jump/fall/climb/swim) untuk R15 atau R6. Pilih rig, pilih pack, unduh dulu, lalu pilih bagian mana yang dipakai." },
 	["Belum diunduh"] = { "Not downloaded yet", "Belum diunduh" },
 	["Belum ada target"] = { "No target yet", "Belum ada target" },
@@ -1806,12 +2000,12 @@ local DICT = {
 	["Loop"] = { "Loop", "Loop", "Bucle", "Loop", "Boucle", "Schleife", "Цикл", "Döngü", "Vòng lặp" },
 	["Akhir"] = { "End", "Akhir", "Final", "Fim", "Fin", "Ende", "Конец", "Son", "Kết thúc" },
 	["SEMUA VFX"] = { "ALL VFX", "SEMUA VFX", "TODOS LOS VFX", "TODOS OS VFX", "TOUS LES VFX", "ALLE VFX", "ВСЕ VFX", "TÜM VFX", "TẤT CẢ VFX" },
-	["\u{2B50} SEMUA VFX"] = { "\u{2B50} ALL VFX", "\u{2B50} SEMUA VFX", "\u{2B50} TODOS LOS VFX", "\u{2B50} TODOS OS VFX", "\u{2B50} TOUS LES VFX", "\u{2B50} ALLE VFX", "\u{2B50} ВСЕ VFX", "\u{2B50} TÜM VFX", "\u{2B50} TẤT CẢ VFX" },
+	["{i:star} SEMUA VFX"] = { "{i:star} ALL VFX", "{i:star} SEMUA VFX", "{i:star} TODOS LOS VFX", "{i:star} TODOS OS VFX", "{i:star} TOUS LES VFX", "{i:star} ALLE VFX", "{i:star} ВСЕ VFX", "{i:star} TÜM VFX", "{i:star} TẤT CẢ VFX" },
 	["Aktifkan custom untuk bagian ini"] = { "Enable custom for this part", "Aktifkan custom untuk bagian ini", "Activar personalizado en esta parte", "Ativar personalizado nesta parte", "Activer le perso pour cette partie", "Eigene für diesen Teil aktivieren", "Включить своё для этой части", "Bu bölüm için özelleştir", "Bật tùy chỉnh cho phần này" },
 	["ID AUDIO (ANGKA SAJA)"] = { "AUDIO ID (NUMBERS ONLY)", "ID AUDIO (ANGKA SAJA)", "ID DE AUDIO (SOLO NÚMEROS)", "ID DE ÁUDIO (SÓ NÚMEROS)", "ID AUDIO (CHIFFRES SEULEMENT)", "AUDIO-ID (NUR ZAHLEN)", "ID АУДИО (ТОЛЬКО ЦИФРЫ)", "SES ID (SADECE RAKAM)", "ID ÂM THANH (CHỈ SỐ)" },
 	["contoh: 122204207976563"] = { "e.g. 122204207976563", "contoh: 122204207976563", "ej.: 122204207976563", "ex.: 122204207976563", "ex. : 122204207976563", "z. B. 122204207976563", "напр.: 122204207976563", "örn.: 122204207976563", "vd: 122204207976563" },
 	["Volume custom"] = { "Custom volume", "Volume custom", "Volumen personalizado", "Volume personalizado", "Volume perso", "Eigene Lautstärke", "Своя громкость", "Özel ses", "Âm lượng tùy chỉnh" },
-	["\u{23E9}  PREVIEW"] = { "\u{23E9}  PREVIEW", "\u{23E9}  PRATINJAU", "\u{23E9}  VISTA PREVIA", "\u{23E9}  PRÉVIA", "\u{23E9}  APERÇU", "\u{23E9}  VORSCHAU", "\u{23E9}  ПРОСЛУШАТЬ", "\u{23E9}  ÖNİZLE", "\u{23E9}  XEM THỬ" },
+	["{i:fast-forward}  PREVIEW"] = { "{i:fast-forward}  PREVIEW", "{i:fast-forward}  PRATINJAU", "{i:fast-forward}  VISTA PREVIA", "{i:fast-forward}  PRÉVIA", "{i:fast-forward}  APERÇU", "{i:fast-forward}  VORSCHAU", "{i:fast-forward}  ПРОСЛУШАТЬ", "{i:fast-forward}  ÖNİZLE", "{i:fast-forward}  XEM THỬ" },
 	["X  HAPUS"] = { "X  DELETE", "X  HAPUS", "X  BORRAR", "X  EXCLUIR", "X  SUPPRIMER", "X  LÖSCHEN", "X  УДАЛИТЬ", "X  SİL", "X  XÓA" },
 	["Custom menggantikan suara bawaan di bagian itu. Nonaktif atau kosong = pakai default. Pilih SEMUA VFX untuk satu suara di semua efek."] = { "Custom replaces the built-in sound for that part. Off or empty = default. Pick ALL VFX for one sound across every effect.", "Custom menggantikan suara bawaan di bagian itu. Nonaktif atau kosong = pakai default. Pilih SEMUA VFX untuk satu suara di semua efek.", "Lo personalizado reemplaza el sonido incluido en esa parte. Desactivado o vacío = predeterminado. Elige TODOS LOS VFX para un solo sonido en todos los efectos.", "O personalizado substitui o som padrão dessa parte. Desligado ou vazio = padrão. Escolha TODOS OS VFX para um som em todos os efeitos.", "Le perso remplace le son d'origine de cette partie. Désactivé ou vide = par défaut. Choisis TOUS LES VFX pour un seul son sur tous les effets.", "Eigene Sounds ersetzen den Standardsound dieses Teils. Aus oder leer = Standard. Wähle ALLE VFX für einen Sound bei allen Effekten.", "Своё заменяет стандартный звук этой части. Выкл. или пусто = по умолчанию. Выберите ВСЕ VFX, чтобы задать один звук для всех эффектов.", "Özel ses, o bölümdeki varsayılan sesin yerine geçer. Kapalı veya boş = varsayılan. Tüm efektlere tek ses için TÜM VFX'i seç.", "Âm tùy chỉnh thay thế âm mặc định của phần đó. Tắt hoặc trống = mặc định. Chọn TẤT CẢ VFX để dùng một âm cho mọi hiệu ứng." },
 	["SKIN"] = { "SKIN", "SKIN", "TEMA", "TEMA", "THÈME", "DESIGN", "ТЕМА", "TEMA", "GIAO DIỆN" },
@@ -2094,7 +2288,7 @@ local TR = { cache = {}, wait = {}, q = {}, run = false, loaded = {}, pauseUntil
 	["Menghitung statistik..."] = true,
 	["Mengirim tes..."] = true,
 	["Menyiapkan "] = true,
-	["Muat lebih\n\u{23E9}\n+"] = true,
+	["Muat lebih\n{i:fast-forward}\n+"] = true,
 	["Muat:"] = true,
 	["No matching server. Change Region / Low ping and scan again."] = true,
 	["No other server found."] = true,
@@ -2193,20 +2387,20 @@ local TR = { cache = {}, wait = {}, q = {}, run = false, loaded = {}, pauseUntil
 	["Yakin? Tiap item muncul prompt beli Roblox. Klik lagi."] = true,
 	["Yakin? klik lagi"] = true,
 	["Yes"] = true,
-	["\u{1F310} Cari lintas game (scan game populer)"] = true,
-	["\u{1F310} SCAN SERVER"] = true,
-	["\u{1F3AE} GAME BROWSER"] = true,
-	["\u{1F3E0} Beranda"] = true,
-	["\u{1F4BE} COOKIE TERSIMPAN / RIWAYAT ("] = true,
-	["\u{1F504} Muat ulang"] = true,
-	["\u{1F50E} Scan "] = true,
-	["\u{1F513} Cookie akun: belum dipasang (opsional, bikin status online/game semua pemain terbaca seperti di web Roblox)"] = true,
-	["\u{1F680} Join server dia"] = true,
-	["\u{1F680} Masuk game ini (server acak)"] = true,
-	["\u{23E9} Lanjutkan scan"] = true,
-	["\u{2795} Simpan pemain ini"] = true,
-	["\u{2B50} PALING COCOK"] = true,
-	["\u{2B50} Tersimpan (ketuk untuk hapus)"] = true,
+	["{i:globe} Cari lintas game (scan game populer)"] = true,
+	["{i:globe} SCAN SERVER"] = true,
+	["{i:gamepad-2} GAME BROWSER"] = true,
+	["{i:home} Beranda"] = true,
+	["{i:save} COOKIE TERSIMPAN / RIWAYAT ("] = true,
+	["{i:refresh-cw} Muat ulang"] = true,
+	["{i:scan-search} Scan "] = true,
+	["{i:lock-open} Cookie akun: belum dipasang (opsional, bikin status online/game semua pemain terbaca seperti di web Roblox)"] = true,
+	["{i:rocket} Join server dia"] = true,
+	["{i:rocket} Masuk game ini (server acak)"] = true,
+	["{i:fast-forward} Lanjutkan scan"] = true,
+	["{i:plus} Simpan pemain ini"] = true,
+	["{i:star} PALING COCOK"] = true,
+	["{i:star} Tersimpan (ketuk untuk hapus)"] = true,
 	["key tersimpan (ganti?)"] = true,
 	["no script matches"] = true,
 	["server ini"] = true,
@@ -2302,6 +2496,28 @@ function TR.req(text, code)
 		end
 	end
 	return nil
+end
+-- token ikon "{i:nama}" di awal/akhir teks tidak ikut dikirim ke API terjemahan (supaya tidak rusak), lalu dipasang lagi
+TR.req0 = TR.req
+function TR.req(text, code)
+	local pre, rest = "", text
+	while true do
+		local t = rest:match("^%s*{i:[%w%-]+}%s*")
+		if not t then break end
+		pre = pre .. t
+		rest = rest:sub(#t + 1)
+	end
+	local post = ""
+	while true do
+		local t = rest:match("%s*{i:[%w%-]+}%s*$")
+		if not t then break end
+		post = t .. post
+		rest = rest:sub(1, #rest - #t)
+	end
+	if pre == "" and post == "" then return TR.req0(text, code) end
+	local v = TR.req0(rest, code)
+	if not v then return nil end
+	return pre .. v .. post
 end
 function TR.work()
 	if TR.run then return end
@@ -2862,7 +3078,7 @@ local function launchParts(char, pos, force, dur, spin)
 	end
 end
 
-local function popup(pos, text, color, size)
+local function popup(pos, text, color, size, icon)
 	local a = fxPart(Enum.PartType.Ball, ONE * 0.2, color, CFrame.new(pos + V3(0, 4, 0)), 1, nil, 3)
 	local bb = Instance.new("BillboardGui")
 	bb.Size, bb.AlwaysOnTop, bb.Adornee = UDim2.fromOffset(300, 60), true, a
@@ -2874,10 +3090,25 @@ local function popup(pos, text, color, size)
 	local st = Instance.new("UIStroke")
 	st.Thickness, st.Color = 2, Color3.new(0, 0, 0)
 	st.Parent = l
+	local icoIm
+	if icon and U and U.icoImage then
+		pcall(function()
+			local fs = size or 26
+			local w = game:GetService("TextService"):GetTextSize(text, fs, Enum.Font.GothamBlack, Vector2.new(100000, 100000)).X
+			local isz = fs + 2
+			l.Position = UDim2.new(0, (isz + 4) / 2, 0, 0)
+			icoIm = U.icoImage(icon, bb, isz, color)
+			if icoIm then
+				icoIm.AnchorPoint = Vector2.new(0.5, 0.5)
+				icoIm.Position = UDim2.new(0.5, -w / 2, 0.5, 0)
+			end
+		end)
+	end
 	tween(a, 1.8, { Position = a.Position + V3(0, 6, 0) })
 	task.delay(0.9, function()
 		tween(l, 0.9, { TextTransparency = 1 })
 		tween(st, 0.9, { Transparency = 1 })
+		if icoIm then tween(icoIm, 0.9, { ImageTransparency = 1 }) end
 	end)
 end
 
@@ -2927,7 +3158,7 @@ local function add(name, icon, color, fn)
 end
 
 -- 1. NUKE ----------------------------------------------------------
-add("Nuke", "\u{1F52C}", C3(255, 140, 40), function(char, pos, gp)
+add("Nuke", "{i:radiation}", C3(255, 140, 40), function(char, pos, gp)
 	local orange, yellow = C3(255, 120, 20), C3(255, 225, 100)
 	boom(1.9, 0.9)
 	defSfx("boom", SFX.bhimpact, 1.2, 1)
@@ -2978,7 +3209,7 @@ local function bolt(a, b, thick, color, tr, depth)
 	end
 end
 
-add("Thunder God", "\u{26A1}", C3(110, 190, 255), function(char, pos, gp)
+add("Thunder God", "{i:zap}", C3(110, 190, 255), function(char, pos, gp)
 	local blue, white = C3(90, 170, 255), C3(235, 248, 255)
 	dim(0.22, 2.2)
 	freezeParts(char)
@@ -3015,7 +3246,7 @@ add("Thunder God", "\u{26A1}", C3(110, 190, 255), function(char, pos, gp)
 end)
 
 -- 3. SHATTER -------------------------------------------------------
-add("Shatter", "\u{1F328}", C3(150, 220, 255), function(char, pos, gp)
+add("Shatter", "{i:cloud-snow}", C3(150, 220, 255), function(char, pos, gp)
 	local ice, deep = C3(170, 225, 255), C3(90, 170, 240)
 	freezeParts(char)
 	for _, p in ipairs(bodyParts(char)) do
@@ -3055,7 +3286,7 @@ add("Shatter", "\u{1F328}", C3(150, 220, 255), function(char, pos, gp)
 end)
 
 -- 4. DUST ----------------------------------------------------------
-add("Dust", "\u{1F4A8}", C3(200, 200, 205), function(char, pos, gp)
+add("Dust", "{i:wind}", C3(200, 200, 205), function(char, pos, gp)
 	local parts = bodyParts(char)
 	freezeParts(char)
 	sfx(SND_BASS, 0.9, 0.4)
@@ -3093,7 +3324,7 @@ add("Dust", "\u{1F4A8}", C3(200, 200, 205), function(char, pos, gp)
 end)
 
 -- 5. BLACK HOLE (v3) -----------------------------------------------
-add("Black Hole", "\u{1F300}", C3(120, 135, 255), function(char, pos, gp)
+add("Black Hole", "{i:orbit}", C3(120, 135, 255), function(char, pos, gp)
 	local hot, gold, orange = C3(255, 247, 225), C3(255, 205, 105), C3(255, 120, 30)
 	local blue, void = C3(90, 170, 255), Color3.new(0, 0, 0)
 	local center = pos + V3(0, 3, 0)
@@ -3313,7 +3544,7 @@ add("Black Hole", "\u{1F300}", C3(120, 135, 255), function(char, pos, gp)
 end)
 
 -- 6. SOUL REAPER ---------------------------------------------------
-add("Soul Reaper", "\u{1F47B}", C3(110, 255, 235), function(char, pos, gp)
+add("Soul Reaper", "{i:ghost}", C3(110, 255, 235), function(char, pos, gp)
 	local cyan = C3(110, 255, 235)
 	sfx(SND_PING, 1, 0.5)
 	sfx(SND_BASS, 0.8, 0.5)
@@ -3357,7 +3588,7 @@ add("Soul Reaper", "\u{1F47B}", C3(110, 255, 235), function(char, pos, gp)
 end)
 
 -- 7. GOLDEN --------------------------------------------------------
-add("Golden", "\u{1F4B0}", C3(255, 205, 60), function(char, pos, gp)
+add("Golden", "{i:coins}", C3(255, 205, 60), function(char, pos, gp)
 	local gold, bright = C3(255, 195, 45), C3(255, 240, 150)
 	freezeParts(char)
 	sfx(SND_PING, 1, 1.4)
@@ -3395,7 +3626,7 @@ add("Golden", "\u{1F4B0}", C3(255, 205, 60), function(char, pos, gp)
 end)
 
 -- 8. GLITCH --------------------------------------------------------
-add("Glitch", "\u{1F4FA}", C3(0, 255, 200), function(char, pos, gp)
+add("Glitch", "{i:tv}", C3(0, 255, 200), function(char, pos, gp)
 	local cols = { C3(0, 255, 255), C3(255, 0, 255), C3(0, 255, 90) }
 	local parts = bodyParts(char)
 	local orig = {}
@@ -3707,13 +3938,13 @@ local function partyNew(char, pos, gp)
 	for _, bm in ipairs(beams) do bm.p:Destroy() end
 	hide(char)
 end
-add("Party", "\u{1F389}", C3(255, 190, 60), function(char, pos, gp)
+add("Party", "{i:party-popper}", C3(255, 190, 60), function(char, pos, gp)
 	task.spawn(partyRef, char, pos, gp)
 	partyNew(char, pos, gp)
 end)
 
 -- 10. INFERNO (baru) -------------------------------------------------
-add("Inferno", "\u{1F525}", C3(255, 95, 25), function(char, pos, gp)
+add("Inferno", "{i:flame}", C3(255, 95, 25), function(char, pos, gp)
 	local fire, ember = C3(255, 105, 30), C3(255, 205, 80)
 	freezeParts(char)
 	sfx(SND_BASS, 1, 0.6)
@@ -3747,7 +3978,7 @@ add("Inferno", "\u{1F525}", C3(255, 95, 25), function(char, pos, gp)
 end)
 
 -- 11. SLASH (v3: potong merah -> lego -> debu merah) ---------------------
-add("Slash", "\u{1F5E1}", C3(255, 55, 50), function(char, pos, gp)
+add("Slash", "{i:sword}", C3(255, 55, 50), function(char, pos, gp)
 	local red, white, deep = C3(255, 45, 40), C3(255, 240, 232), C3(120, 10, 12)
 	freezeParts(char)
 	dim(0.2, 3.4)
@@ -3879,7 +4110,7 @@ add("Slash", "\u{1F5E1}", C3(255, 55, 50), function(char, pos, gp)
 end)
 
 -- 12. ASCEND (malaikat bersayap 3 lapis bulu, halo, naik ke cahaya) ----
-add("Ascend", "\u{1F47C}", C3(255, 224, 130), function(char, pos, gp)
+add("Ascend", "{i:feather}", C3(255, 224, 130), function(char, pos, gp)
 	local gold, white, pearl = C3(255, 214, 110), C3(255, 252, 240), C3(255, 236, 196)
 	freezeParts(char)
 	sfx(SND_PING, 1, 1.7)
@@ -3995,7 +4226,7 @@ add("Ascend", "\u{1F47C}", C3(255, 224, 130), function(char, pos, gp)
 end)
 
 -- 13. SAKURA (baru) ---------------------------------------------------
-add("Sakura", "\u{1F338}", C3(255, 170, 195), function(char, pos, gp)
+add("Sakura", "{i:flower-2}", C3(255, 170, 195), function(char, pos, gp)
 	local cols = { C3(255, 183, 197), C3(255, 232, 238), C3(255, 150, 180), C3(190, 235, 170) }
 	freezeParts(char)
 	sfx(SND_PING, 0.8, 1.3)
@@ -4033,7 +4264,7 @@ add("Sakura", "\u{1F338}", C3(255, 170, 195), function(char, pos, gp)
 end)
 
 -- 14. TOXIC (baru) ----------------------------------------------------
-add("Toxic", "\u{1F4A3}", C3(150, 255, 60), function(char, pos, gp)
+add("Toxic", "{i:bomb}", C3(150, 255, 60), function(char, pos, gp)
 	local lime, dark = C3(160, 255, 60), C3(50, 120, 25)
 	freezeParts(char)
 	sfx(SND_BASS, 1, 0.7)
@@ -4209,13 +4440,13 @@ local function meteorNew(char, pos, gp)
 	launchParts(char, pos, 58, 1.2, 14)
 	popup(pos + V3(0, 6, 0), "IMPACT", orange, 36)
 end
-add("Meteor", "\u{1F320}", C3(255, 120, 40), function(char, pos, gp)
+add("Meteor", "{i:sparkles}", C3(255, 120, 40), function(char, pos, gp)
 	task.spawn(meteorRef, char, pos, gp)
 	meteorNew(char, pos, gp)
 end)
 
 -- 16. CYCLONE (baru) --------------------------------------------------
-add("Cyclone", "\u{1F32A}", C3(120, 225, 220), function(char, pos, gp)
+add("Cyclone", "{i:tornado}", C3(120, 225, 220), function(char, pos, gp)
 	local teal, white = C3(120, 225, 220), C3(235, 255, 252)
 	freezeParts(char)
 	sfx(SND_BASS, 1, 0.8)
@@ -4264,7 +4495,7 @@ add("Cyclone", "\u{1F32A}", C3(120, 225, 220), function(char, pos, gp)
 end)
 
 -- 17. MATRIX (baru) ---------------------------------------------------
-add("Matrix", "\u{1F4BB}", C3(50, 255, 110), function(char, pos, gp)
+add("Matrix", "{i:laptop}", C3(50, 255, 110), function(char, pos, gp)
 	local g = C3(50, 255, 110)
 	local glyphs = { "0", "1", "{", "}", "#", "$", "%", "<", ">", "/", "=", "+" }
 	freezeParts(char)
@@ -4325,7 +4556,7 @@ end)
 -- ====================== EFEK BARU ======================
 
 -- 18. ORBITAL (laser dari langit)
-add("Orbital", "\u{1F6F0}", C3(255, 226, 90), function(char, pos, gp)
+add("Orbital", "{i:satellite}", C3(255, 226, 90), function(char, pos, gp)
 	local yel, white, red = C3(255, 226, 90), C3(255, 252, 235), C3(255, 70, 50)
 	freezeParts(char)
 	dim(0.2, 2.8)
@@ -4376,7 +4607,7 @@ add("Orbital", "\u{1F6F0}", C3(255, 226, 90), function(char, pos, gp)
 end)
 
 -- 19. GRAVITY (lempeng raksasa menghancurkan)
-add("Gravity", "\u{1F4CC}", C3(70, 215, 190), function(char, pos, gp)
+add("Gravity", "{i:pin}", C3(70, 215, 190), function(char, pos, gp)
 	local teal, slate, white = C3(70, 215, 190), C3(40, 50, 58), C3(220, 255, 248)
 	freezeParts(char)
 	dim(0.18, 2.6)
@@ -4500,7 +4731,7 @@ add("Chrono", "..", C3(120, 255, 190), function(char, pos, gp)
 end)
 
 -- 21. SHADOW (ditarik bayangan)
-add("Shadow", "\u{1F311}", C3(150, 105, 235), function(char, pos, gp)
+add("Shadow", "{i:moon}", C3(150, 105, 235), function(char, pos, gp)
 	local vio, ink = C3(150, 105, 235), C3(10, 8, 16)
 	freezeParts(char)
 	dim(0.3, 3.2)
@@ -4571,7 +4802,7 @@ add("Shadow", "\u{1F311}", C3(150, 105, 235), function(char, pos, gp)
 end)
 
 -- 22. DRAGON (v7: naga timur - kepala, tanduk, taring, sisik, kaki, cakar) ---
-add("Dragon", "\u{1F409}", C3(60, 230, 150), function(char, pos, gp)
+add("Dragon", "{i:flame}", C3(60, 230, 150), function(char, pos, gp)
 	local jade, deep, pale, gold, white = C3(34, 176, 112), C3(12, 70, 56), C3(170, 255, 214), C3(255, 214, 120), C3(242, 255, 248)
 	local belly = C3(236, 226, 168)
 	freezeParts(char)
@@ -4779,7 +5010,7 @@ add("Dragon", "\u{1F409}", C3(60, 230, 150), function(char, pos, gp)
 end)
 
 -- 23. SOLAR (jadi matahari lalu meledak)
-add("Solar", "\u{1F31E}", C3(255, 196, 60), function(char, pos, gp)
+add("Solar", "{i:sun}", C3(255, 196, 60), function(char, pos, gp)
 	local core, yel, orange = C3(255, 250, 225), C3(255, 204, 70), C3(255, 110, 30)
 	freezeParts(char)
 	dim(0.22, 3)
@@ -4842,7 +5073,7 @@ add("Solar", "\u{1F31E}", C3(255, 196, 60), function(char, pos, gp)
 end)
 
 -- 24. PORTAL (ditelan portal)
-add("Portal", "\u{1F30C}", C3(255, 150, 45), function(char, pos, gp)
+add("Portal", "{i:sparkles}", C3(255, 150, 45), function(char, pos, gp)
 	local orange, blue, void = C3(255, 150, 45), C3(70, 185, 255), Color3.new(0, 0, 0)
 	freezeParts(char)
 	dim(0.2, 2.8)
@@ -4923,7 +5154,7 @@ add("Portal", "\u{1F30C}", C3(255, 150, 45), function(char, pos, gp)
 end)
 
 -- 25. PRISM (kristal pelangi)
-add("Prism", "\u{1F48E}", C3(90, 240, 215), function(char, pos, gp)
+add("Prism", "{i:gem}", C3(90, 240, 215), function(char, pos, gp)
 	local rainbow = {
 		C3(255, 90, 90), C3(255, 170, 60), C3(255, 235, 80),
 		C3(90, 235, 120), C3(80, 200, 255), C3(120, 120, 255),
@@ -4974,7 +5205,7 @@ byName["Slash"].tag = "HOT"
 -- ====================== EFEK BARU v6 ======================
 
 -- 26. ECLIPSE (bulan hitam menyedot)
-add("Eclipse", "\u{1F31A}", C3(255, 105, 70), function(char, pos, gp)
+add("Eclipse", "{i:moon}", C3(255, 105, 70), function(char, pos, gp)
 	local ember, white, void = C3(255, 105, 70), C3(255, 238, 220), Color3.new(0, 0, 0)
 	freezeParts(char)
 	dim(0.38, 3.8)
@@ -5030,7 +5261,7 @@ add("Eclipse", "\u{1F31A}", C3(255, 105, 70), function(char, pos, gp)
 end)
 
 -- 27. BLADE STORM (pedang berputar menusuk)
-add("Blade Storm", "\u{1F5E1}", C3(205, 220, 240), function(char, pos, gp)
+add("Blade Storm", "{i:sword}", C3(205, 220, 240), function(char, pos, gp)
 	local steel, edge, glow, brass = C3(185, 200, 220), C3(245, 250, 255), C3(120, 200, 255), C3(255, 215, 120)
 	freezeParts(char)
 	dim(0.18, 2.8)
@@ -5115,7 +5346,7 @@ add("Blade Storm", "\u{1F5E1}", C3(205, 220, 240), function(char, pos, gp)
 end)
 
 -- 28. VOLCANO (gunung api meletus)
-add("Volcano", "\u{1F30B}", C3(255, 85, 30), function(char, pos, gp)
+add("Volcano", "{i:mountain}", C3(255, 85, 30), function(char, pos, gp)
 	local lava, yel, rock = C3(255, 85, 30), C3(255, 205, 80), C3(40, 30, 28)
 	freezeParts(char)
 	dim(0.2, 3.4)
@@ -5206,7 +5437,7 @@ add("Volcano", "\u{1F30B}", C3(255, 85, 30), function(char, pos, gp)
 end)
 
 -- 29. DISCO (lantai disko)
-add("Disco", "\u{1F57A}", C3(255, 60, 160), function(char, pos, gp)
+add("Disco", "{i:music}", C3(255, 60, 160), function(char, pos, gp)
 	local cols = {
 		C3(255, 60, 90), C3(255, 160, 40), C3(255, 235, 60), C3(90, 235, 110),
 		C3(60, 220, 255), C3(80, 110, 255), C3(255, 70, 200),
@@ -5282,7 +5513,7 @@ add("Disco", "\u{1F57A}", C3(255, 60, 160), function(char, pos, gp)
 end)
 
 -- 30. CONSTELLATION (jadi rasi bintang)
-add("Constellation", "\u{2728}", C3(150, 175, 255), function(char, pos, gp)
+add("Constellation", "{i:sparkles}", C3(150, 175, 255), function(char, pos, gp)
 	local blue, gold = C3(150, 175, 255), C3(255, 225, 150)
 	freezeParts(char)
 	dim(0.34, 3.8)
@@ -5373,7 +5604,7 @@ add("Constellation", "\u{2728}", C3(150, 175, 255), function(char, pos, gp)
 end)
 
 -- 31. PAINT (meledak jadi cat)
-add("Paint", "\u{1F3A8}", C3(255, 140, 90), function(char, pos, gp)
+add("Paint", "{i:palette}", C3(255, 140, 90), function(char, pos, gp)
 	local pal = {
 		C3(255, 70, 70), C3(255, 160, 40), C3(255, 225, 60), C3(80, 220, 110),
 		C3(60, 200, 255), C3(90, 120, 255), C3(255, 90, 190),
@@ -5445,7 +5676,7 @@ add("Paint", "\u{1F3A8}", C3(255, 140, 90), function(char, pos, gp)
 end)
 
 -- 32. JUDGEMENT (pedang suci jatuh)
-add("Judgement", "\u{1F52E}", C3(190, 220, 255), function(char, pos, gp)
+add("Judgement", "{i:wand-sparkles}", C3(190, 220, 255), function(char, pos, gp)
 	local holy, gold, white = C3(190, 220, 255), C3(255, 218, 130), C3(255, 252, 245)
 	freezeParts(char)
 	dim(0.24, 3.4)
@@ -5519,7 +5750,7 @@ add("Judgement", "\u{1F52E}", C3(190, 220, 255), function(char, pos, gp)
 end)
 
 -- 33. TSUNAMI (ombak raksasa)
-add("Tsunami", "\u{1F30A}", C3(60, 170, 255), function(char, pos, gp)
+add("Tsunami", "{i:waves}", C3(60, 170, 255), function(char, pos, gp)
 	local water, foam, deep = C3(40, 150, 235), C3(240, 250, 255), C3(12, 60, 120)
 	freezeParts(char)
 	dim(0.15, 3)
@@ -5577,7 +5808,7 @@ end)
 -- ====================== EFEK BARU v11 ======================
 
 -- 34. PHOENIX (burung api bangkit)
-add("Phoenix", "\u{1F426}", C3(255, 122, 40), function(char, pos, gp)
+add("Phoenix", "{i:bird}", C3(255, 122, 40), function(char, pos, gp)
 	local fire, gold, hot = C3(255, 96, 30), C3(255, 192, 64), C3(255, 246, 214)
 	local B, CYL = Enum.PartType.Block, Enum.PartType.Cylinder
 	freezeParts(char)
@@ -5699,7 +5930,7 @@ add("Phoenix", "\u{1F426}", C3(255, 122, 40), function(char, pos, gp)
 end)
 
 -- 35. HOLOGRAM (scan lalu jadi voxel)
-add("Hologram", "\u{1F52E}", C3(70, 230, 255), function(char, pos, gp)
+add("Hologram", "{i:wand-sparkles}", C3(70, 230, 255), function(char, pos, gp)
 	local cy, bl, wh = C3(70, 230, 255), C3(60, 130, 255), C3(220, 252, 255)
 	freezeParts(char)
 	dim(0.26, 3.4)
@@ -5802,7 +6033,7 @@ add("Hologram", "\u{1F52E}", C3(70, 230, 255), function(char, pos, gp)
 end)
 
 -- 36. KRAKEN (tentakel menyeret ke bawah)
-add("Kraken", "\u{1F991}", C3(60, 190, 190), function(char, pos, gp)
+add("Kraken", "{i:anchor}", C3(60, 190, 190), function(char, pos, gp)
 	local teal, deep, purple, foam = C3(50, 190, 185), C3(14, 70, 84), C3(110, 70, 160), C3(220, 255, 250)
 	freezeParts(char)
 	dim(0.22, 3.6)
@@ -5880,7 +6111,7 @@ add("Kraken", "\u{1F991}", C3(60, 190, 190), function(char, pos, gp)
 end)
 
 -- 37. BUBBLE (terperangkap gelembung)
-add("Bubble", "\u{1F4A7}", C3(120, 220, 255), function(char, pos, gp)
+add("Bubble", "{i:droplet}", C3(120, 220, 255), function(char, pos, gp)
 	local cols = { C3(255, 130, 190), C3(255, 220, 120), C3(130, 255, 200), C3(120, 200, 255), C3(190, 150, 255) }
 	freezeParts(char)
 	sfx(SND_PING, 0.9, 1.8)
@@ -5954,7 +6185,7 @@ add("Bubble", "\u{1F4A7}", C3(120, 220, 255), function(char, pos, gp)
 end)
 
 -- 38. TESLA (tiga kumparan menyetrum)
-add("Tesla", "\u{1F50C}", C3(110, 215, 255), function(char, pos, gp)
+add("Tesla", "{i:plug-zap}", C3(110, 215, 255), function(char, pos, gp)
 	local blue, white, core, gold = C3(95, 190, 255), C3(235, 250, 255), C3(40, 80, 140), C3(255, 215, 120)
 	freezeParts(char)
 	dim(0.22, 3.4)
@@ -6029,7 +6260,7 @@ end)
 -- ====================== EFEK BARU v13 ======================
 
 -- 39. SUPERNOVA (jadi bintang lalu meledak)
-add("Supernova", "\u{1F31F}", C3(255, 226, 150), function(char, pos, gp)
+add("Supernova", "{i:sparkle}", C3(255, 226, 150), function(char, pos, gp)
 	local gold, blue, white = C3(255, 205, 100), C3(110, 160, 255), C3(255, 250, 238)
 	freezeParts(char)
 	dim(0.3, 3.6)
@@ -6095,7 +6326,7 @@ add("Supernova", "\u{1F31F}", C3(255, 226, 150), function(char, pos, gp)
 end)
 
 -- 40. FIREWORKS (jadi kembang api)
-add("Fireworks", "\u{1F386}", C3(255, 95, 160), function(char, pos, gp)
+add("Fireworks", "{i:sparkles}", C3(255, 95, 160), function(char, pos, gp)
 	local pal = { C3(255, 90, 150), C3(255, 210, 80), C3(90, 220, 255), C3(160, 255, 120), C3(190, 130, 255) }
 	freezeParts(char)
 	dim(0.2, 3.8)
@@ -6168,7 +6399,7 @@ add("Fireworks", "\u{1F386}", C3(255, 95, 160), function(char, pos, gp)
 end)
 
 -- 41. ANVIL (digencet landasan)
-add("Anvil", "\u{1F528}", C3(150, 162, 180), function(char, pos, gp)
+add("Anvil", "{i:hammer}", C3(150, 162, 180), function(char, pos, gp)
 	local steel, dark, gold = C3(120, 130, 146), C3(54, 58, 68), C3(255, 215, 90)
 	freezeParts(char)
 	local ctr = V3(pos.X, gp.Y, pos.Z)
@@ -6240,7 +6471,7 @@ add("Anvil", "\u{1F528}", C3(150, 162, 180), function(char, pos, gp)
 end)
 
 -- 42. SANDSTORM (jadi pasir lalu ditiup badai)
-add("Sandstorm", "\u{1F3DC}", C3(232, 190, 110), function(char, pos, gp)
+add("Sandstorm", "{i:wind}", C3(232, 190, 110), function(char, pos, gp)
 	local sandA, sandB, dune = C3(238, 200, 128), C3(196, 150, 84), C3(255, 232, 170)
 	freezeParts(char)
 	dim(0.16, 3.4)
@@ -6287,7 +6518,7 @@ add("Sandstorm", "\u{1F3DC}", C3(232, 190, 110), function(char, pos, gp)
 end)
 
 -- 43. TITAN FIST (tinju raksasa dari langit)
-add("Titan Fist", "\u{1F44A}", C3(255, 120, 66), function(char, pos, gp)
+add("Titan Fist", "{i:hand}", C3(255, 120, 66), function(char, pos, gp)
 	local rock, rock2, lava = C3(88, 72, 70), C3(62, 52, 52), C3(255, 120, 50)
 	freezeParts(char)
 	dim(0.26, 3.4)
@@ -6352,7 +6583,7 @@ add("Titan Fist", "\u{1F44A}", C3(255, 120, 66), function(char, pos, gp)
 end)
 
 -- 44. FROSTBITE (membeku jadi patung es lalu pecah)
-add("Frostbite", "\u{1F328}", C3(150, 225, 255), function(char, pos, gp)
+add("Frostbite", "{i:cloud-snow}", C3(150, 225, 255), function(char, pos, gp)
 	local ice, deep, white = C3(160, 226, 255), C3(70, 150, 230), C3(240, 252, 255)
 	local ctr = V3(pos.X, gp.Y, pos.Z)
 	freezeParts(char)
@@ -6396,7 +6627,7 @@ add("Frostbite", "\u{1F328}", C3(150, 225, 255), function(char, pos, gp)
 end)
 
 -- 45. CRYSTALLIZE (jadi kristal ungu lalu meledak)
-add("Crystallize", "\u{1F48E}", C3(190, 120, 255), function(char, pos, gp)
+add("Crystallize", "{i:gem}", C3(190, 120, 255), function(char, pos, gp)
 	local amethyst, cyan, white = C3(176, 96, 255), C3(110, 230, 255), C3(250, 240, 255)
 	local ctr = V3(pos.X, gp.Y, pos.Z)
 	freezeParts(char)
@@ -6447,7 +6678,7 @@ add("Crystallize", "\u{1F48E}", C3(190, 120, 255), function(char, pos, gp)
 end)
 
 -- 46. HELLGATE (gerbang neraka menarik korban ke bawah)
-add("Hellgate", "\u{1F525}", C3(255, 50, 40), function(char, pos, gp)
+add("Hellgate", "{i:flame}", C3(255, 50, 40), function(char, pos, gp)
 	local red, orange, black = C3(255, 48, 36), C3(255, 150, 40), C3(20, 8, 8)
 	local ctr = V3(pos.X, gp.Y, pos.Z)
 	freezeParts(char)
@@ -6506,7 +6737,7 @@ add("Hellgate", "\u{1F525}", C3(255, 50, 40), function(char, pos, gp)
 end)
 
 -- 47. PIXELATE (terurai jadi kubus piksel yang melayang)
-add("Pixelate", "\u{1F4BB}", C3(60, 255, 190), function(char, pos, gp)
+add("Pixelate", "{i:laptop}", C3(60, 255, 190), function(char, pos, gp)
 	local cols = { C3(60, 255, 190), C3(70, 170, 255), C3(255, 70, 200), WHITE }
 	local ctr = V3(pos.X, gp.Y, pos.Z)
 	freezeParts(char)
@@ -6562,7 +6793,7 @@ add("Pixelate", "\u{1F4BB}", C3(60, 255, 190), function(char, pos, gp)
 end)
 
 -- 48. ORIGAMI (jadi kertas lipat lalu terbang berputar)
-add("Origami", "\u{1F338}", C3(255, 120, 150), function(char, pos, gp)
+add("Origami", "{i:flower-2}", C3(255, 120, 150), function(char, pos, gp)
 	local paper = { C3(250, 246, 238), C3(255, 120, 140), C3(255, 205, 100), C3(120, 190, 255) }
 	local ctr = V3(pos.X, gp.Y, pos.Z)
 	freezeParts(char)
@@ -6609,7 +6840,7 @@ add("Origami", "\u{1F338}", C3(255, 120, 150), function(char, pos, gp)
 end)
 
 -- 49. BLAST OFF (terlempar ke langit, berkilau di ujung)
-add("Blast Off", "\u{1F4AB}", C3(255, 214, 90), function(char, pos, gp)
+add("Blast Off", "{i:rocket}", C3(255, 214, 90), function(char, pos, gp)
 	local gold, orange, white = C3(255, 214, 90), C3(255, 140, 50), C3(255, 250, 230)
 	local ctr = V3(pos.X, gp.Y, pos.Z)
 	freezeParts(char)
@@ -6652,7 +6883,7 @@ add("Blast Off", "\u{1F4AB}", C3(255, 214, 90), function(char, pos, gp)
 end)
 
 -- 50. RAILGUN (sinar rel menembus korban)
-add("Railgun", "\u{1F52B}", C3(90, 200, 255), function(char, pos, gp)
+add("Railgun", "{i:crosshair}", C3(90, 200, 255), function(char, pos, gp)
 	local cyan, blue, white = C3(90, 210, 255), C3(40, 110, 255), C3(240, 252, 255)
 	local ctr = V3(pos.X, gp.Y, pos.Z)
 	local c = cam()
@@ -6697,7 +6928,7 @@ add("Railgun", "\u{1F52B}", C3(90, 200, 255), function(char, pos, gp)
 end)
 
 -- ===== EFEK BARU v26 =====
-add("Aurora Veil", "\u{1F30C}", C3(90, 255, 200), function(char, pos, gp)
+add("Aurora Veil", "{i:sparkles}", C3(90, 255, 200), function(char, pos, gp)
 	local cols = { C3(70, 255, 190), C3(90, 160, 255), C3(190, 90, 255), C3(255, 120, 220) }
 	freezeParts(char)
 	dim(0.3, 3.4)
@@ -6743,7 +6974,7 @@ add("Aurora Veil", "\u{1F30C}", C3(90, 255, 200), function(char, pos, gp)
 	popup(pos + V3(0, 6, 0), "AURORA", cols[1], 32)
 end)
 
-add("Starfall", "\u{1F320}", C3(255, 235, 150), function(char, pos, gp)
+add("Starfall", "{i:sparkles}", C3(255, 235, 150), function(char, pos, gp)
 	local gold, white, blue = C3(255, 226, 120), C3(255, 255, 255), C3(150, 190, 255)
 	freezeParts(char)
 	dim(0.35, 3)
@@ -6792,7 +7023,7 @@ add("Starfall", "\u{1F320}", C3(255, 235, 150), function(char, pos, gp)
 	popup(pos + V3(0, 5, 0), "STARFALL", gold, 32)
 end)
 
-add("Mirror Break", "\u{1F4A0}", C3(190, 235, 255), function(char, pos, gp)
+add("Mirror Break", "{i:diamond}", C3(190, 235, 255), function(char, pos, gp)
 	local ice, white, cy = C3(200, 235, 255), C3(255, 255, 255), C3(110, 210, 255)
 	freezeParts(char)
 	sfx(SND_PING, 1, 1.4)
@@ -6837,7 +7068,7 @@ add("Mirror Break", "\u{1F4A0}", C3(190, 235, 255), function(char, pos, gp)
 	popup(pos + V3(0, 5, 0), "SHATTERED", ice, 30)
 end)
 
-add("Lotus Bloom", "\u{1F33A}", C3(255, 130, 190), function(char, pos, gp)
+add("Lotus Bloom", "{i:flower}", C3(255, 130, 190), function(char, pos, gp)
 	local pink, white, gold = C3(255, 120, 190), C3(255, 235, 245), C3(255, 215, 110)
 	freezeParts(char)
 	dim(0.2, 3.4)
@@ -6884,7 +7115,7 @@ add("Lotus Bloom", "\u{1F33A}", C3(255, 130, 190), function(char, pos, gp)
 	popup(pos + V3(0, 5, 0), "BLOOM", pink, 30)
 end)
 
-add("Zodiac Seal", "\u{1F52E}", C3(170, 90, 255), function(char, pos, gp)
+add("Zodiac Seal", "{i:wand-sparkles}", C3(170, 90, 255), function(char, pos, gp)
 	local vio, cy, white = C3(170, 90, 255), C3(90, 230, 255), C3(255, 255, 255)
 	freezeParts(char)
 	dim(0.35, 3.6)
@@ -6945,7 +7176,7 @@ add("Zodiac Seal", "\u{1F52E}", C3(170, 90, 255), function(char, pos, gp)
 	popup(pos + V3(0, 6, 0), "SEALED", vio, 34)
 end)
 
-add("Neon Downpour", "\u{1F306}", C3(255, 60, 200), function(char, pos, gp)
+add("Neon Downpour", "{i:building-2}", C3(255, 60, 200), function(char, pos, gp)
 	local cols = { C3(255, 60, 200), C3(60, 240, 255), C3(255, 230, 70), C3(140, 90, 255) }
 	freezeParts(char)
 	dim(0.3, 3)
@@ -8932,7 +9163,8 @@ U.boot = function()
 	-- buttons (opsional, maks 2): { {label=, fn=}, {label=, fn=} } -> badge dengan tombol
 	function U.toast(title, text, kind, buttons)
 		if not alive() then return end
-		text = tostring(text or "")
+		text = U.icoStrip(tostring(text or ""))
+		title = title and U.icoStrip(title)
 		local now = os.clock()
 		if not buttons then
 			if text == lastNoteTxt and now - lastNoteAt < 6 then return end -- jangan spam notifikasi sama
@@ -15350,7 +15582,7 @@ U.boot = function()
 				for _, s in ipairs(state.lookSaved) do
 					local uid = tonumber(s.uid)
 					local inSrv = uid and Players:GetPlayerByUserId(uid) ~= nil
-					if inSrv and not seenSrv[uid] then U.note("\u{2B50} " .. tostring(s.display or s.name) .. " masuk server ini") end
+					if inSrv and not seenSrv[uid] then U.note("{i:star} " .. tostring(s.display or s.name) .. " masuk server ini") end
 					seenSrv[uid] = inSrv
 				end
 				tick = tick + 1
@@ -15361,7 +15593,7 @@ U.boot = function()
 						for _, it in ipairs(all) do if nowMs() - it.t < 30000 then now[tonumber(it.uid) or 0] = it end end
 						for _, s in ipairs(state.lookSaved) do
 							local uid = tonumber(s.uid)
-							if uid and now[uid] and not seenDb[uid] then U.note("\u{2B50} " .. tostring(s.display or s.name) .. " online (pakai script)" .. (now[uid].g and (" - " .. tostring(now[uid].g)) or "")) end
+							if uid and now[uid] and not seenDb[uid] then U.note("{i:star} " .. tostring(s.display or s.name) .. " online (pakai script)" .. (now[uid].g and (" - " .. tostring(now[uid].g)) or "")) end
 							seenDb[uid] = now[uid] ~= nil
 						end
 					end
@@ -15561,6 +15793,7 @@ local function buildUI()
 			elseif cur ~= o:GetAttribute("tv") then
 				o:SetAttribute("k", nil)
 			end
+			if U.icoRender then pcall(U.icoRender, o, function(t) busy = true o.Text = t busy = false end) end
 		end
 		o:GetPropertyChangedSignal("Text"):Connect(conv)
 		conv()
@@ -15592,13 +15825,8 @@ local function buildUI()
 				end
 			end
 		end
-		if o:IsA("TextButton") and props.AutoButtonColor == false and props.BackgroundTransparency ~= 1 and props.Size
-			and props.Size.X.Scale == 0 and props.Size.X.Offset > 0 and props.Size.X.Offset <= 130 then
-			local sc = Instance.new("UIScale")
-			sc.Parent = o
-			o.MouseEnter:Connect(function() tween(sc, 0.12, { Scale = 1.07 }) end)
-			o.MouseLeave:Connect(function() tween(sc, 0.12, { Scale = 1 }) end)
-		end
+		-- tanpa efek hover: tint hover bawaan Roblox dimatikan; efek hanya muncul saat klik / tap (lihat fxBtn di UI MICRO-INTERACTIONS)
+		if (o:IsA("TextButton") or o:IsA("ImageButton")) and props.AutoButtonColor == nil then o.AutoButtonColor = false end
 		return o
 	end
 	local function corner(o, r) return mk("UICorner", { CornerRadius = UDim.new(0, r) }, o) end
@@ -15906,6 +16134,180 @@ local function buildUI()
 				hudPing.Text = "PING -"
 			end
 		end)
+	end
+
+	-- ===== BATERAI di kapsul HUD (ikon Lucide + persen, warna & ikon ikut level) + notifikasi gaya WindUI saat <= 30% =====
+	-- Roblox tidak punya API resmi untuk baterai perangkat. Sumber data dicari lewat fungsi executor (getbattery dkk) kalau ada;
+	-- kalau tidak ada, kapsul menampilkan "--". Bisa disuplai manual: U.setBattery(persen, sedangCharge).
+	do
+		local okB, errB = pcall(function()
+			local GREEN, AMBER, REDB, GREY = Color3.fromRGB(91, 224, 138), Color3.fromRGB(255, 200, 87), Color3.fromRGB(255, 107, 99), Color3.fromRGB(138, 148, 166)
+			local LOW, REARM = 30, 36
+
+			-- ---------- notifikasi gaya WindUI (kartu bulat, tile ikon, judul + isi, tombol tutup, garis waktu di bawah) ----------
+			local wnGui = tagged("ScreenGui")
+			wnGui.Name = "wncb20ce"
+			wnGui.ResetOnSpawn = false
+			wnGui.DisplayOrder = 2147482100
+			wnGui.Parent = getGuiParent()
+			local wnHolder = mk("Frame", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -16, 1, -16), Size = UDim2.fromOffset(312, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1 }, wnGui)
+			mk("UIListLayout", { Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder, VerticalAlignment = Enum.VerticalAlignment.Bottom, HorizontalAlignment = Enum.HorizontalAlignment.Right }, wnHolder)
+			local wnN = 0
+			function U.winNote(title, content, iconName, color, dur)
+				if not alive() then return end
+				dur = dur or 8
+				color = color or GREEN
+				wnN = wnN + 1
+				local wrap = mk("Frame", { Size = UDim2.fromOffset(312, 80), BackgroundTransparency = 1, ClipsDescendants = true, LayoutOrder = wnN }, wnHolder)
+				local card = mk("Frame", { Position = UDim2.new(1, 330, 0, 0), Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = BG, BackgroundTransparency = 0.04, BorderSizePixel = 0 }, wrap)
+				corner(card, 16)
+				mk("UIStroke", { Color = WHITE, Transparency = 0.85, Thickness = 1 }, card)
+				local tile = mk("Frame", { Position = UDim2.fromOffset(12, 14), Size = UDim2.fromOffset(44, 44), BackgroundColor3 = color, BackgroundTransparency = 0.82, BorderSizePixel = 0 }, card)
+				corner(tile, 12)
+				local ico = U.icoImage and U.icoImage(iconName or "bell-ring", tile, 24, color)
+				if ico then ico.AnchorPoint = Vector2.new(0.5, 0.5) ico.Position = UDim2.fromScale(0.5, 0.5) end
+				local tt = lab(card, title, 13, FONTB, TXT, UDim2.fromOffset(68, 12), UDim2.new(1, -108, 0, 18), LEFT)
+				tt.TextTruncate = Enum.TextTruncate.AtEnd
+				local cc = lab(card, content, 11, FONT, DIM, UDim2.fromOffset(68, 32), UDim2.new(1, -80, 0, 32), LEFT)
+				cc.TextWrapped = true
+				cc.TextYAlignment = Enum.TextYAlignment.Top
+				local x = mk("TextButton", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -8, 0, 8), Size = UDim2.fromOffset(22, 22), BackgroundTransparency = 1, Text = "{i:x}", Font = FONTB, TextSize = 12, TextColor3 = DIM, AutoButtonColor = false }, card)
+				local barBg = mk("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 14, 1, -6), Size = UDim2.new(1, -28, 0, 3), BackgroundColor3 = WHITE, BackgroundTransparency = 0.9, BorderSizePixel = 0 }, card)
+				corner(barBg, 2)
+				local bar = mk("Frame", { Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = color, BorderSizePixel = 0 }, barBg)
+				corner(bar, 2)
+				local gone = false
+				local function close()
+					if gone then return end
+					gone = true
+					tween(card, 0.25, { Position = UDim2.new(1, 330, 0, 0) }, Enum.EasingStyle.Quad, Enum.EasingDirection.In)
+					task.delay(0.28, function() pcall(function() wrap:Destroy() end) end)
+				end
+				x.MouseButton1Click:Connect(close)
+				tween(card, 0.35, { Position = UDim2.new(0, 0, 0, 0) }, Enum.EasingStyle.Back)
+				tween(bar, dur, { Size = UDim2.new(0, 0, 1, 0) }, Enum.EasingStyle.Linear)
+				task.delay(dur, close)
+			end
+
+			-- ---------- chip baterai di kapsul HUD ----------
+			local batBox = mk("Frame", { Size = UDim2.fromOffset(0, 26), AutomaticSize = Enum.AutomaticSize.X, BackgroundTransparency = 1, LayoutOrder = 3 }, hud)
+			mk("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 4), VerticalAlignment = Enum.VerticalAlignment.Center, SortOrder = Enum.SortOrder.LayoutOrder }, batBox)
+			local batIcon = U.icoImage("battery", batBox, 18, GREY)
+			batIcon.LayoutOrder = 1
+			local batTxt = mk("TextLabel", { Size = UDim2.fromOffset(0, 26), AutomaticSize = Enum.AutomaticSize.X, BackgroundTransparency = 1, Text = "--", Font = FONTB, TextSize = 12, TextColor3 = GREY, LayoutOrder = 2 }, batBox)
+
+			local shownName
+			local function paint(pct, chg)
+				local name, col
+				if pct == nil then name, col = "battery", GREY
+				elseif chg then name, col = "battery-charging", GREEN
+				elseif pct >= 70 then name, col = "battery-full", GREEN
+				elseif pct >= 40 then name, col = "battery-medium", (pct > 60) and GREEN or AMBER
+				elseif pct > 15 then name, col = "battery-low", (pct > LOW) and AMBER or REDB
+				else name, col = "battery-warning", REDB end
+				if name ~= shownName then
+					local e = U.ICONS[name]
+					if e then
+						batIcon.Image = "rbxassetid://" .. e[1]
+						batIcon.ImageRectOffset = Vector2.new(e[2], e[3])
+					end
+					shownName = name
+				end
+				batIcon.ImageColor3 = col
+				batTxt.TextColor3 = col
+				batTxt.Text = pct and (pct .. "%") or "--"
+			end
+
+			-- ---------- sumber data ----------
+			-- kunci acak per-install (dibuat otomatis, tersimpan); halaman web memakai kunci ini, jadi tidak perlu mengetik UserId
+			if type(state.batKey) ~= "string" or #state.batKey < 10 then
+				local rnd, chars, out = Random.new(), "abcdefghijklmnopqrstuvwxyz0123456789", {}
+				for i = 1, 14 do local k = rnd:NextInteger(1, #chars) out[i] = chars:sub(k, k) end
+				state.batKey = table.concat(out)
+				saveSoon()
+			end
+			function U.batteryLink()
+				local page = tostring(CONFIG.BATTERY_PAGE or "")
+				local q = "db=" .. HttpService:UrlEncode(tostring(U.fbUrl or "")) .. "&k=" .. state.batKey
+				local link = (page ~= "" and (page .. "?") or "") .. q
+				local okc = pcall(function() if setclipboard then setclipboard(link) elseif toclipboard then toclipboard(link) else error("x") end end)
+				if page == "" then
+					U.winNote("Link baterai belum lengkap", "CONFIG.BATTERY_PAGE masih kosong (host battery-bridge.html lalu isi alamatnya). Yang disalin hanya parameter: " .. q:sub(1, 60), "battery-warning", AMBER, 10)
+				elseif okc then
+					U.winNote("Link baterai disalin", "Tempel di Chrome HP yang sama, lalu biarkan halamannya terbuka.", "battery-charging", GREEN, 7)
+				else
+					U.winNote("Gagal menyalin", "Executor tidak punya setclipboard.", "triangle-alert", REDB, 7)
+				end
+			end
+			local manual
+			function U.setBattery(pct, chg) manual = { tonumber(pct), chg == true } end
+			local NAMES = { "getbattery", "get_battery", "getbatterylevel", "GetBatteryLevel", "getbatterypercent", "getbatterypercentage" }
+			local function parse(a, b)
+				local pct, chg
+				if type(a) == "table" then
+					pct = a.Level or a.level or a.Percent or a.percent or a.Percentage or a.percentage or a.Battery or a.battery
+					chg = a.Charging or a.charging or a.IsCharging or a.isCharging
+				else pct, chg = a, b end
+				if type(chg) == "string" then local l = chg:lower() chg = l:find("charg", 1, true) ~= nil and not l:find("discharg", 1, true) end
+				pct = tonumber(pct)
+				if not pct or pct ~= pct then return nil end
+				if pct >= 0 and pct <= 1 and pct ~= math.floor(pct) then pct = pct * 100 end
+				return math.clamp(math.floor(pct + 0.5), 0, 100), chg == true
+			end
+			local function read()
+				if manual and manual[1] then return parse(manual[1], manual[2]) end
+				local env
+				pcall(function() env = (getgenv and getgenv()) or _G end)
+				if type(env) ~= "table" then return nil end
+				for _, n in ipairs(NAMES) do
+					local f
+					pcall(function() f = env[n] end)
+					if type(f) == "function" then
+						local ok, a, b = pcall(f)
+						if ok then
+							local pct, chg = parse(a, b)
+							if pct then return pct, chg end
+						end
+					end
+				end
+				-- jembatan web: halaman battery-bridge.html (dibuka di HP yang sama) menulis ke Firebase battery/<UserId>; di sini dibaca balik
+				if U.fb then
+					local ok, d = pcall(U.fb, "GET", "battery/" .. state.batKey)
+					if ok and type(d) == "table" and tonumber(d.pct) then
+						local age = math.abs(os.time() * 1000 - (tonumber(d.t) or 0))
+						if age <= 180000 then return parse(d.pct, d.chg) end
+					end
+				end
+			end
+
+			-- ---------- logika notifikasi: sekali saat turun ke <= 30%, sekali lagi saat <= 15%; aktif lagi setelah naik / di-charge ----------
+			local armedLow, armedCrit = true, true
+			local function check(pct, chg)
+				if pct == nil then return end
+				if chg or pct >= REARM then armedLow, armedCrit = true, true return end
+				if pct <= 15 and armedCrit then
+					armedCrit, armedLow = false, false
+					U.winNote("Baterai kritis", "Baterai tinggal " .. pct .. "%. Charge sekarang supaya perangkat tidak mati.", "battery-warning", REDB, 10)
+					U.notifSound(1) task.delay(0.35, function() U.notifSound(1) end)
+				elseif pct <= LOW and armedLow then
+					armedLow = false
+					U.winNote("Baterai rendah", "Baterai tinggal " .. pct .. "%. Ingat untuk charge perangkatmu.", "battery-low", AMBER, 8)
+					U.notifSound(1)
+				end
+			end
+			function U.batteryTest(pct) paint(pct or 30, false) armedLow = true check(pct or 30, false) end
+
+			paint(nil)
+			task.spawn(function()
+				while alive() do
+					local pct, chg = read()
+					paint(pct, chg)
+					check(pct, chg)
+					task.wait(5)
+				end
+			end)
+		end)
+		if not okB then warn("[RV] Baterai HUD gagal dibuat: " .. tostring(errB)) end
 	end
 
 	-- ===== DAYTIME: jam akurat di atas HUD (ketuk = tanggal) =====
@@ -16901,7 +17303,8 @@ local function buildUI()
 	mk("Frame", { Position = UDim2.fromOffset(3, 3), Size = UDim2.fromOffset(1, 5), BackgroundColor3 = WHITE, BorderSizePixel = 0, ZIndex = 43 }, trashBody)
 	mk("Frame", { Position = UDim2.fromOffset(6, 3), Size = UDim2.fromOffset(1, 5), BackgroundColor3 = WHITE, BorderSizePixel = 0, ZIndex = 43 }, trashBody)
 	mk("TextLabel", { Position = UDim2.fromOffset(28, 0), Size = UDim2.new(1, -34, 1, 0), BackgroundTransparency = 1, Text = "DESTROY SCRIPT", Font = FONTK, TextSize = 10, TextColor3 = WHITE, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 42 }, destroyBtn)
-	destroyBtn.MouseEnter:Connect(function() tween(dStroke, 0.12, { Transparency = 0 }) tween(dGrad, 0.12, { Offset = Vector2.new(0.25, 0) }) end)
+	destroyBtn.MouseButton1Down:Connect(function() tween(dStroke, 0.12, { Transparency = 0 }) tween(dGrad, 0.12, { Offset = Vector2.new(0.25, 0) }) end)
+	destroyBtn.MouseButton1Up:Connect(function() tween(dStroke, 0.12, { Transparency = 0.5 }) tween(dGrad, 0.12, { Offset = Vector2.new(0, 0) }) end)
 	destroyBtn.MouseLeave:Connect(function() tween(dStroke, 0.12, { Transparency = 0.5 }) tween(dGrad, 0.12, { Offset = Vector2.new(0, 0) }) end)
 	end
 	local destroyAsk
@@ -16913,7 +17316,7 @@ local function buildUI()
 		corner(dlg, 16)
 		mk("UIStroke", { Color = C3(214, 70, 78), Thickness = 1.6 }, dlg)
 		mk("UISizeConstraint", { MaxSize = Vector2.new(9999, 9999), MinSize = Vector2.new(260, 150) }, dlg)
-		mk("TextLabel", { Position = UDim2.fromOffset(18, 14), Size = UDim2.new(1, -36, 0, 26), BackgroundTransparency = 1, Text = "\u{1F5D1}  Hancurkan script?", Font = FONTK, TextSize = 17, TextColor3 = TXT, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 602 }, dlg)
+		mk("TextLabel", { Position = UDim2.fromOffset(18, 14), Size = UDim2.new(1, -36, 0, 26), BackgroundTransparency = 1, Text = "{i:trash-2}  Hancurkan script?", Font = FONTK, TextSize = 17, TextColor3 = TXT, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 602 }, dlg)
 		mk("TextLabel", { Position = UDim2.fromOffset(18, 46), Size = UDim2.new(1, -36, 0, 84), BackgroundTransparency = 1, Text = "Semua UI, efek, aura, dan item catalog akan dihapus, dan koneksi script dimatikan. Untuk memakai lagi kamu harus execute script ulang.", Font = FONT, TextSize = 12, TextColor3 = DIM, TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, ZIndex = 602 }, dlg)
 		local no = mk("TextButton", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.new(0, 18, 1, -16), Size = UDim2.new(0.5, -24, 0, 38), BackgroundColor3 = SURF2, Text = "Batal", Font = FONTB, TextSize = 13, TextColor3 = TXT, AutoButtonColor = false, ZIndex = 602 }, dlg)
 		corner(no, 11)
@@ -17087,7 +17490,7 @@ local function buildUI()
 	local left = mk("Frame", { Position = UDim2.fromOffset(0, 34), Size = UDim2.new(0, 410, 1, -34), BackgroundTransparency = 1 }, pageFx)
 	local sbox = mk("Frame", { Size = UDim2.new(1, 0, 0, 32), BackgroundColor3 = SURF }, left)
 	corner(sbox, 10)
-	lab(sbox, "\u{1F50D}", 14, FONTB, DIM, UDim2.fromOffset(10, 0), UDim2.fromOffset(20, 32))
+	lab(sbox, "{i:search}", 14, FONTB, DIM, UDim2.fromOffset(10, 0), UDim2.fromOffset(20, 32))
 	local searchBox = mk("TextBox", { Position = UDim2.fromOffset(34, 0), Size = UDim2.new(1, -44, 1, 0), BackgroundTransparency = 1, Text = "", PlaceholderText = "Cari efek (nama / kategori)...", PlaceholderColor3 = DIM, ClearTextOnFocus = false, Font = FONT, TextSize = 13, TextColor3 = TXT, TextXAlignment = LEFT }, sbox)
 	local chipRow = mk("ScrollingFrame", { Position = UDim2.fromOffset(0, 38), Size = UDim2.new(1, 0, 0, 26), BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 0, CanvasSize = UDim2.new(), AutomaticCanvasSize = Enum.AutomaticSize.X, ScrollingDirection = Enum.ScrollingDirection.X }, left)
 	mk("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder }, chipRow)
@@ -17119,7 +17522,7 @@ local function buildUI()
 	end
 	restyle[#restyle + 1] = styleChips
 	for i, n in ipairs({ "ALL", "FIRE", "NATURE", "DARK", "LIGHT", "TECH", "FUN", "FAV" }) do
-		local c = mk("TextButton", { Size = UDim2.fromOffset(0, 24), AutomaticSize = Enum.AutomaticSize.X, BackgroundColor3 = SURF, Text = (n == "FAV") and "\u{2B50} FAV" or n, Font = FONTB, TextSize = 10, TextColor3 = DIM, AutoButtonColor = false, LayoutOrder = i }, chipRow)
+		local c = mk("TextButton", { Size = UDim2.fromOffset(0, 24), AutomaticSize = Enum.AutomaticSize.X, BackgroundColor3 = SURF, Text = (n == "FAV") and "{i:star} FAV" or n, Font = FONTB, TextSize = 10, TextColor3 = DIM, AutoButtonColor = false, LayoutOrder = i }, chipRow)
 		corner(c, 12)
 		mk("UIPadding", { PaddingLeft = UDim.new(0, 11), PaddingRight = UDim.new(0, 11) }, c)
 		chipBtns[n] = c
@@ -17152,13 +17555,10 @@ local function buildUI()
 		if e.tag then
 			lab(b, e.tag, 9, FONTK, e.color, UDim2.new(1, -20, 0, 5), UDim2.fromOffset(34, 12), RIGHT).AnchorPoint = Vector2.new(1, 0)
 		end
-		local cs = mk("UIScale", { Scale = 1 }, b)
-		b.MouseEnter:Connect(function() tween(cs, 0.12, { Scale = 1.05 }) end)
-		b.MouseLeave:Connect(function() tween(cs, 0.12, { Scale = 1 }) end)
-		local star = mk("TextButton", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -5, 1, -3), Size = UDim2.fromOffset(24, 24), BackgroundTransparency = 1, Text = "\u{2795}", TextSize = 17, Font = FONTB, TextColor3 = DIM, AutoButtonColor = false }, b)
+		local star = mk("TextButton", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, -5, 1, -3), Size = UDim2.fromOffset(24, 24), BackgroundTransparency = 1, Text = "{i:plus}", TextSize = 17, Font = FONTB, TextColor3 = DIM, AutoButtonColor = false }, b)
 		starRefs[e.name] = star
 		local function starStyle()
-			star.Text = favs[e.name] and "\u{2B50}" or "\u{2795}"
+			star.Text = favs[e.name] and "{i:star}" or "{i:plus}"
 			star.TextColor3 = favs[e.name] and C3(255, 205, 70) or DIM
 		end
 		starStyle()
@@ -17178,7 +17578,7 @@ local function buildUI()
 	end
 
 	local right = scroller(pageFx, UDim2.fromOffset(422, 34), UDim2.new(1, -422, 1, -34))
-	local testBtn = acc(mk("TextButton", { Size = UDim2.new(1, 0, 0, 54), Text = "\u{23E9}  TEST EFFECT", Font = FONTK, TextSize = 16, TextColor3 = INK, AutoButtonColor = false, LayoutOrder = 1 }, right))
+	local testBtn = acc(mk("TextButton", { Size = UDim2.new(1, 0, 0, 54), Text = "{i:fast-forward}  TEST EFFECT", Font = FONTK, TextSize = 16, TextColor3 = INK, AutoButtonColor = false, LayoutOrder = 1 }, right))
 	corner(testBtn, 13)
 	testBtn.MouseButton1Click:Connect(function()
 		click()
@@ -17245,7 +17645,7 @@ local function buildUI()
 
 			-- kiri: filter rarity + grid kartu
 			local aLeft = mk("Frame", { Size = UDim2.new(0, 410, 1, 0), BackgroundTransparency = 1 }, auraPg)
-			local aSearch = mk("TextBox", { Size = UDim2.new(1, 0, 0, 26), BackgroundColor3 = SURF, Text = "", PlaceholderText = "🔍 cari aura / tema…", PlaceholderColor3 = DIM, Font = FONT, TextSize = 12, TextColor3 = TXT, ClearTextOnFocus = false, BorderSizePixel = 0 }, aLeft)
+			local aSearch = mk("TextBox", { Size = UDim2.new(1, 0, 0, 26), BackgroundColor3 = SURF, Text = "", PlaceholderText = "cari aura / tema…", PlaceholderColor3 = DIM, Font = FONT, TextSize = 12, TextColor3 = TXT, ClearTextOnFocus = false, BorderSizePixel = 0 }, aLeft)
 			corner(aSearch, 8)
 			local auraQ = ""
 			local chipA = mk("ScrollingFrame", { Position = UDim2.fromOffset(0, 30), Size = UDim2.new(1, 0, 0, 26), BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 0, CanvasSize = UDim2.new(), AutomaticCanvasSize = Enum.AutomaticSize.X, ScrollingDirection = Enum.ScrollingDirection.X }, aLeft)
@@ -17499,7 +17899,7 @@ local function buildUI()
 					renderCfg()
 					U.quiet("Config dihapus: " .. e.name)
 				end)
-				mb(38, 26, "\u{2605}", isAuto and byName[state.selected].color or SURF2, isAuto and INK or TXT, function()
+				mb(38, 26, "{i:star}", isAuto and byName[state.selected].color or SURF2, isAuto and INK or TXT, function()
 					local a = U.cfgSetAuto(e.name)
 					renderCfg()
 					U.note(a == "" and "Auto load dimatikan" or ("Auto load: " .. a))
@@ -17549,6 +17949,11 @@ local function buildUI()
 		switchRow(p, 10, "Showcase auto", "showcase")
 		switchRow(p, 11, "Blur saat menu", "blur")
 		switchRow(p, 12, "HUD FPS & Ping", "hud", function() hud.Visible = state.hud end)
+		do
+			local bb = mk("TextButton", { Size = UDim2.new(1, 0, 0, 32), BackgroundColor3 = SURF, Text = "{i:battery-charging}  Salin link baterai (HP)", Font = FONTB, TextSize = 12, TextColor3 = TXT, AutoButtonColor = false, LayoutOrder = 12 }, p)
+			corner(bb, 10)
+			bb.MouseButton1Click:Connect(function() click() if U.batteryLink then U.batteryLink() end end)
+		end
 		switchRow(p, 13, "Aura & impact", "aura")
 		switchRow(p, 14, "Daytime", "daytime", function() U.placeHud() end)
 		switchRow(p, 20, "Shiftlock (custom, Shift key / button)", "slOn", function() if U.slApply then U.slApply() end end)
@@ -17819,7 +18224,7 @@ local function buildUI()
 				local row = mk("Frame", { Name = "svrow", Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = SURF2, LayoutOrder = i }, sv)
 				corner(row, 8)
 				local nb = mk("TextButton", { Size = UDim2.new(1, -34, 1, 0), BackgroundTransparency = 1, Text = "  " .. tostring(e.n or e.id) .. "  \u{2022}  " .. tostring(e.id), Font = FONTB, TextSize = 11, TextColor3 = TXT, TextXAlignment = LEFT, TextTruncate = Enum.TextTruncate.AtEnd, AutoButtonColor = false }, row)
-				local xb = mk("TextButton", { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -4, 0.5, 0), Size = UDim2.fromOffset(24, 22), BackgroundTransparency = 1, Text = "\u{2715}", Font = FONTB, TextSize = 12, TextColor3 = DIM, AutoButtonColor = false }, row)
+				local xb = mk("TextButton", { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -4, 0.5, 0), Size = UDim2.fromOffset(24, 22), BackgroundTransparency = 1, Text = "{i:x}", Font = FONTB, TextSize = 12, TextColor3 = DIM, AutoButtonColor = false }, row)
 				nb.MouseButton1Click:Connect(function() click() playId(tostring(e.id)) end)
 				xb.MouseButton1Click:Connect(function() click() table.remove(list, i) saveSoon() renderSaved() end)
 			end
@@ -17915,7 +18320,7 @@ local function buildUI()
 			setVol(e and e.vol or 1)
 			loading = false
 		end
-		local targets = { { "*", "\u{2B50} SEMUA VFX" } }
+		local targets = { { "*", "{i:star} SEMUA VFX" } }
 		for _, e in ipairs(EFFECTS) do targets[#targets + 1] = { e.name, e.icon .. "  " .. e.name } end
 		for i, t in ipairs(targets) do
 			local b = mk("TextButton", { Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = SURF, Text = "", AutoButtonColor = false, LayoutOrder = i }, lf)
@@ -17986,7 +18391,7 @@ local function buildUI()
 				volFrom(input)
 			end
 		end)
-		local pv = acc(mk("TextButton", { Position = UDim2.fromOffset(0, 216), Size = UDim2.new(0.5, -4, 0, 36), Text = "\u{23E9}  PREVIEW", Font = FONTK, TextSize = 13, TextColor3 = INK, AutoButtonColor = false }, ed))
+		local pv = acc(mk("TextButton", { Position = UDim2.fromOffset(0, 216), Size = UDim2.new(0.5, -4, 0, 36), Text = "{i:fast-forward}  PREVIEW", Font = FONTK, TextSize = 13, TextColor3 = INK, AutoButtonColor = false }, ed))
 		corner(pv, 11)
 		local clr = mk("TextButton", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, 216), Size = UDim2.new(0.5, -4, 0, 36), BackgroundColor3 = SURF2, Text = "X  HAPUS", Font = FONTK, TextSize = 13, TextColor3 = TXT, AutoButtonColor = false }, ed)
 		corner(clr, 11)
@@ -18752,7 +19157,7 @@ local function buildUI()
 	-- ===== TOOLS: kalkulator, tic tac toe, executor =====
 	local function __buildTools()
 		pageTools = mk("Frame", { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Visible = false }, body)
-		local TOOLS = { "Kalkulator", "Tic Tac Toe", "Reaction", "Memory", "RPS", "Guess Number", "Simon", "Arena", "Whack", "Executor", "Search script", "Catatan", "Timer", "Info", "Chat", "Pemain", "Cepat", "UI Detector", "AI", "Translate", "Weather", "Audio", "Images", "Video", "YouTube", "Fling", "Seat Bring", "Animation", "Macro", "Visual", "ESP Part", "Bring Part", "Control Part", "Combat", "Annoy", "Extras" }
+		local TOOLS = { "Kalkulator", "Tic Tac Toe", "Reaction", "Memory", "RPS", "Guess Number", "Simon", "Arena", "Whack", "Executor", "Search script", "Catatan", "Timer", "Info", "Chat", "Pemain", "Cepat", "UI Detector", "AI", "Translate", "Weather", "Audio", "Images", "Video", "YouTube", "Fling", "Animation", "Macro", "Visual", "ESP Part", "Control Part", "Seat Bring", "Combat", "Annoy", "Extras", "Stress Test" }
 		local function say(t) if U.note then U.note(t) end end
 		local tPages, tPills, tCur = {}, {}, "Kalkulator"
 		local function styleTools()
@@ -18762,7 +19167,7 @@ local function buildUI()
 			end
 		end
 		restyle[#restyle + 1] = styleTools
-		local TW = { ["Weather"] = 62, ["Kalkulator"] = 84, ["Tic Tac Toe"] = 82, ["Executor"] = 72, ["Search script"] = 100, ["Catatan"] = 70, ["Timer"] = 58, ["Info"] = 50, ["Chat"] = 50, ["Pemain"] = 72, ["Cepat"] = 58, ["UI Detector"] = 84, ["AI"] = 40, ["Translate"] = 70, ["Audio"] = 58, ["Images"] = 62, ["Video"] = 58, ["YouTube"] = 66, ["Fling"] = 58, ["Seat Bring"] = 76, ["Animation"] = 72, ["Macro"] = 58, ["Theme"] = 58, ["Profil"] = 58, ["Reaction"] = 72, ["Memory"] = 64, ["RPS"] = 48, ["Guess Number"] = 90, ["Simon"] = 58, ["Arena"] = 58, ["Whack"] = 58, ["Visual"] = 62, ["ESP Part"] = 70, ["Bring Part"] = 80, ["Control Part"] = 84, ["Combat"] = 62, ["Annoy"] = 58, ["Extras"] = 58 }
+		local TW = { ["Weather"] = 62, ["Kalkulator"] = 84, ["Tic Tac Toe"] = 82, ["Executor"] = 72, ["Search script"] = 100, ["Catatan"] = 70, ["Timer"] = 58, ["Info"] = 50, ["Chat"] = 50, ["Pemain"] = 72, ["Cepat"] = 58, ["UI Detector"] = 84, ["AI"] = 40, ["Translate"] = 70, ["Audio"] = 58, ["Images"] = 62, ["Video"] = 58, ["YouTube"] = 66, ["Fling"] = 58, ["Animation"] = 72, ["Macro"] = 58, ["Theme"] = 58, ["Profil"] = 58, ["Reaction"] = 72, ["Memory"] = 64, ["RPS"] = 48, ["Guess Number"] = 90, ["Simon"] = 58, ["Arena"] = 58, ["Whack"] = 58, ["Visual"] = 62, ["ESP Part"] = 70, ["Bring Part"] = 80, ["Control Part"] = 84, ["Combat"] = 62, ["Annoy"] = 58, ["Extras"] = 58, ["Stress Test"] = 84, ["Seat Bring"] = 76 }
 		-- bar tab bisa digeser kiri/kanan (tidak perlu lebarkan UI)
 		local toolBar = mk("ScrollingFrame", {
 			Position = UDim2.fromOffset(0, 28),
@@ -18808,12 +19213,12 @@ local function buildUI()
 			local CATS = {
 				{ "All", nil },
 				{ "Mini games", { "Tic Tac Toe", "Reaction", "Memory", "RPS", "Guess Number", "Simon", "Arena", "Whack", "Kalkulator" } },
-				{ "Troll", { "Fling", "Seat Bring", "Annoy", "Extras", "Animation", "Bring Part", "Control Part" } },
-				{ "Combat", { "Combat", "Fling", "Bring Part" } },
-				{ "Utility", { "Weather", "Kalkulator", "Executor", "Search script", "Catatan", "Timer", "Info", "Cepat", "UI Detector", "AI", "Translate", "Macro" } },
+				{ "Troll", { "Fling", "Annoy", "Extras", "Animation", "Control Part", "Seat Bring" } },
+				{ "Combat", { "Combat", "Fling", "Control Part" } },
+				{ "Utility", { "Weather", "Kalkulator", "Executor", "Search script", "Catatan", "Timer", "Info", "Cepat", "UI Detector", "AI", "Translate", "Macro", "Stress Test" } },
 				{ "Social", { "Chat", "Pemain", "Arena" } },
 				{ "Media", { "Audio", "Images", "Video", "YouTube", "Visual" } },
-				{ "World", { "ESP Part", "Bring Part", "Control Part", "Macro", "Extras", "Pemain" } },
+				{ "World", { "ESP Part", "Control Part", "Macro", "Extras", "Pemain" } },
 			}
 			CATS[2][2][9] = nil -- kalkulator bukan game
 			local catOf = {}
@@ -18973,7 +19378,7 @@ local function buildUI()
 				local npName = lab(np, "Belum ada audio", 12, FONTB, TXT, UDim2.fromOffset(10, 6), UDim2.new(1, -20, 0, 16))
 				npName.TextTruncate = Enum.TextTruncate.AtEnd
 				npName.Size = UDim2.new(1, -130, 0, 16)
-				local npInfo = lab(np, "pilih hasil lalu tekan ▶", 10, FONT, DIM, UDim2.fromOffset(10, 22), UDim2.new(1, -20, 0, 14))
+				local npInfo = lab(np, "pilih hasil lalu tekan {i:play}", 10, FONT, DIM, UDim2.fromOffset(10, 22), UDim2.new(1, -20, 0, 14))
 				local function bt(txt, x, w)
 					local b = mk("TextButton", { Position = UDim2.fromOffset(x, 40), Size = UDim2.fromOffset(w, 26), BackgroundColor3 = SURF2, Text = txt, Font = FONTB, TextSize = 11, TextColor3 = TXT, AutoButtonColor = false }, np)
 					corner(b, 8)
@@ -19039,8 +19444,8 @@ local function buildUI()
 						end
 					end)
 				end
-				local bStop = bt("■", 10, 32)
-				local bPause = bt("⏯", 46, 32)
+				local bStop = bt("{i:square}", 10, 32)
+				local bPause = bt("{i:play}", 46, 32)
 				local bCopy = bt("Copy ID", 82, 62)
 				local bSlow = bt("−", 150, 26)
 				local spLab = lab(np, "1.00x", 11, FONTB, TXT, UDim2.fromOffset(178, 44), UDim2.fromOffset(46, 18), Enum.TextXAlignment.Center)
@@ -19614,939 +20019,6 @@ local function buildUI()
 			end
 		end
 
-		-- ---------- Seat Bring (port dari SeatBring v2: ambil pemain pakai tool Seat, antar ke spot / void; UI = UI RV) ----------
-		do
-			U.stage()
-			local pg = tPages["Seat Bring"]
-			local okSB, errSB = pcall(function()
-				if not pg then return end
-				local Workspace = workspace
-				local TEAL, AMB, REDC = C3(45, 212, 191), C3(255, 181, 71), C3(214, 76, 70)
-				local DARK = C3(30, 22, 6)
-				local HIT_MIN, HIT_MAX = 4, 40
-				local SEAT_TIMEOUT = 6 -- detik mencoba mendudukkan satu target
-				local VOID_DROP_ABOVE = 60 -- FALL: stud di atas FallenPartsDestroyHeight
-				local VOID_KILL_ABOVE = 8 -- KILL: lepas sedekat ini ke garis kill
-				local ACQUIRE_TIMEOUT = 30 -- detik untuk seluruh pencarian tool seat
-
-				if type(state.sbHit) ~= "number" then state.sbHit = 16 end
-				state.sbHit = math.clamp(math.floor(state.sbHit), HIT_MIN, HIT_MAX)
-				for _, k in ipairs({ "sbLoop", "sbAnti", "sbHl", "sbView", "sbReset", "sbKill" }) do
-					if type(state[k]) ~= "boolean" then state[k] = false end
-				end
-
-				local mode = "spot" -- "spot" | "custom" | "void"
-				local customCF = nil
-				local queue = {} -- userId yang dipilih, urut pilih
-				local rowsW = {} -- [userId] = { frame, badge, stroke }
-				local busy, cancelled, picking = false, false, false
-				local marker = nil
-				local saved = {} -- properti asli seat
-				local currentTarget = nil
-				local viewActive = false
-				local history, lastRescue = {}, 0
-				local highlights = {} -- [userId] = { h = Highlight, cur = bool }
-
-				-- ======================= UI (gaya RV) =======================
-				local sc = mk("ScrollingFrame", { Size = UDim2.new(1, 0, 1, -62), BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 3, CanvasSize = UDim2.new(), AutomaticCanvasSize = Enum.AutomaticSize.Y }, pg)
-				lab(sc, "Seat Bring", 14, FONTK, TXT, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 20))
-
-				local function tbtn(txt, x, w, y, col, tcol, parent)
-					local b = mk("TextButton", { Position = UDim2.new(x, 0, 0, y), Size = UDim2.new(w, -4, 0, 28), BackgroundColor3 = col, Text = txt, Font = FONTB, TextSize = 11, TextColor3 = tcol or TXT, AutoButtonColor = false, TextTruncate = Enum.TextTruncate.AtEnd }, parent or sc)
-					corner(b, 8)
-					return b
-				end
-				local function styleOn(b, on, col)
-					b.BackgroundColor3 = on and col or SURF2
-					b.TextColor3 = on and DARK or TXT
-				end
-
-				local sBox = mk("TextBox", { Position = UDim2.fromOffset(0, 22), Size = UDim2.new(1, -128, 0, 26), BackgroundColor3 = SURF, Text = "", PlaceholderText = "Cari pemain (display / username)...", PlaceholderColor3 = DIM, Font = FONT, TextSize = 11, TextColor3 = TXT, ClearTextOnFocus = false, TextXAlignment = Enum.TextXAlignment.Left }, sc)
-				corner(sBox, 8)
-				mk("UIPadding", { PaddingLeft = UDim.new(0, 8) }, sBox)
-				local allB = mk("TextButton", { Position = UDim2.new(1, -122, 0, 22), Size = UDim2.fromOffset(58, 26), BackgroundColor3 = SURF2, Text = "SEMUA", Font = FONTB, TextSize = 10, TextColor3 = TEAL, AutoButtonColor = false }, sc)
-				corner(allB, 8)
-				local noneB = mk("TextButton", { Position = UDim2.new(1, -62, 0, 22), Size = UDim2.fromOffset(58, 26), BackgroundColor3 = SURF2, Text = "BATAL", Font = FONTB, TextSize = 10, TextColor3 = REDC, AutoButtonColor = false }, sc)
-				corner(noneB, 8)
-
-				local list = mk("ScrollingFrame", { Position = UDim2.fromOffset(0, 52), Size = UDim2.new(1, -4, 0, 116), BackgroundColor3 = SURF, BorderSizePixel = 0, ScrollBarThickness = 3, CanvasSize = UDim2.new(), AutomaticCanvasSize = Enum.AutomaticSize.Y }, sc)
-				corner(list, 8)
-				mk("UIListLayout", { Padding = UDim.new(0, 3), SortOrder = Enum.SortOrder.LayoutOrder }, list)
-				mk("UIPadding", { PaddingTop = UDim.new(0, 3), PaddingLeft = UDim.new(0, 3), PaddingRight = UDim.new(0, 3), PaddingBottom = UDim.new(0, 3) }, list)
-				local emptyL = lab(sc, "Belum ada pemain lain di server ini.", 10, FONT, DIM, UDim2.fromOffset(0, 100), UDim2.new(1, -4, 0, 20), Enum.TextXAlignment.Center)
-
-				lab(sc, "TUJUAN", 10, FONTB, DIM, UDim2.fromOffset(0, 174), UDim2.new(1, 0, 0, 12))
-				local chipDefs = { { id = "spot", text = "SPOTKU" }, { id = "custom", text = "SPOT PILIHAN" }, { id = "void", text = "VOID" } }
-				local chips = {}
-				for i, d in ipairs(chipDefs) do
-					chips[d.id] = tbtn(d.text, (i - 1) / 3, 1 / 3, 188, SURF2, TXT)
-				end
-				local destInfo = lab(sc, "", 10, FONT, DIM, UDim2.fromOffset(0, 220), UDim2.new(1, -134, 0, 30))
-				destInfo.TextWrapped = true
-				destInfo.TextYAlignment = Enum.TextYAlignment.Top
-				local pickB = mk("TextButton", { Position = UDim2.new(1, -130, 0, 220), Size = UDim2.fromOffset(126, 28), BackgroundColor3 = SURF2, Text = "KLIK UNTUK PILIH", Font = FONTB, TextSize = 10, TextColor3 = TEAL, AutoButtonColor = false }, sc)
-				corner(pickB, 8)
-				local fallB = mk("TextButton", { Position = UDim2.new(1, -130, 0, 220), Size = UDim2.fromOffset(62, 28), BackgroundColor3 = SURF2, Text = "FALL", Font = FONTB, TextSize = 11, TextColor3 = TXT, AutoButtonColor = false, Visible = false }, sc)
-				corner(fallB, 8)
-				local killB = mk("TextButton", { Position = UDim2.new(1, -64, 0, 220), Size = UDim2.fromOffset(60, 28), BackgroundColor3 = SURF2, Text = "KILL", Font = FONTB, TextSize = 11, TextColor3 = TXT, AutoButtonColor = false, Visible = false }, sc)
-				corner(killB, 8)
-
-				lab(sc, "HITBOX SEAT", 10, FONTB, DIM, UDim2.fromOffset(0, 254), UDim2.new(0.5, 0, 0, 12))
-				local hitL = lab(sc, "", 10, FONTB, AMB, UDim2.new(0.5, 0, 0, 254), UDim2.new(0.5, -8, 0, 12), Enum.TextXAlignment.Right)
-				local sliderHit = mk("TextButton", { Text = "", AutoButtonColor = false, BackgroundTransparency = 1, Position = UDim2.fromOffset(0, 270), Size = UDim2.new(1, -8, 0, 22) }, sc)
-				local bar = mk("Frame", { BackgroundColor3 = SURF2, BorderSizePixel = 0, Size = UDim2.new(1, 0, 0, 8), Position = UDim2.new(0, 0, 0.5, -4) }, sliderHit)
-				corner(bar, 4)
-				local fill = mk("Frame", { BackgroundColor3 = TEAL, BorderSizePixel = 0, Size = UDim2.new(0.3, 0, 1, 0) }, bar)
-				corner(fill, 4)
-				local knob = mk("Frame", { BackgroundColor3 = WHITE, BorderSizePixel = 0, AnchorPoint = Vector2.new(0.5, 0.5), Size = UDim2.fromOffset(16, 16), Position = UDim2.new(0.3, 0, 0.5, 0), ZIndex = 2 }, sliderHit)
-				corner(knob, 8)
-
-				local loopB = tbtn("LOOP", 0, 1 / 3, 298, SURF2, TXT)
-				local antiB = tbtn("ANTI SIT", 1 / 3, 1 / 3, 298, SURF2, TXT)
-				local hlB = tbtn("HIGHLIGHT", 2 / 3, 1 / 3, 298, SURF2, TXT)
-				local viewB = tbtn("VIEW", 0, 1 / 3, 330, SURF2, TXT)
-				local getB = tbtn("AMBIL TOOL", 1 / 3, 1 / 3, 330, SURF2, AMB)
-				local resetB = tbtn("RESET FALLBACK", 2 / 3, 1 / 3, 330, SURF2, TXT)
-				lab(sc, "ANTI SIT di sini = kalau ada yang mendudukkanmu, kamu dibebaskan dan dikembalikan ke posisi sebelumnya. RESET FALLBACK = respawn untuk ambil tool seat dari StarterPack bila tool tidak ditemukan.", 9, FONT, DIM, UDim2.fromOffset(0, 362), UDim2.new(1, -8, 0, 38)).TextWrapped = true
-
-				-- bar bawah tetap: BRING / STOP + status
-				local bringB = mk("TextButton", { Position = UDim2.new(0, 0, 1, -58), Size = UDim2.new(1, -4, 0, 30), BackgroundColor3 = AMB, Text = "BRING", Font = FONTK, TextSize = 13, TextColor3 = DARK, AutoButtonColor = false }, pg)
-				corner(bringB, 8)
-				local stat = lab(pg, "Siap. Pilih pemain lalu tekan BRING.", 10, FONT, DIM, UDim2.new(0, 0, 1, -26), UDim2.new(1, -4, 0, 24))
-				stat.TextWrapped = true
-				stat.TextYAlignment = Enum.TextYAlignment.Top
-				local function setStatus(t, c)
-					stat.Text = t
-					stat.TextColor3 = c or DIM
-				end
-
-				-- ======================= GAME HELPERS =======================
-				local function getChar()
-					local char = player.Character
-					if not char then return end
-					local hum = char:FindFirstChildOfClass("Humanoid")
-					local root = char:FindFirstChild("HumanoidRootPart")
-					if not hum or not root or hum.Health <= 0 then return end
-					return char, hum, root
-				end
-				local function seatIn(tool)
-					return tool:FindFirstChildWhichIsA("Seat", true) or tool:FindFirstChildWhichIsA("VehicleSeat", true)
-				end
-				local function findSeatTool() -- tool yang dipegang dulu, lalu Backpack
-					local char = player.Character
-					if char then
-						for _, c in ipairs(char:GetChildren()) do
-							if c:IsA("Tool") then
-								local s = seatIn(c)
-								if s then return c, s end
-							end
-						end
-					end
-					local bp = player:FindFirstChildOfClass("Backpack")
-					if bp then
-						for _, c in ipairs(bp:GetChildren()) do
-							if c:IsA("Tool") then
-								local s = seatIn(c)
-								if s then return c, s end
-							end
-						end
-					end
-				end
-				local function applyHitbox(seat)
-					if not saved[seat] then
-						saved[seat] = { Size = seat.Size, CanCollide = seat.CanCollide, CanTouch = seat.CanTouch, Massless = seat.Massless }
-					end
-					local s = state.sbHit
-					seat.Size = Vector3.new(s, s, s)
-					seat.CanCollide = false
-					seat.CanTouch = true
-					seat.Massless = true
-					pcall(function() seat.Disabled = false end)
-				end
-				local function restoreHitbox()
-					for seat, s in pairs(saved) do
-						if seat and seat.Parent then
-							pcall(function()
-								seat.Size = s.Size
-								seat.CanCollide = s.CanCollide
-								seat.CanTouch = s.CanTouch
-								seat.Massless = s.Massless
-							end)
-						end
-					end
-					saved = {}
-				end
-				local function voidCFrame(base, kill)
-					local h = Workspace.FallenPartsDestroyHeight
-					if h ~= h or h < -5000 then h = -5000 end -- jaga dari NaN / -inf
-					return CFrame.new(base.X, h + (kill and VOID_KILL_ABOVE or VOID_DROP_ABOVE), base.Z)
-				end
-				local function leadTime() -- kompensasi lag replikasi untuk target yang bergerak
-					local ok, ping = pcall(function() return player:GetNetworkPing() end)
-					if not ok or type(ping) ~= "number" then ping = 0.05 end
-					return math.clamp(ping + 0.06, 0.04, 0.35)
-				end
-				local function stopped() return cancelled or not alive() end
-
-				local function setMarker(pos)
-					if marker then marker:Destroy() marker = nil end
-					if not pos then return end
-					marker = mk("Part", { Name = "RVSeatMarker", Shape = Enum.PartType.Ball, Size = Vector3.new(2.2, 2.2, 2.2), Material = Enum.Material.Neon, Color = TEAL, Transparency = 0.35, Anchored = true, CanCollide = false, CanQuery = false, CanTouch = false, CastShadow = false, Position = pos }, Workspace.CurrentCamera or Workspace)
-				end
-
-				-- ======================= HIGHLIGHT + VIEW =======================
-				local function refreshHighlights()
-					local want = {}
-					if state.sbHl then
-						for _, uid in ipairs(queue) do want[uid] = true end
-						if currentTarget then want[currentTarget] = true end
-					end
-					for uid, e in pairs(highlights) do
-						local p = Players:GetPlayerByUserId(uid)
-						local char = p and p.Character
-						if not want[uid] or not char or e.h.Parent ~= char or e.cur ~= (uid == currentTarget) then
-							pcall(function() e.h:Destroy() end)
-							highlights[uid] = nil
-						end
-					end
-					for uid in pairs(want) do
-						local p = Players:GetPlayerByUserId(uid)
-						local char = p and p.Character
-						if char and not highlights[uid] then
-							local isCur = uid == currentTarget
-							local h = mk("Highlight", { Name = "RVSeatHL", Adornee = char, FillColor = isCur and TEAL or AMB, OutlineColor = isCur and TEAL or REDC, FillTransparency = isCur and 0.35 or 0.6, OutlineTransparency = 0, DepthMode = Enum.HighlightDepthMode.AlwaysOnTop }, char)
-							highlights[uid] = { h = h, cur = isCur }
-						end
-					end
-				end
-				local function refreshView()
-					local cam = Workspace.CurrentCamera
-					if not cam then return end
-					local _, myHum = getChar()
-					local subject = nil
-					if state.sbView then
-						local uid = currentTarget or queue[1]
-						local p = uid and Players:GetPlayerByUserId(uid)
-						local c = p and p.Character
-						subject = c and c:FindFirstChildOfClass("Humanoid")
-					end
-					if subject then
-						if cam.CameraSubject ~= subject then cam.CameraSubject = subject end
-						viewActive = true
-					elseif viewActive then
-						if myHum then cam.CameraSubject = myHum end
-						viewActive = false
-					end
-				end
-
-				-- ======================= ANTI SIT (balik ke posisi sebelumnya) + VIEW tick =======================
-				local runBusyFlag = function() return busy end
-				bind(RunService.Heartbeat, function()
-					if state.sbView then pcall(refreshView) end
-					local char, hum, root = getChar()
-					if not char then
-						history = {}
-						return
-					end
-					local now = os.clock()
-					local sp = hum.SeatPart
-					if sp ~= nil and not sp:IsDescendantOf(char) then
-						if state.sbAnti and now - lastRescue > 0.4 then
-							lastRescue = now
-							local back = history[1]
-							for i = #history, 1, -1 do
-								if history[i].t <= now - 0.6 then
-									back = history[i]
-									break
-								end
-							end
-							hum.Sit = false
-							pcall(function() hum:ChangeState(Enum.HumanoidStateType.Jumping) end)
-							if back then
-								root.CFrame = back.cf
-								root.AssemblyLinearVelocity = Vector3.zero
-							end
-							if not runBusyFlag() then setStatus("Anti sit: dibebaskan dan dikembalikan.", TEAL) end
-						end
-						return -- jangan catat posisi saat duduk
-					end
-					history[#history + 1] = { t = now, cf = root.CFrame }
-					while #history > 0 and history[1].t < now - 1.5 do table.remove(history, 1) end
-				end)
-
-				-- ======================= AUTO-GET TOOL SEAT =======================
-				local SEAT_WORDS = { "seat", "chair", "sofa", "couch", "bench", "stool", "throne" }
-				local GIVER_WORDS = { "tool", "giver", "gear", "item", "weapon", "shop" }
-				local function hasAny(s, words)
-					s = string.lower(tostring(s or ""))
-					for _, w in ipairs(words) do
-						if string.find(s, w, 1, true) then return true end
-					end
-					return false
-				end
-				local function gotTool() return findSeatTool() ~= nil end
-				local function heldByAPlayer(inst)
-					for _, p in ipairs(Players:GetPlayers()) do
-						if p.Character and inst:IsDescendantOf(p.Character) then return true end
-						local bp = p:FindFirstChildOfClass("Backpack")
-						if bp and inst:IsDescendantOf(bp) then return true end
-					end
-					return false
-				end
-				local function positionOf(inst)
-					if not inst then return nil end
-					if inst:IsA("BasePart") then return inst.Position end
-					if inst:IsA("Attachment") then return inst.WorldPosition end
-					local h = inst:FindFirstChild("Handle")
-					if h and h:IsA("BasePart") then return h.Position end
-					if inst:IsA("Model") then return inst:GetPivot().Position end
-					return nil
-				end
-				local function scanWorkspace() -- tool seat lepas + ProximityPrompt aktif
-					local tools, prompts = {}, {}
-					local n = 0
-					for _, d in ipairs(Workspace:GetDescendants()) do
-						n = n + 1
-						if n % 4000 == 0 then task.wait() end
-						if d:IsA("Tool") then
-							if seatIn(d) and not heldByAPlayer(d) then tools[#tools + 1] = d end
-						elseif d:IsA("ProximityPrompt") and d.Enabled then
-							prompts[#prompts + 1] = d
-						end
-					end
-					return tools, prompts
-				end
-				local function templateNames() -- nama tool seat di StarterPack dll: petunjuk untuk giver
-					local names = {}
-					for _, svcName in ipairs({ "StarterPack", "ReplicatedStorage", "ReplicatedFirst" }) do
-						local ok, svc = pcall(game.GetService, game, svcName)
-						if ok and svc then
-							for _, d in ipairs(svc:GetDescendants()) do
-								if d:IsA("Tool") and seatIn(d) then names[#names + 1] = string.lower(d.Name) end
-							end
-						end
-					end
-					return names
-				end
-				local function starterHasSeatTool()
-					local containers = {}
-					local ok, sp = pcall(game.GetService, game, "StarterPack")
-					if ok and sp then containers[#containers + 1] = sp end
-					local sg = player:FindFirstChild("StarterGear")
-					if sg then containers[#containers + 1] = sg end
-					for _, c in ipairs(containers) do
-						for _, d in ipairs(c:GetChildren()) do
-							if d:IsA("Tool") and seatIn(d) then return true end
-						end
-					end
-					return false
-				end
-				local function pickupLoose(tool) -- berdiri di handle supaya engine memungut
-					local handle = tool:FindFirstChild("Handle") or seatIn(tool)
-					if not handle then return false end
-					local t0 = os.clock()
-					while os.clock() - t0 < 2 do
-						if stopped() then return false end
-						if gotTool() then return true end
-						if heldByAPlayer(tool) or tool.Parent == nil then break end
-						local _, _, root = getChar()
-						if not root then return false end
-						root.CFrame = handle.CFrame
-						root.AssemblyLinearVelocity = Vector3.zero
-						RunService.Heartbeat:Wait()
-					end
-					return gotTool()
-				end
-				local function triggerPrompt(prompt)
-					local pos = positionOf(prompt.Parent)
-					if not pos then return false end
-					local _, _, root = getChar()
-					if not root then return false end
-					root.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
-					root.AssemblyLinearVelocity = Vector3.zero
-					task.wait(0.2)
-					if fireproximityprompt then
-						pcall(fireproximityprompt, prompt)
-					else
-						pcall(function() prompt:InputHoldBegin() end)
-						task.wait((prompt.HoldDuration or 0) + 0.25)
-						pcall(function() prompt:InputHoldEnd() end)
-					end
-					local t0 = os.clock()
-					while os.clock() - t0 < 1.2 do
-						if gotTool() then return true end
-						task.wait(0.1)
-					end
-					return gotTool()
-				end
-				-- 2 = sebut kata seat / nama tool seat yang dikenal, 1 = kata giver umum, 0 = abaikan
-				local function promptScore(pr, extraWords)
-					local texts = { pr.ActionText, pr.ObjectText, pr.Name }
-					local a = pr.Parent
-					for _ = 1, 4 do
-						if not a or a == Workspace then break end
-						texts[#texts + 1] = a.Name
-						a = a.Parent
-					end
-					for _, s in ipairs(texts) do
-						if hasAny(s, SEAT_WORDS) or hasAny(s, extraWords) then return 2 end
-					end
-					for _, s in ipairs(texts) do
-						if hasAny(s, GIVER_WORDS) then return 1 end
-					end
-					return 0
-				end
-				local function respawnForTool()
-					local oldChar, hum = getChar()
-					if not hum then return false end
-					setStatus("Reset untuk ambil tool seat dari starter...", AMB)
-					hum.Health = 0
-					local t0 = os.clock()
-					while os.clock() - t0 < 15 do
-						if stopped() then return false end
-						if player.Character and player.Character ~= oldChar and getChar() then break end
-						task.wait(0.1)
-					end
-					local t1 = os.clock()
-					while os.clock() - t1 < 5 do
-						if gotTool() then return true end
-						task.wait(0.1)
-					end
-					return gotTool()
-				end
-				-- return found:boolean, message:string
-				local function acquireSeatTool()
-					if gotTool() then return true end
-					local t0 = os.clock()
-					local function timedOut() return stopped() or os.clock() - t0 > ACQUIRE_TIMEOUT end
-					setStatus("Tidak ada tool seat. Mencari di map...", AMB)
-					local tools, prompts = scanWorkspace()
-					local _, _, root0 = getChar()
-					local function dist(inst)
-						local pos = positionOf(inst)
-						if not pos or not root0 then return math.huge end
-						return (pos - root0.CFrame.Position).Magnitude
-					end
-					table.sort(tools, function(a, b) return dist(a) < dist(b) end)
-					for i = 1, math.min(#tools, 5) do
-						if timedOut() then break end
-						setStatus("Mengambil tool lepas: " .. tools[i].Name, AMB)
-						if pickupLoose(tools[i]) then return true end
-					end
-					local names = templateNames()
-					local scored = {}
-					for _, pr in ipairs(prompts) do
-						local s = promptScore(pr, names)
-						if s > 0 then scored[#scored + 1] = { pr = pr, s = s, d = dist(pr.Parent) } end
-					end
-					table.sort(scored, function(a, b)
-						if a.s ~= b.s then return a.s > b.s end
-						return a.d < b.d
-					end)
-					for i = 1, math.min(#scored, 6) do
-						if timedOut() then break end
-						local label = scored[i].pr.ActionText
-						if label == nil or label == "" then label = scored[i].pr.Name end
-						setStatus("Mencoba prompt: " .. tostring(label), AMB)
-						if triggerPrompt(scored[i].pr) then return true end
-					end
-					local hint = ""
-					if not timedOut() and starterHasSeatTool() then
-						if state.sbReset then
-							if respawnForTool() then return true end
-						else
-							hint = " Ada tool seat di starter: nyalakan RESET FALLBACK untuk respawn."
-						end
-					end
-					if stopped() then return false, "Dihentikan." end
-					return false, "Tool seat tidak ditemukan (inventori, tool lepas, prompt)." .. hint
-				end
-
-				-- ======================= CORE: antar satu target =======================
-				local function deliver(target, origin)
-					if not gotTool() then
-						local found, why = acquireSeatTool()
-						local _, _, r0 = getChar()
-						if r0 then
-							r0.CFrame = origin
-							r0.AssemblyLinearVelocity = Vector3.zero
-						end
-						if not found then return false, why end
-					end
-					local char, hum, root = getChar()
-					if not char then return false, "Karaktermu belum siap." end
-					local tool, seat = findSeatTool()
-					if not tool then return false, "Tidak ada tool dengan Seat di inventorimu." end
-
-					local function abort(msg)
-						local _, h, r = getChar()
-						if h then h:UnequipTools() end
-						if r then
-							r.CFrame = origin
-							r.AssemblyLinearVelocity = Vector3.zero
-						end
-						return false, msg
-					end
-
-					if tool.Parent ~= char then
-						hum:EquipTool(tool)
-						local e0 = os.clock()
-						while tool.Parent ~= char and os.clock() - e0 < 2 do task.wait() end
-						if tool.Parent ~= char then return false, "Gagal equip tool seat." end
-					end
-					applyHitbox(seat)
-
-					-- 1) pusatkan hitbox seat di target sampai dia duduk
-					local t0 = os.clock()
-					local seated = false
-					local flip = 1
-					while os.clock() - t0 < SEAT_TIMEOUT do
-						if stopped() then return abort("Dihentikan.") end
-						char, hum, root = getChar()
-						if not char then return false, "Kamu mati." end
-						if tool.Parent ~= char then hum:EquipTool(tool) end
-						if seat.Size.X ~= state.sbHit then applyHitbox(seat) end
-
-						local tChar = target.Character
-						local tHum = tChar and tChar:FindFirstChildOfClass("Humanoid")
-						local tRoot = tChar and tChar:FindFirstChild("HumanoidRootPart")
-						if not tHum or not tRoot or tHum.Health <= 0 then return abort("Target tidak tersedia.") end
-						if tHum.SeatPart == seat then
-							seated = true
-							break
-						end
-						if tHum.SeatPart ~= nil then return abort("Target sedang duduk di tempat lain.") end
-
-						flip = -flip -- geser vertikal kecil supaya Touched terus terpicu
-						local base = tRoot.CFrame
-						if flip > 0 then -- tiap frame ke-2 bidik arah gerak target
-							local vel = tRoot.AssemblyLinearVelocity or Vector3.zero
-							base = CFrame.new(base.Position + vel * leadTime())
-						end
-						local want = base * CFrame.new(0, 0.25 * flip, 0)
-						root.CFrame = want * seat.CFrame:ToObjectSpace(root.CFrame)
-						root.AssemblyLinearVelocity = Vector3.zero
-						RunService.PreSimulation:Wait()
-					end
-
-					char, hum, root = getChar()
-					if not char then return false, "Kamu mati." end
-					if not seated then return abort("Gagal mendudukkan target (seat nonaktif / terhalang).") end
-
-					-- 2) bawa
-					local destCF = origin
-					if mode == "void" then
-						destCF = voidCFrame(origin.Position, state.sbKill)
-					elseif mode == "custom" and customCF then
-						destCF = customCF
-					end
-					local nearDist = state.sbHit / 2 + 14
-					local c0 = os.clock()
-					local frames = 0
-					while os.clock() - c0 < 1.2 do
-						if stopped() then return abort("Dihentikan.") end
-						char, hum, root = getChar()
-						if not char then return false, "Kamu mati." end
-						local tChar = target.Character
-						local tHum = tChar and tChar:FindFirstChildOfClass("Humanoid")
-						local tRoot = tChar and tChar:FindFirstChild("HumanoidRootPart")
-						if not tHum or not tRoot or tHum.SeatPart ~= seat then return abort("Target lolos.") end
-						root.CFrame = destCF
-						root.AssemblyLinearVelocity = Vector3.zero
-						RunService.PreSimulation:Wait()
-						frames = frames + 1
-						if frames >= 2 and (tRoot.CFrame.Position - destCF.Position).Magnitude <= nearDist then break end
-					end
-
-					-- 3) lepas (unequip memindahkan seat keluar dunia -> target terlepas)
-					char, hum, root = getChar()
-					if hum then hum:UnequipTools() end
-					local r0 = os.clock()
-					while os.clock() - r0 < 0.7 do
-						local _, _, r = getChar()
-						if r then
-							r.CFrame = destCF -- tetap aman di titik drop sampai target bebas
-							r.AssemblyLinearVelocity = Vector3.zero
-						end
-						local tChar = target.Character
-						local tHum = tChar and tChar:FindFirstChildOfClass("Humanoid")
-						if not tHum or tHum.SeatPart ~= seat then break end
-						RunService.Heartbeat:Wait()
-					end
-
-					-- 4) kembali ke posisi awal
-					local _, _, r = getChar()
-					if r then
-						r.CFrame = origin
-						r.AssemblyLinearVelocity = Vector3.zero
-					end
-					return true, "Terantar " .. target.DisplayName
-				end
-
-				-- ======================= QUEUE RUNNER =======================
-				local function updateBring()
-					if busy then
-						bringB.Text = "STOP"
-						bringB.BackgroundColor3 = REDC
-						bringB.TextColor3 = WHITE
-					else
-						bringB.Text = #queue > 0 and ("BRING  (" .. #queue .. ")") or "BRING"
-						bringB.BackgroundColor3 = AMB
-						bringB.TextColor3 = DARK
-					end
-				end
-				local function runQueue()
-					if busy then
-						cancelled = true
-						setStatus("Menghentikan...", AMB)
-						return
-					end
-					if #queue == 0 then setStatus("Pilih minimal satu pemain.", REDC) return end
-					if mode == "custom" and not customCF then setStatus("Pilih spot dulu: tekan KLIK UNTUK PILIH.", REDC) return end
-					local char, hum, root = getChar()
-					if not char then setStatus("Karaktermu belum siap.", REDC) return end
-
-					busy, cancelled = true, false
-					updateBring()
-					local origin = root.CFrame -- "spotku": tempat kamu berdiri sebelum mulai
-
-					local good, bad, lastErr = 0, 0, ""
-					local round = 0
-					repeat
-						round = round + 1
-						local ids = {}
-						for _, uid in ipairs(queue) do ids[#ids + 1] = uid end
-						if #ids == 0 then break end
-						local prefix = state.sbLoop and ("[Loop " .. round .. "] ") or ""
-						for i, uid in ipairs(ids) do
-							if stopped() then break end
-							local target = Players:GetPlayerByUserId(uid)
-							if target then
-								setStatus(string.format("%s(%d/%d) Mengambil %s...", prefix, i, #ids, target.DisplayName), AMB)
-								currentTarget = uid
-								refreshHighlights()
-								refreshView()
-								local ok, success, msg = pcall(deliver, target, origin)
-								currentTarget = nil
-								if not ok then success, msg = false, tostring(success) end
-								if success then
-									good = good + 1
-								else
-									bad = bad + 1
-									lastErr = target.DisplayName .. ": " .. tostring(msg)
-								end
-								task.wait(0.05)
-							else
-								bad = bad + 1
-								lastErr = "Ada target yang keluar dari server."
-							end
-						end
-						if state.sbLoop and not stopped() then task.wait(0.15) end
-					until not state.sbLoop or stopped()
-
-					currentTarget = nil
-					refreshHighlights()
-					refreshView()
-					restoreHitbox()
-					local _, h, r = getChar()
-					if h then h:UnequipTools() end
-					if r then
-						r.CFrame = origin
-						r.AssemblyLinearVelocity = Vector3.zero
-					end
-					local wasCancelled = cancelled
-					busy = false
-					updateBring()
-					if wasCancelled then
-						setStatus(string.format("Dihentikan. %d terantar.", good), AMB)
-					elseif bad == 0 then
-						setStatus(string.format("Selesai. %d terantar.", good), TEAL)
-					else
-						setStatus(string.format("%d terantar, %d gagal. %s", good, bad, lastErr), AMB)
-					end
-				end
-				local function getToolOnly()
-					if busy then cancelled = true return end
-					local _, _, root = getChar()
-					if not root then setStatus("Karaktermu belum siap.", REDC) return end
-					busy, cancelled = true, false
-					updateBring()
-					local origin = root.CFrame
-					local ok, found, msg = pcall(acquireSeatTool)
-					local _, _, r = getChar()
-					if r then
-						r.CFrame = origin
-						r.AssemblyLinearVelocity = Vector3.zero
-					end
-					busy = false
-					updateBring()
-					local tool = findSeatTool()
-					if tool then
-						setStatus("Dapat tool seat: " .. tool.Name, TEAL)
-					else
-						setStatus(ok and tostring(msg or "Tool seat tidak ditemukan.") or ("Error: " .. tostring(found)), REDC)
-					end
-				end
-
-				-- ======================= UI LOGIC =======================
-				local function refreshToggles()
-					loopB.Text = state.sbLoop and "LOOP: ON" or "LOOP: OFF"
-					styleOn(loopB, state.sbLoop, TEAL)
-					antiB.Text = state.sbAnti and "ANTI SIT: ON" or "ANTI SIT: OFF"
-					styleOn(antiB, state.sbAnti, TEAL)
-					hlB.Text = state.sbHl and "HIGHLIGHT: ON" or "HIGHLIGHT: OFF"
-					styleOn(hlB, state.sbHl, AMB)
-					viewB.Text = state.sbView and "VIEW: ON" or "VIEW: OFF"
-					styleOn(viewB, state.sbView, TEAL)
-					resetB.Text = state.sbReset and "RESET FB: ON" or "RESET FB: OFF"
-					styleOn(resetB, state.sbReset, AMB)
-					styleOn(fallB, not state.sbKill, AMB)
-					styleOn(killB, state.sbKill, REDC)
-				end
-				local function updateDestInfo()
-					if mode == "spot" then
-						destInfo.Text = "Diturunkan di tempatmu berdiri sebelum mulai."
-						destInfo.TextColor3 = DIM
-					elseif mode == "void" then
-						destInfo.Text = state.sbKill and "Dibunuh di garis void. Kamu tetap aman." or "Dijatuhkan dari tinggi di void, lalu kamu kembali."
-						destInfo.TextColor3 = state.sbKill and REDC or DIM
-					elseif customCF then
-						local p = customCF.Position
-						destInfo.Text = string.format("Spot: %d, %d, %d", math.floor(p.X + 0.5), math.floor(p.Y + 0.5), math.floor(p.Z + 0.5))
-						destInfo.TextColor3 = TEAL
-					else
-						destInfo.Text = "Belum ada spot. Tekan KLIK UNTUK PILIH."
-						destInfo.TextColor3 = AMB
-					end
-				end
-				local function setMode(id)
-					mode = id
-					local isVoid = id == "void"
-					pickB.Visible = not isVoid
-					fallB.Visible = isVoid
-					killB.Visible = isVoid
-					for cid, b in pairs(chips) do
-						styleOn(b, cid == id, TEAL)
-					end
-					refreshToggles()
-					updateDestInfo()
-				end
-				local function setHitbox(alpha)
-					alpha = math.clamp(alpha, 0, 1)
-					state.sbHit = math.floor(HIT_MIN + (HIT_MAX - HIT_MIN) * alpha + 0.5)
-					fill.Size = UDim2.new(alpha, 0, 1, 0)
-					knob.Position = UDim2.new(alpha, 0, 0.5, 0)
-					hitL.Text = state.sbHit .. " stud"
-				end
-				setHitbox((state.sbHit - HIT_MIN) / (HIT_MAX - HIT_MIN))
-
-				local function refreshBadges()
-					for uid, r in pairs(rowsW) do
-						local idx = nil
-						for i, id in ipairs(queue) do
-							if id == uid then idx = i break end
-						end
-						r.badge.Visible = idx ~= nil
-						if idx then r.badge.Text = tostring(idx) end
-						r.stroke.Enabled = idx ~= nil
-						r.frame.BackgroundColor3 = idx and SURF2 or SURF
-					end
-					updateBring()
-					refreshHighlights()
-					refreshView()
-				end
-				local function toggleSelect(uid)
-					for i, id in ipairs(queue) do
-						if id == uid then
-							table.remove(queue, i)
-							refreshBadges()
-							return
-						end
-					end
-					queue[#queue + 1] = uid
-					refreshBadges()
-				end
-
-				local sig = ""
-				local function refreshList()
-					local arr, ids = {}, {}
-					local fq = sBox.Text:lower()
-					for _, pl in ipairs(Players:GetPlayers()) do
-						if pl ~= player and (fq == "" or pl.DisplayName:lower():find(fq, 1, true) or pl.Name:lower():find(fq, 1, true)) then
-							arr[#arr + 1] = pl
-						end
-					end
-					table.sort(arr, function(a, b) return a.DisplayName:lower() < b.DisplayName:lower() end)
-					for _, pl in ipairs(arr) do ids[#ids + 1] = pl.UserId end
-					-- buang target yang sudah keluar dari antrean
-					for i = #queue, 1, -1 do
-						if not Players:GetPlayerByUserId(queue[i]) then table.remove(queue, i) end
-					end
-					local s = table.concat(ids, ",") .. "|" .. fq
-					if s ~= sig then
-						sig = s
-						for _, c in ipairs(list:GetChildren()) do
-							if c:IsA("TextButton") then c:Destroy() end
-						end
-						rowsW = {}
-						for i, pl in ipairs(arr) do
-							local uid = pl.UserId
-							local r = mk("TextButton", { Size = UDim2.new(1, -2, 0, 34), BackgroundColor3 = SURF, Text = "", AutoButtonColor = false, BorderSizePixel = 0, LayoutOrder = i }, list)
-							corner(r, 8)
-							local st = mk("UIStroke", { Color = AMB, Thickness = 1.5, Enabled = false }, r)
-							local av = mk("ImageLabel", { Position = UDim2.fromOffset(5, 3), Size = UDim2.fromOffset(28, 28), BackgroundColor3 = SURF2, Image = "rbxthumb://type=AvatarHeadShot&id=" .. uid .. "&w=100&h=100", BorderSizePixel = 0 }, r)
-							corner(av, 14)
-							local n = lab(r, pl.DisplayName, 12, FONTB, TXT, UDim2.fromOffset(40, 2), UDim2.new(1, -80, 0, 16))
-							n.TextTruncate = Enum.TextTruncate.AtEnd
-							lab(r, "@" .. pl.Name, 10, FONT, DIM, UDim2.fromOffset(40, 18), UDim2.new(1, -80, 0, 14)).TextTruncate = Enum.TextTruncate.AtEnd
-							local badge = mk("TextLabel", { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -6, 0.5, 0), Size = UDim2.fromOffset(22, 22), BackgroundColor3 = AMB, Text = "", Font = FONTK, TextSize = 12, TextColor3 = DARK, Visible = false }, r)
-							corner(badge, 11)
-							rowsW[uid] = { frame = r, badge = badge, stroke = st }
-							r.MouseButton1Click:Connect(function()
-								click()
-								toggleSelect(uid)
-							end)
-						end
-						emptyL.Visible = #arr == 0
-					end
-					refreshBadges()
-				end
-
-				-- ======================= WIRING =======================
-				sBox:GetPropertyChangedSignal("Text"):Connect(function() sig = "" pcall(refreshList) end)
-				allB.MouseButton1Click:Connect(function()
-					click()
-					local have = {}
-					for _, id in ipairs(queue) do have[id] = true end
-					local vis = {}
-					for uid, r in pairs(rowsW) do vis[#vis + 1] = { uid = uid, o = r.frame.LayoutOrder } end
-					table.sort(vis, function(a, b) return a.o < b.o end)
-					for _, v in ipairs(vis) do
-						if not have[v.uid] then queue[#queue + 1] = v.uid end
-					end
-					refreshBadges()
-				end)
-				noneB.MouseButton1Click:Connect(function()
-					click()
-					queue = {}
-					refreshBadges()
-				end)
-				for id, b in pairs(chips) do
-					b.MouseButton1Click:Connect(function() click() if picking then picking = false pickB.Text = "KLIK UNTUK PILIH" end setMode(id) end)
-				end
-				fallB.MouseButton1Click:Connect(function() click() state.sbKill = false saveSoon() refreshToggles() updateDestInfo() end)
-				killB.MouseButton1Click:Connect(function() click() state.sbKill = true saveSoon() refreshToggles() updateDestInfo() end)
-				loopB.MouseButton1Click:Connect(function() click() state.sbLoop = not state.sbLoop saveSoon() refreshToggles() end)
-				antiB.MouseButton1Click:Connect(function() click() state.sbAnti = not state.sbAnti saveSoon() refreshToggles() end)
-				resetB.MouseButton1Click:Connect(function() click() state.sbReset = not state.sbReset saveSoon() refreshToggles() end)
-				hlB.MouseButton1Click:Connect(function() click() state.sbHl = not state.sbHl saveSoon() refreshToggles() refreshHighlights() end)
-				viewB.MouseButton1Click:Connect(function() click() state.sbView = not state.sbView saveSoon() refreshToggles() refreshView() end)
-				getB.MouseButton1Click:Connect(function() click() task.spawn(getToolOnly) end)
-				bringB.MouseButton1Click:Connect(function() click() task.spawn(runQueue) end)
-
-				-- klik dunia untuk pilih spot
-				local function stopPicking(msg, color)
-					picking = false
-					pickB.Text = "KLIK UNTUK PILIH"
-					if msg then setStatus(msg, color) end
-				end
-				pickB.MouseButton1Click:Connect(function()
-					click()
-					if busy then return end
-					if picking then stopPicking("Pemilihan dibatalkan.", DIM) return end
-					picking = true
-					setMode("custom")
-					pickB.Text = "KLIK DUNIA..."
-					setStatus("Klik / ketuk dunia untuk set spot. Esc membatalkan.", AMB)
-				end)
-				bind(UserInputService.InputBegan, function(io, processed)
-					if not picking then return end
-					if io.KeyCode == Enum.KeyCode.Escape then stopPicking("Pemilihan dibatalkan.", DIM) return end
-					if processed then return end
-					if io.UserInputType == Enum.UserInputType.MouseButton1 or io.UserInputType == Enum.UserInputType.Touch then
-						local cam = Workspace.CurrentCamera
-						if not cam then return end
-						local ray = cam:ScreenPointToRay(io.Position.X, io.Position.Y)
-						local ignore = {}
-						if player.Character then ignore[#ignore + 1] = player.Character end
-						if marker then ignore[#ignore + 1] = marker end
-						local params = RaycastParams.new()
-						params.FilterType = Enum.RaycastFilterType.Exclude
-						params.FilterDescendantsInstances = ignore
-						local hit = Workspace:Raycast(ray.Origin, ray.Direction * 2000, params)
-						if hit then
-							customCF = CFrame.new(hit.Position + Vector3.new(0, 3.5, 0))
-							setMarker(hit.Position + Vector3.new(0, 1.2, 0))
-							setMode("custom")
-							stopPicking("Spot tersimpan.", TEAL)
-						else
-							setStatus("Tidak ada apa-apa di sana. Klik tanah atau dinding.", REDC)
-						end
-					end
-				end)
-
-				-- slider hitbox (scroll dikunci saat menggeser supaya tidak ikut tergulung)
-				do
-					local sliding = false
-					local function fromInput(io)
-						local w = bar.AbsoluteSize.X
-						if w > 0 then setHitbox((io.Position.X - bar.AbsolutePosition.X) / w) end
-					end
-					sliderHit.InputBegan:Connect(function(io)
-						if io.UserInputType == Enum.UserInputType.MouseButton1 or io.UserInputType == Enum.UserInputType.Touch then
-							sliding = true
-							sc.ScrollingEnabled = false
-							fromInput(io)
-						end
-					end)
-					bind(UserInputService.InputChanged, function(io)
-						if sliding and (io.UserInputType == Enum.UserInputType.MouseMovement or io.UserInputType == Enum.UserInputType.Touch) then fromInput(io) end
-					end)
-					bind(UserInputService.InputEnded, function(io)
-						if sliding and (io.UserInputType == Enum.UserInputType.MouseButton1 or io.UserInputType == Enum.UserInputType.Touch) then
-							sliding = false
-							sc.ScrollingEnabled = true
-							saveSoon()
-						end
-					end)
-				end
-
-				-- loop ringan: sinkron daftar pemain + highlight
-				task.spawn(function()
-					while alive() do
-						if pg.Visible then pcall(refreshList) end
-						if state.sbHl or next(highlights) then pcall(refreshHighlights) end
-						task.wait(1)
-					end
-				end)
-
-				-- bersih-bersih saat RV dimatikan
-				local prevCleanup = U.cleanup
-				U.cleanup = function()
-					cancelled = true
-					currentTarget = nil
-					pcall(restoreHitbox)
-					for uid, e in pairs(highlights) do
-						pcall(function() e.h:Destroy() end)
-						highlights[uid] = nil
-					end
-					pcall(function() if marker then marker:Destroy() marker = nil end end)
-					pcall(function()
-						local cam = Workspace.CurrentCamera
-						local _, h = getChar()
-						if viewActive and cam and h then cam.CameraSubject = h end
-					end)
-					if prevCleanup then return prevCleanup() end
-				end
-
-				setMode("spot")
-				refreshToggles()
-				updateBring()
-				pcall(refreshList)
-			end)
-			if not okSB then warn("[RV] Seat Bring gagal dibuat: " .. tostring(errSB)) end
-		end
-
 		-- ---------- Troll (kecil, digabung di Tools; hanya tampil untuk yang punya izin 'troll'; dioptimalkan untuk layar HP) ----------
 		do
 			local pg = mk("Frame", { Size = UDim2.new(1, 0, 1, -108), Position = UDim2.fromOffset(0, 108), BackgroundTransparency = 1, Visible = false })
@@ -20688,7 +20160,7 @@ local function buildUI()
 				end)
 			end
 		end
-		-- ---------- Animation: Emote (R15 katalog / R6 daftar) + Animation Pack (idle/walk/run/dll). Favorit ★ bisa dicari ----------
+		-- ---------- Animation: Emote (R15 katalog / R6 daftar) + Animation Pack (idle/walk/run/dll). Favorit {i:star} bisa dicari ----------
 		-- Daftar ID R6 bawaan: emote default Roblox (Animate script) + koleksi komunitas open source
 		-- (TANG-software/roblox-id-vault [MIT], skrip "r6 emotes OPEN SOURCE", gist Blackwatch69).
 		do
@@ -20706,9 +20178,9 @@ local function buildUI()
 					{ "Insane", "33796059" }, { "Mega Insane", "184574340" }, { "Sword Slice", "35978879" }, { "Head Throw", "35154961" }, { "Floor Crawl", "282574440" }, { "Dino Walk", "204328711" },
 					{ "Weird Move Back", "215384594" }, { "Moon Dance", "45834924" }, { "Full Punch", "204062532" }, { "Full Swing", "218504594" }, { "Arm Turbine", "259438880" }, { "Barrel Roll", "136801964" },
 					{ "Arm Detach", "33169583" }, { "Insane Arms", "27432691" }, { "Sit", "178130996" }, { "Tool Slash", "129967390" }, { "Tool Lunge", "129967478" },
-					{ "Azure Slash", "54584713" }, { "Azure Darken", "77329203" }, { "Soul Rise ⚠", "4698259767" }, { "Cyber Slash", "63718551" }, { "Cyber Summon", "268569955" }, { "Cyber Right Slash", "54611484" }, { "Cyber Slash 2", "54432537" },
-					{ "Survivor Idle ⚠", "131082534135875" }, { "Jalan Survivor ⚠", "108018357044094" }, { "Lari Penyelamat ⚠", "136252471123500" }, { "Berlutut ⚠", "74530436512522" }, { "Jalan Jongkok ⚠", "94721495253171" },
-					{ "Serangan Cepat ⚠", "123569615350667" }, { "Pukulan Meleset ⚠", "119850211147676" }, { "Start Pukulan ⚠", "74858281441140" }, { "Dipukul ⚠", "80582403450485" },
+					{ "Azure Slash", "54584713" }, { "Azure Darken", "77329203" }, { "Soul Rise {i:triangle-alert}", "4698259767" }, { "Cyber Slash", "63718551" }, { "Cyber Summon", "268569955" }, { "Cyber Right Slash", "54611484" }, { "Cyber Slash 2", "54432537" },
+					{ "Survivor Idle {i:triangle-alert}", "131082534135875" }, { "Jalan Survivor {i:triangle-alert}", "108018357044094" }, { "Lari Penyelamat {i:triangle-alert}", "136252471123500" }, { "Berlutut {i:triangle-alert}", "74530436512522" }, { "Jalan Jongkok {i:triangle-alert}", "94721495253171" },
+					{ "Serangan Cepat {i:triangle-alert}", "123569615350667" }, { "Pukulan Meleset {i:triangle-alert}", "119850211147676" }, { "Start Pukulan {i:triangle-alert}", "74858281441140" }, { "Dipukul {i:triangle-alert}", "80582403450485" },
 					{ "Jumpstyle", "75631958792776" }, { "Hakari", "78960964491931" }, { "Konton", "82209980008479" }, { "Gangnam", "103846887522259" }, { "California Girls", "92864241258894" }, { "Clapping", "118626077235621" },
 				}
 				local function hum()
@@ -20722,7 +20194,7 @@ local function buildUI()
 				local mode, sub = rigNow(), "emote"
 				local cur, curSnd, curAnim
 				local stopOnMove, loopOn = true, true
-				local STAR, STAR0 = "\u{2605}", "\u{2606}"
+				local STAR, STAR0 = "{i:star}", "{i:star-off}"
 				local GOLD = C3(255, 200, 60)
 				local lastErr = ""
 				local function decodeBody(body)
@@ -20896,7 +20368,7 @@ local function buildUI()
 					end)
 					return render
 				end
-				-- ===== market katalog (emote Subcategory 39, animation pack 38): cari nama + creator, ★ favorit =====
+				-- ===== market katalog (emote Subcategory 39, animation pack 38): cari nama + creator, {i:star} favorit =====
 				-- daftar bawaan (cadangan bila katalog online gagal dimuat, mis. di PC): bundleId|nama|idle,walk,run,jump,fall,climb,swim
 				local STATIC_PACKS = [[
 2623795|adidas Community|126354114956642,106810508343012,124765145869332,115715495289805,93993406355955,123695349157584,106537993816942
@@ -21417,7 +20889,7 @@ local function buildUI()
 				end, "Play", function(e) favToggle(state.emotes[mode], { name = e.name, id = e.id, song = e.song or "" }) if U.animRenderR6 then U.animRenderR6() end end, function(e) return true end)
 				local fHi = nE()
 				U.animRenderFav, U.animRenderR6 = renderFav, renderR6
-				local note = lab(sfE, "R15: ID emote katalog atau tombol bawaan. R6: animation ID. ★ = simpan ke favorit (bisa dicari). Animasi hanya jalan kalau asetnya milik Roblox / pembuat game / kamu. Lagu hanya terdengar olehmu.", 9, FONT, DIM, nil, UDim2.new(1, 0, 0, 46))
+				local note = lab(sfE, "R15: ID emote katalog atau tombol bawaan. R6: animation ID. {i:star} = simpan ke favorit (bisa dicari). Animasi hanya jalan kalau asetnya milik Roblox / pembuat game / kamu. Lagu hanya terdengar olehmu.", 9, FONT, DIM, nil, UDim2.new(1, 0, 0, 46))
 				note.TextWrapped = true note.LayoutOrder = nE()
 
 				local function setVis(list, v) for _, o in ipairs(list) do o.Visible = v end end
@@ -25698,7 +25170,7 @@ local function buildUI()
 						local function favIdx()
 							for i, x in ipairs(state.ccatFav) do if tostring(x.id) == tostring(it.id) and (x.kind == "Bundle") == (it.kind == "Bundle") then return i end end
 						end
-						local hb = mk("TextButton", { Position = UDim2.new(1, -26, 0, 104), Size = UDim2.fromOffset(20, 20), BackgroundTransparency = 1, Text = "\u{2665}", Font = FONTK, TextSize = 15, TextColor3 = favIdx() and C3n(255, 84, 110) or C3n(96, 104, 122), AutoButtonColor = false, ZIndex = 4 }, f)
+						local hb = mk("TextButton", { Position = UDim2.new(1, -26, 0, 104), Size = UDim2.fromOffset(20, 20), BackgroundTransparency = 1, Text = "{i:heart}", Font = FONTK, TextSize = 15, TextColor3 = favIdx() and C3n(255, 84, 110) or C3n(96, 104, 122), AutoButtonColor = false, ZIndex = 4 }, f)
 						hb.MouseButton1Click:Connect(function()
 							click()
 							local i = favIdx()
@@ -25857,7 +25329,7 @@ local function buildUI()
 						corner(orb, 22)
 						mk("UIGradient", { Color = ColorSequence.new(a.c1 or C3n(255, 255, 255), a.c2 or a.c1 or C3n(255, 255, 255)), Rotation = 45 }, orb)
 						lab(f, a.name, 11, FONTB, TXT, UDim2.fromOffset(6, 68), UDim2.new(1, -12, 0, 16), Enum.TextXAlignment.Center).TextTruncate = Enum.TextTruncate.AtEnd
-						lab(f, string.rep("★", a.rar or 1), 11, FONT, a.c2 or DIM, UDim2.fromOffset(6, 86), UDim2.new(1, -12, 0, 14), Enum.TextXAlignment.Center)
+						lab(f, string.rep("{i:star}", a.rar or 1), 11, FONT, a.c2 or DIM, UDim2.fromOffset(6, 86), UDim2.new(1, -12, 0, 14), Enum.TextXAlignment.Center)
 						local tag = mk("TextLabel", { BackgroundColor3 = C3n(90, 230, 170), Position = UDim2.new(1, -30, 0, 8), Size = UDim2.fromOffset(22, 16), Text = "ON", Font = FONTK, TextSize = 9, TextColor3 = INK, Visible = false }, f)
 						corner(tag, 6)
 						cards[a.key] = { f = f, stroke = sk, tag = tag }
@@ -26329,7 +25801,7 @@ local function buildUI()
 						end)
 					end
 					st.presetFetch = fetchPresets
-					addChip("@preset", "\u{2605} Presets", -1).MouseButton1Click:Connect(function()
+					addChip("@preset", "{i:star} Presets", -1).MouseButton1Click:Connect(function()
 						click()
 						st.inv, st.preset, st.creator, st.q = false, false, nil, ""
 						box.Text = ""
@@ -26493,7 +25965,7 @@ local function buildUI()
 				local st = lab(pg, "Cocokkan pasangan emoji.", 11, FONT, DIM, UDim2.fromOffset(0, 24), UDim2.new(1, 0, 0, 18))
 				local grid = mk("Frame", { Position = UDim2.fromOffset(0, 48), Size = UDim2.new(1, 0, 0, 200), BackgroundTransparency = 1 }, pg)
 				mk("UIGridLayout", { CellSize = UDim2.fromOffset(70, 54), CellPadding = UDim2.fromOffset(6, 6), SortOrder = Enum.SortOrder.LayoutOrder }, grid)
-				local icons = { "🍎", "🍋", "🍇", "🍒", "⭐", "💎" }
+				local icons = { "{i:apple}", "{i:citrus}", "{i:grape}", "{i:cherry}", "{i:star}", "{i:gem}" }
 				local function newGame()
 					for _, c in ipairs(grid:GetChildren()) do if c:IsA("TextButton") then c:Destroy() end end
 					local deck = {}
@@ -26504,6 +25976,7 @@ local function buildUI()
 						local b = mk("TextButton", { Size = UDim2.fromOffset(70, 54), BackgroundColor3 = SURF, Text = "?", Font = FONTK, TextSize = 20, TextColor3 = TXT, AutoButtonColor = false, LayoutOrder = i }, grid)
 						corner(b, 8)
 						local val, done = ic, false
+						b:SetAttribute("v", val)
 						b.MouseButton1Click:Connect(function()
 							if lock or done or open[b] then return end
 							click()
@@ -26513,7 +25986,7 @@ local function buildUI()
 							if not first then first = b return end
 							lock = true
 							task.delay(0.45, function()
-								if first.Text == b.Text then
+								if first:GetAttribute("v") == b:GetAttribute("v") then
 									done = true
 									first:SetAttribute("done", true)
 									b.BackgroundColor3 = C3(50, 160, 90)
@@ -26592,6 +26065,7 @@ local function buildUI()
 				end
 				paint()
 				b.MouseButton1Click:Connect(function() click() on = not on paint() cb(on) end)
+				H.lastRow = b
 				return function(v) on = v and true or false paint() end
 			end
 			function H.num(parent, order, text, get, set, lo, hi, step, dec, inf)
@@ -26640,6 +26114,7 @@ local function buildUI()
 						task.delay(0.4, function() while held and alive() and b.Parent do bump() task.wait(0.06) end end)
 					end)
 				end
+				H.lastRow = r
 				return show
 			end
 			function H.chips(parent, order, list, get, set)
@@ -26666,6 +26141,13 @@ local function buildUI()
 				corner(b, 8)
 				b.MouseButton1Click:Connect(function() click() cb(b) end)
 				return b
+			end
+			-- bar sticky di atas halaman: scroller `sc` digeser turun, isi bar (tombol START/ON + status) tidak ikut scroll
+			function H.pin(pg, sc, h)
+				local bar = mk("Frame", { Name = "RVPinBar", Position = UDim2.fromOffset(0, 0), Size = UDim2.new(1, -6, 0, h), BackgroundTransparency = 1, ZIndex = 5, ClipsDescendants = true }, pg)
+				sc.Position = UDim2.fromOffset(0, h + 6)
+				sc.Size = UDim2.new(1, 0, 1, -(h + 6))
+				return bar
 			end
 			-- pemilih target: kolom nama + PICK (tap pemain di layar) + NEXT (ganti pemain berikutnya)
 			function H.picker(parent, order)
@@ -26727,7 +26209,127 @@ local function buildUI()
 		-- ---------- Bring Part: tarik part ke kita / orbit / ring / blackhole / spiral / fling target ----------
 		do
 			U.stage()
-			local pg = tPages["Bring Part"]
+			local top = tPages["Control Part"]
+			local pg
+			if top then
+				-- tab gabungan "Control Part": sub-halaman Shapes / Bring / Click. Hanya SATU mesin part yang aktif pada satu waktu (U.PE), jadi tidak saling tabrak.
+				U.PE = { stops = {}, cur = nil }
+				function U.PE.take(name)
+					local old = U.PE.cur
+					U.PE.cur = name
+					if old and old ~= name then
+						local f = U.PE.stops[old]
+						if f then pcall(f) end
+					end
+				end
+				function U.PE.free(name) if U.PE.cur == name then U.PE.cur = nil end end
+				U.PE.bad = setmetatable({}, { __mode = "k" })
+				-- part benar-benar lepas: tidak anchored, assembly-nya tidak anchored, dan tidak tersambung (weld / joint / constraint) ke part anchored
+				function U.PE.real(p)
+					if not p:IsA("BasePart") or p:IsA("Terrain") or p.Anchored then return false end
+					local ar = p.AssemblyRootPart
+					if ar and ar.Anchored then return false end
+					local ok, conn = pcall(function() return p:GetConnectedParts(true) end)
+					if ok and conn then
+						for i = 1, math.min(#conn, 400) do
+							if conn[i].Anchored then return false end
+						end
+					end
+					return true
+				end
+				-- true = kepemilikan fisika di kita, false = dipegang pemain lain / server (gerak hanya visual), nil = executor tidak punya isnetworkowner
+				function U.PE.ownState(p)
+					if type(isnetworkowner) ~= "function" then return nil end
+					local ok, r = pcall(isnetworkowner, p)
+					if ok then return r and true or false end
+					return nil
+				end
+				-- true = part ini harus dibuang dari daftar (terus-menerus visual-only). Part yang pernah kita miliki diberi waktu tunggu lebih lama.
+				function U.PE.judge(sv, p, now, own)
+					if own == nil then return false end
+					if own then sv.vis0 = nil sv.owned = true return false end
+					if state.feOnly == false then return false end
+					sv.vis0 = sv.vis0 or now
+					if now - sv.vis0 > (sv.owned and 8 or 3) then
+						U.PE.bad[p] = now + 25
+						return true
+					end
+					return false
+				end
+				-- ANTI FLING PART: part lepas milik pemain lain di sekitar kita dibuat non-collide di sisi kita (tabrakan dihitung di klien kita, jadi tidak bisa melempar)
+				U.PE.apSaved = setmetatable({}, { __mode = "k" })
+				U.PE.apSync = {}
+				function U.PE.antiParts(on)
+					state.antiParts = on and true or false
+					if U.PE.apC then U.PE.apC:Disconnect() U.PE.apC = nil end
+					if not on then
+						for p, cc in pairs(U.PE.apSaved) do
+							if p.Parent then pcall(function() p.CanCollide = cc end) end
+						end
+						U.PE.apSaved = setmetatable({}, { __mode = "k" })
+						for _, f in ipairs(U.PE.apSync) do pcall(f, false) end
+						return
+					end
+					local last = 0
+					U.PE.apC = RunService.Stepped:Connect(function()
+						local now = os.clock()
+						if now - last < 0.12 then return end
+						last = now
+						local c = player.Character
+						local r = c and (c:FindFirstChild("HumanoidRootPart") or c.PrimaryPart)
+						if not r then return end
+						local rp = OverlapParams.new()
+						rp.FilterType = Enum.RaycastFilterType.Exclude
+						rp.FilterDescendantsInstances = { c }
+						local ok, parts = pcall(function() return workspace:GetPartBoundsInRadius(r.Position, 90, rp) end)
+						if not ok then return end
+						for _, d in ipairs(parts) do
+							if not d.Anchored and d.CanCollide and not U.PE.apSaved[d] and not d:IsA("Terrain") and U.PE.ownState(d) ~= true then
+								local ar = d.AssemblyRootPart
+								if not (ar and ar.Anchored) then
+									U.PE.apSaved[d] = true
+									pcall(function() U.PE.apSaved[d] = d.CanCollide d.CanCollide = false end)
+								end
+							end
+						end
+						for p, cc in pairs(U.PE.apSaved) do -- part yang sudah jauh: kembalikan collide-nya
+							if not p.Parent then U.PE.apSaved[p] = nil
+							elseif (p.Position - r.Position).Magnitude > 150 then
+								pcall(function() p.CanCollide = cc end)
+								U.PE.apSaved[p] = nil
+							end
+						end
+					end)
+					for _, f in ipairs(U.PE.apSync) do pcall(f, true) end
+				end
+				function U.PE.addToggles(Hh, scr, o1, o2)
+					Hh.toggle(scr, o1, "Only parts I can truly move (drop visual-only parts)", state.feOnly ~= false, function(v) state.feOnly = v end)
+					local setAp = Hh.toggle(scr, o2, "Anti-fling parts (noclip other players' loose parts)", state.antiParts == true, function(v) U.PE.antiParts(v) end)
+					U.PE.apSync[#U.PE.apSync + 1] = setAp
+				end
+				task.spawn(function() while alive() do task.wait(1) end pcall(U.PE.antiParts, false) end)
+				local subs, btns, selSub = {}, {}, "shapes"
+				local order = { { "shapes", "{i:orbit} Shapes" }, { "bring", "{i:hand} Bring" }, { "click", "{i:map-pin} Click" } }
+				local function paintSub()
+					for k, b in pairs(btns) do
+						b.BackgroundColor3 = (k == selSub) and TXT or SURF2
+						b.TextColor3 = (k == selSub) and INK or TXT
+						subs[k].Visible = (k == selSub)
+					end
+				end
+				local bar = mk("Frame", { Size = UDim2.new(1, -6, 0, 28), BackgroundTransparency = 1 }, top)
+				mk("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 4), SortOrder = Enum.SortOrder.LayoutOrder }, bar)
+				for i, e in ipairs(order) do
+					local b = mk("TextButton", { Size = UDim2.new(1 / 3, -3, 1, 0), BackgroundColor3 = SURF2, Text = e[2], Font = FONTK, TextSize = 10, TextColor3 = TXT, AutoButtonColor = false, LayoutOrder = i }, bar)
+					corner(b, 13)
+					btns[e[1]] = b
+					subs[e[1]] = mk("Frame", { Position = UDim2.fromOffset(0, 32), Size = UDim2.new(1, 0, 1, -32), BackgroundTransparency = 1 }, top)
+					b.MouseButton1Click:Connect(function() click() selSub = e[1] paintSub() end)
+				end
+				paintSub()
+				U.cpSub = subs
+				pg = subs.bring
+			end
 			if pg then
 				local H = U.H
 				local C3n = Color3.fromRGB
@@ -26761,9 +26363,17 @@ local function buildUI()
 				H.chips(sc, 16.3, { { "bp", "BodyPosition (TPUna style)" }, { "align", "AlignPosition" } }, function() return B.engine end, function(v) B.engine = v end)
 				H.toggle(sc, 17, "Claim physics (FE for loose parts)", true, function(v) B.claim = v end)
 				H.toggle(sc, 18, "Restore positions on stop", true, function(v) B.restore = v end)
+				H.toggle(sc, 19, "No equip tools (tools can't be equipped while moved)", state.noEquip ~= false, function(v)
+					state.noEquip = v
+					saveSoon()
+					for p, sv in pairs(B.saved) do
+						if sv.tool and p.Parent then pcall(function() p.CanTouch = v and false or sv.ct end) end
+					end
+				end)
 
+				U.PE.addToggles(H, sc, 19.1, 19.2)
 				local function partOf(o)
-					if o:IsA("BasePart") then return o end
+				if o:IsA("BasePart") then return o end
 					if o:IsA("Tool") then return o:FindFirstChild("Handle") or o:FindFirstChildWhichIsA("BasePart", true) end
 					if o:IsA("Model") then return o.PrimaryPart or o:FindFirstChildWhichIsA("BasePart", true) end
 				end
@@ -26779,7 +26389,7 @@ local function buildUI()
 					local out, seen = {}, {}
 					local function add(o)
 						local p = o and partOf(o)
-						if p and not seen[p] and p.Parent and not p.Anchored and not p:IsA("Terrain") and not isCharPart(p) and p.Size.Magnitude < 120 then
+						if p and not seen[p] and p.Parent and not p.Anchored and not p:IsA("Terrain") and not isCharPart(p) and p.Size.Magnitude < 120 and not (U.PE.bad[p] and U.PE.bad[p] > os.clock()) and U.PE.real(p) then
 							seen[p] = true out[#out + 1] = p
 						end
 					end
@@ -26816,8 +26426,14 @@ local function buildUI()
 					B.att, B.aps = {}, {}
 					if B.helper then pcall(function() B.helper:Destroy() end) B.helper = nil end
 				end
+				local function restoreTouch()
+					for p, s in pairs(B.saved) do
+						if s.ct ~= nil and p.Parent then pcall(function() p.CanTouch = s.ct end) end
+					end
+				end
 				local function restorePos()
 					dropAlign()
+					restoreTouch()
 					for p, s in pairs(B.saved) do
 						if p.Parent then
 							pcall(function()
@@ -26831,9 +26447,10 @@ local function buildUI()
 					B.saved = {}
 				end
 				local function stop(msg)
-					B.on = false
+				B.on = false
+				U.PE.free("bring")
 					if B.conn then B.conn:Disconnect() B.conn = nil end
-					if B.restore then restorePos() else dropAlign() B.saved = {} end
+					if B.restore then restorePos() else dropAlign() restoreTouch() B.saved = {} end
 					B.parts = {}
 					say(msg or "Stopped")
 				end
@@ -26945,15 +26562,25 @@ local function buildUI()
 							H.shp(player, "MaximumSimulationRadius", 1e9)
 						end
 						local fe, vis = 0, 0
-						for i, p in ipairs(B.parts) do
-							if not p.Anchored then
-								local own = true
-								if isnetworkowner then own = isnetworkowner(p) end
-								if own then fe += 1 else
+						for i = #B.parts, 1, -1 do
+							local p = B.parts[i]
+							local sv = B.saved[p]
+							if p.Anchored or (p.AssemblyRootPart and p.AssemblyRootPart.Anchored) then
+								B.untrack(p) -- jadi anchored / tersambung ke part anchored: tidak bisa dipakai
+								B.dropped = (B.dropped or 0) + 1
+							else
+								local own = U.PE.ownState(p)
+								if sv and U.PE.judge(sv, p, now, own) then -- terus-menerus visual-only (dipegang pemain lain / server): buang dari daftar
+									B.untrack(p)
+									B.dropped = (B.dropped or 0) + 1
+								elseif own == false then
 									vis += 1
-									if B.claim and fti and myR and (claimIdx + i) % 4 == 0 then pcall(function() fti(myR, p, 0) fti(myR, p, 1) end) end
+									-- JANGAN firetouchinterest ke part tool: sentuhan itu yang membuat tool ter-equip
+									if B.claim and fti and myR and not (sv and sv.tool) and (claimIdx + i) % 4 == 0 then pcall(function() fti(myR, p, 0) fti(myR, p, 1) end) end
+								else
+									fe += 1
 								end
-							else vis += 1 end
+							end
 						end
 						claimIdx += 1
 						if B.auto and (B.src == "loose" or B.src == "name") and #B.parts < B.limit and now - B.lastAuto > 1 then
@@ -26963,7 +26590,7 @@ local function buildUI()
 							end
 						end
 						B.nfe, B.nvis = fe, vis
-						say("Running: " .. B.mode .. "  |  " .. #B.parts .. " parts  |  FE " .. fe .. "  /  visual " .. vis)
+						say("Running: " .. B.mode .. "  |  " .. #B.parts .. " parts  |  FE " .. fe .. "  /  visual " .. vis .. ((B.dropped or 0) > 0 and ("  |  skipped " .. B.dropped .. " visual-only") or ""))
 					end
 				end
 				-- pasang penggerak ke satu part (BodyPosition ala TPUna, atau AlignPosition)
@@ -27006,26 +26633,59 @@ local function buildUI()
 				end
 				local function track(p)
 					if B.saved[p] then return end
-					B.saved[p] = { cf = p.CFrame, a = p.Anchored, cc = p.CanCollide }
-					pcall(function() p.CanCollide = false end)
+					local isTool = p:FindFirstAncestorWhichIsA("Tool") ~= nil
+					B.saved[p] = { cf = p.CFrame, a = p.Anchored, cc = p.CanCollide, ct = p.CanTouch, tool = isTool }
+					pcall(function()
+						p.CanCollide = false
+						-- NO EQUIP TOOLS: matikan Touched supaya tool tidak ter-equip saat disentuh
+						if isTool and state.noEquip ~= false then p.CanTouch = false end
+					end)
 					B.parts[#B.parts + 1] = p
 					if B.mode ~= "fling" then B.mover(p) end
 				end
 				B.track = track
+				-- kalau part yang sedang dipakai ternyata sudah dipegang karakter (tool ter-equip), lepaskan dari daftar & kembalikan
+				local function untrack(p)
+					local sv = B.saved[p]
+					for i = #B.parts, 1, -1 do if B.parts[i] == p then table.remove(B.parts, i) end end
+					pcall(function() local a = B.att[p] if a then a:Destroy() end local ap = B.aps[p] if ap then ap:Destroy() end end)
+					B.att[p], B.aps[p] = nil, nil
+					if sv then pcall(function() if sv.a0 then sv.a0:Destroy() end p.CanCollide = sv.cc if sv.ct ~= nil then p.CanTouch = sv.ct end end) end
+					B.saved[p] = nil
+				end
+				B.untrack = untrack
+				-- tiap frame: part tool yang sudah ter-equip (jadi bagian karakter) langsung dilepas, supaya pemakai tidak ikut tertarik
+				bind(RunService.Heartbeat, function()
+					if not B.on then return end
+					for i = #B.parts, 1, -1 do
+						local p = B.parts[i]
+						local sv = p and B.saved[p]
+						if p and (not p.Parent or (sv and sv.tool and isCharPart(p))) then untrack(p)
+						elseif p and sv and sv.tool and state.noEquip ~= false and p.CanTouch then pcall(function() p.CanTouch = false end) end
+					end
+				end)
 				local function start()
 					if B.on then stop("Restarted") end
 					local list = collect()
 					if #list == 0 then say("No unanchored parts found for this source (anchored parts are skipped). Select loose parts in ESP Part, or change the source.") return end
+					U.PE.take("bring")
+					B.dropped = 0
 					B.parts, B.saved = {}, {}
 					for _, p in ipairs(list) do track(p) end
 					B.t0 = os.clock()
 					B.on = true
 					B.conn = RunService.Heartbeat:Connect(function(dt) local ok, e = pcall(frame, dt) end)
 					say("Started: " .. #B.parts .. " parts")
+					end
+					U.PE.stops.bring = function() if B.on then stop("Stopped (another Control Part mode started)") end end
+				do
+					local pb = H.pin(pg, sc, 66)
+					local bS = H.button(sc, 20, "START / RESTART", function() start() end, true)
+					bS.Parent = pb bS.Position = UDim2.fromOffset(0, 0) bS.Size = UDim2.new(0.5, -3, 0, 30)
+					local bX = H.button(sc, 21, "STOP", function() stop("Stopped") end)
+					bX.Parent = pb bX.Position = UDim2.new(0.5, 3, 0, 0) bX.Size = UDim2.new(0.5, -3, 0, 30)
+					stat.Parent = pb stat.Position = UDim2.fromOffset(0, 34) stat.Size = UDim2.new(1, 0, 0, 30) stat.TextSize = 10 stat.TextTruncate = Enum.TextTruncate.AtEnd
 				end
-				H.header(sc, 19, "CONTROL")
-				H.button(sc, 20, "START / RESTART", function() start() end, true)
-				H.button(sc, 21, "STOP", function() stop("Stopped") end)
 				H.button(sc, 22, "RETURN PARTS TO ORIGINAL POSITION", function()
 					local was = B.on
 					if B.conn then B.conn:Disconnect() B.conn = nil end
@@ -28132,7 +27792,7 @@ local function buildUI()
 						corner(hudBg, 4)
 						local hudF = mk("Frame", { Size = UDim2.fromScale(1, 1), BackgroundColor3 = C3n(80, 220, 120), BorderSizePixel = 0, ZIndex = 7 }, hudBg)
 						corner(hudF, 4)
-						local hm = mk("TextLabel", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(40, 40), BackgroundTransparency = 1, Text = "\u{2715}", Font = FONTK, TextSize = 30, TextColor3 = WHITE, TextTransparency = 1, TextStrokeTransparency = 1, ZIndex = 9 }, cg)
+						local hm = mk("TextLabel", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(40, 40), BackgroundTransparency = 1, Text = "{i:x}", Font = FONTK, TextSize = 30, TextColor3 = WHITE, TextTransparency = 1, TextStrokeTransparency = 1, ZIndex = 9 }, cg)
 						local hsnd = Instance.new("Sound")
 						hsnd.SoundId = "rbxasset://sounds/electronicpingshort.wav"
 						hsnd.Volume = 0.7
@@ -28374,11 +28034,11 @@ local function buildUI()
 		-- ---------- CONTROL PART (dulu Telekinesis): atur banyak part jadi aura / bentuk / tangga / karpet / robot ----------
 		do
 			U.stage()
-			local pg = tPages["Control Part"]
+			local pg = U.cpSub and U.cpSub.shapes
 			if pg then
-				local H = U.H
-				local C3n = Color3.fromRGB
-				local TAU = math.pi * 2
+			local H = U.H
+			local C3n = Color3.fromRGB
+			local TAU = math.pi * 2
 				local UIS = UserInputService
 				local CP = {
 					on = false, src = "world", follow = "Me", shape = "Orbit", grabT = 0,
@@ -28514,16 +28174,19 @@ local function buildUI()
 					if not d:IsA("BasePart") or d:IsA("Terrain") or d.Anchored or d.Size.Magnitude >= 40 or isChar(d) then return false end
 					local ar = d.AssemblyRootPart
 					if ar and ar.Anchored then return false end
-					return true
-				end
-				function M.adopt(p)
+					if U.PE.bad[d] and U.PE.bad[d] > os.clock() then return false end
+					return U.PE.real(d)
+					end
+					function M.adopt(p)
 					if not p or not p:IsA("BasePart") or p:IsA("Terrain") then M.say("Nothing to grab") return false end
 					local tool = p:FindFirstAncestorWhichIsA("Tool")
 					if tool and tool:FindFirstChild("Handle") then p = tool.Handle end
 					if isChar(p) then M.say("Cannot grab a character part") return false end
 					if p.Anchored or (p.AssemblyRootPart and p.AssemblyRootPart.Anchored) then M.say("That part is anchored (or attached to anchored parts) - only loose parts work") return false end
 					if CP.saved[p] then return true end
-					CP.saved[p] = { cc = p.CanCollide, col = p.Color, mat = p.Material, tr = p.Transparency }
+					if not U.PE.real(p) then M.say("That part is attached to anchored parts - only loose parts work") return false end
+					CP.saved[p] = { cc = p.CanCollide, ct = p.CanTouch, col = p.Color, mat = p.Material, tr = p.Transparency, tool = tool ~= nil }
+					if tool and state.noEquip ~= false then pcall(function() p.CanTouch = false end) end -- NO EQUIP TOOLS
 					CP.world[#CP.world + 1] = p
 					CP.dirty = true
 					return true
@@ -28533,7 +28196,7 @@ local function buildUI()
 						local s = CP.saved[p]
 						if p.Parent then
 							pcall(function()
-								if s then p.CanCollide = s.cc p.Color = s.col p.Material = s.mat p.Transparency = s.tr end
+								if s then p.CanCollide = s.cc p.Color = s.col p.Material = s.mat p.Transparency = s.tr if s.ct ~= nil then p.CanTouch = s.ct end end
 								if s and s.bp then pcall(function() s.bp:Destroy() end) end
 								if s and s.bg then pcall(function() s.bg:Destroy() end) end
 								pcall(function() local t0 = p:FindFirstChild("rvTr") if t0 then t0:Destroy() end local a0 = p:FindFirstChild("rvA0") if a0 then a0:Destroy() end local a1 = p:FindFirstChild("rvA1") if a1 then a1:Destroy() end end)
@@ -29075,7 +28738,56 @@ local function buildUI()
 
 				-- ===== main loop =====
 				function M.frame(dt)
-					if not CP.on then return end
+				if not CP.on then return end
+				if U.PE and U.PE.cur ~= "shapes" then U.PE.take("shapes") end
+				if CP.src ~= "own" then
+					local now0 = os.clock()
+					local noEq = state.noEquip ~= false
+					if now0 - (CP.feT or 0) > 0.3 then
+						CP.feT = now0
+						CP.feIdx = (CP.feIdx or 0) + 1
+						local _, _, myR0 = H.me()
+						local fe, vis = 0, 0
+						for i = #CP.world, 1, -1 do
+							local p = CP.world[i]
+							local sv = CP.saved[p]
+							if sv and p.Parent then
+								local own = U.PE.ownState(p)
+								if U.PE.judge(sv, p, now0, own) then -- terus-menerus visual-only (dipegang pemain lain / server): lepas
+									pcall(function()
+										p.CanCollide = sv.cc p.Color = sv.col p.Material = sv.mat p.Transparency = sv.tr
+										if sv.ct ~= nil then p.CanTouch = sv.ct end
+										if sv.bp then sv.bp:Destroy() end
+										if sv.bg then sv.bg:Destroy() end
+									end)
+									CP.saved[p] = nil
+									table.remove(CP.world, i)
+									CP.dirty = true
+									CP.dropped = (CP.dropped or 0) + 1
+								elseif own == false then
+									vis += 1
+									-- part tool JANGAN disentuh (firetouchinterest memicu equip)
+									local fti0 = firetouchinterest
+									if fti0 and myR0 and not sv.tool and (CP.feIdx + i) % 4 == 0 then pcall(function() fti0(myR0, p, 0) fti0(myR0, p, 1) end) end
+								else
+									fe += 1
+								end
+								if noEq and sv.tool and p.CanTouch then pcall(function() p.CanTouch = false end) end
+							end
+						end
+						if #CP.world > 0 then M.say("Loose parts: FE " .. fe .. " / visual " .. vis .. ((CP.dropped or 0) > 0 and ("  |  skipped " .. CP.dropped .. " visual-only") or "")) end
+					end
+				end
+					for i = #CP.world, 1, -1 do
+						local p = CP.world[i]
+						local sv = CP.saved[p]
+						if not p.Parent or (sv and sv.tool and isChar(p)) then -- tool ter-equip / part hilang: lepas dari daftar (pemakai tidak ikut tertarik)
+							if sv and p.Parent then pcall(function() p.CanCollide = sv.cc if sv.ct ~= nil then p.CanTouch = sv.ct end end) end
+							CP.saved[p] = nil
+							table.remove(CP.world, i)
+							CP.dirty = true
+						end
+					end
 					local dv = ((CP.kUp or CP.bUp) and 1 or 0) - ((CP.kDown or CP.bDown) and 1 or 0)
 					if dv ~= 0 then CP.level = math.clamp(CP.level + dv * CP.hspeed * dt, -500, 5000) end
 					if CP.move then CP.phase += dt * CP.speed end
@@ -29121,7 +28833,8 @@ local function buildUI()
 					M.apply(list, cfs, n)
 				end
 				function M.off()
-					CP.on = false
+				CP.on = false
+				if U.PE then U.PE.free("shapes") end
 					M.clearOwn()
 					M.robDestroy()
 					M.release()
@@ -29196,8 +28909,23 @@ local function buildUI()
 
 				-- ===== POWER =====
 				HDR("POWER")
-				setOnUI = TOG("ON", "on", function(v) if not v then M.off() else CP.cen = nil if CP.shape == "Stairs" or CP.shape == "Carpet" then M.place() end end end)
-				CHIPS({ { "Me", "Follow me" }, { "Player", "Follow player" }, { "Mouse", "Mouse" }, { "Freeze", "Freeze" }, { "Camera", "In front of camera" } }, "follow", function(v)
+				setOnUI = TOG("ON", "on", function(v) if not v then M.off() else CP.cen = nil CP.dropped = 0 if CP.shape == "Stairs" or CP.shape == "Carpet" then M.place() end end end)
+				if U.PE then U.PE.stops.shapes = function() if CP.on then CP.on = false M.off() pcall(setOnUI, false) end end end
+				do
+					local onRow = H.lastRow
+					local pb = H.pin(pg, sc, 66)
+					onRow.Parent = pb onRow.Position = UDim2.fromOffset(0, 0) onRow.Size = UDim2.new(1, 0, 0, 30)
+					stat.Parent = pb stat.Position = UDim2.fromOffset(0, 34) stat.Size = UDim2.new(1, 0, 0, 30) stat.TextSize = 10 stat.TextTruncate = Enum.TextTruncate.AtEnd
+				end
+				H.toggle(sc, O(), "No equip tools (tools can't be equipped while moved)", state.noEquip ~= false, function(v)
+					state.noEquip = v
+					saveSoon()
+					for p, sv in pairs(CP.saved) do
+						if sv.tool and p.Parent then pcall(function() p.CanTouch = v and false or sv.ct end) end
+					end
+				end)
+				U.PE.addToggles(H, sc, O(), O())
+					CHIPS({ { "Me", "Follow me" }, { "Player", "Follow player" }, { "Mouse", "Mouse" }, { "Freeze", "Freeze" }, { "Camera", "In front of camera" } }, "follow", function(v)
 					if v == "Freeze" then M.freezeHere() elseif v == "Mouse" then local cam = workspace.CurrentCamera CP.fixedYaw = cam and M.yawOf(cam.CFrame) or 0 end
 					CP.cen = nil
 				end)
@@ -29276,8 +29004,8 @@ local function buildUI()
 						b.MouseButton1Up:Connect(function() CP[key] = false end)
 						b.MouseLeave:Connect(function() CP[key] = false end)
 					end
-					hold("RAISE (hold)  \u{25B2}", UDim2.new(0, 0, 0, 0), "bUp")
-					hold("LOWER (hold)  \u{25BC}", UDim2.new(0.5, 3, 0, 0), "bDown")
+					hold("RAISE (hold)  {i:chevron-up}", UDim2.new(0, 0, 0, 0), "bUp")
+					hold("LOWER (hold)  {i:chevron-down}", UDim2.new(0.5, 3, 0, 0), "bDown")
 				end
 				keyBtn("Raise key", "upKey")
 				keyBtn("Lower key", "downKey")
@@ -29496,6 +29224,1383 @@ local function buildUI()
 				end)
 				task.spawn(function() while alive() do task.wait(1) end pcall(M.off) pcall(function() local g = (gethui and gethui() or game:GetService("CoreGui")):FindFirstChild("RVdraw") if g then g:Destroy() end end) end)
 			end
+		end
+
+				-- ---------- CLICK MODE (tab Control Part > Click): part lepas terbang ke titik yang di-klik / di-tap ----------
+				-- Anti-jatuh ala "Ring Parts": CanCollide mati, part dibuat ringan (CustomPhysicalProperties), ditahan AlignPosition + AlignOrientation (OneAttachment),
+				-- VectorForce meniadakan gravitasi tiap frame, SimulationRadius dimaksimalkan + klaim kepemilikan fisika (firetouchinterest, TIDAK untuk part tool).
+				do
+					U.stage()
+					local pg = U.cpSub and U.cpSub.click
+					if pg and U.H then
+						local H = U.H
+						local WS = workspace
+						local UIS = UserInputService
+						local fti = firetouchinterest
+						local TAU = math.pi * 2
+						local K = {
+							on = false, parts = {}, saved = {}, tgt = nil, form = "Cluster",
+							count = 20, gr = 80, speed = 150, spread = 6, height = 3, spin = 1,
+							instant = false, auto = true, claim = true,
+							t0 = 0, lastGrab = 0, lastClaim = 0, lastGrav = 0, claimIdx = 1, conn = nil, err = nil, pend = nil,
+							nfe = 0, nvis = 0, dropped = 0,
+						}
+						local sc = scroller(pg, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 1, 0))
+						local stat = lab(sc, "Idle. Press START, then click / tap the world: the parts fly there.", 11, FONTB, DIM, nil, UDim2.new(1, 0, 0, 30))
+						stat.LayoutOrder = 1 stat.TextWrapped = true
+						local function say(t) if stat.Text ~= t then stat.Text = t end end
+						local function status()
+							say("Click mode  |  " .. #K.parts .. " parts  |  FE " .. K.nfe .. " / visual " .. K.nvis .. "  |  " .. (K.tgt and "target set" or "waiting for a click (hovering around you)") .. (K.dropped > 0 and ("  |  skipped " .. K.dropped .. " visual-only") or ""))
+						end
+
+						local function isChar(p)
+							local a = p.Parent
+							while a and a ~= WS do
+								if Players:GetPlayerFromCharacter(a) then return true end
+								a = a.Parent
+							end
+							return false
+						end
+						local function loose(d)
+							if not d:IsA("BasePart") or d:IsA("Terrain") or d.Anchored or d.Size.Magnitude >= 40 or isChar(d) then return false end
+							if U.PE.bad[d] and U.PE.bad[d] > os.clock() then return false end
+							return U.PE.real(d)
+						end
+						local function collect(want)
+							local c, _, r = H.me()
+							if not r or want <= 0 then return {} end
+							local rp = OverlapParams.new()
+							rp.FilterType = Enum.RaycastFilterType.Exclude
+							rp.FilterDescendantsInstances = { c }
+							local ok, parts = pcall(function() return WS:GetPartBoundsInRadius(r.Position, K.gr, rp) end)
+							local found = {}
+							if ok then
+								for _, d in ipairs(parts) do
+									if loose(d) and not K.saved[d] then found[#found + 1] = { d, (d.Position - r.Position).Magnitude } end
+								end
+							end
+							table.sort(found, function(a, b) return a[2] < b[2] end)
+							local out = {}
+							for i = 1, math.min(want, #found) do out[i] = found[i][1] end
+							return out
+						end
+
+						-- posisi tiap part di sekitar titik c (fungsi murni): Cluster / Ring / Sphere
+						local function fpos(form, i, n, c, spread, t, spin)
+							if form == "Ring" then
+								local a = TAU * (i - 1) / n + t * spin
+								return c + Vector3.new(math.cos(a) * spread, 0, math.sin(a) * spread)
+							elseif form == "Sphere" then
+								local f = (i - 0.5) / n
+								local ph = math.acos(1 - 2 * f)
+								local th = math.pi * (1 + 5 ^ 0.5) * (i - 0.5) + t * spin
+								return c + Vector3.new(math.cos(th) * math.sin(ph), math.cos(ph), math.sin(th) * math.sin(ph)) * spread
+							end
+							local a = (i - 1) * 2.399963 + t * spin
+							local r = spread * math.sqrt((i - 0.5) / n)
+							return c + Vector3.new(math.cos(a) * r, ((i - 1) % 3) * 0.6 - 0.6, math.sin(a) * r)
+						end
+
+						local function engage(p)
+							if K.saved[p] or not p.Parent then return end
+							local tool = p:FindFirstAncestorWhichIsA("Tool")
+							local s = { cc = p.CanCollide, ct = p.CanTouch, pp = p.CustomPhysicalProperties, tool = tool ~= nil }
+							K.saved[p] = s
+							K.parts[#K.parts + 1] = p
+							pcall(function()
+								p.CanCollide = false
+								if s.tool and state.noEquip ~= false then p.CanTouch = false end
+								p.CustomPhysicalProperties = PhysicalProperties.new(0.01, 0, 0, 0, 0) -- ringan: gravitasi hampir tidak berpengaruh
+								local a0 = tagged("Attachment") a0.Name = "_rvk0" a0.Parent = p
+								s.a0 = a0
+								local ap = tagged("AlignPosition") ap.Name = "_rvkP"
+								ap.Mode = Enum.PositionAlignmentMode.OneAttachment
+								ap.Attachment0 = a0
+								ap.Position = p.Position
+								ap.MaxForce = math.huge
+								ap.MaxVelocity = K.speed
+								ap.Responsiveness = 200
+								ap.RigidityEnabled = false
+								ap.ApplyAtCenterOfMass = true
+								ap.ReactionForceEnabled = false
+								ap.Parent = p
+								s.ap = ap
+								local ao = tagged("AlignOrientation") ao.Name = "_rvkO"
+								ao.Mode = Enum.OrientationAlignmentMode.OneAttachment
+								ao.Attachment0 = a0
+								ao.CFrame = p.CFrame.Rotation
+								ao.MaxTorque = math.huge
+								ao.MaxAngularVelocity = math.huge
+								ao.Responsiveness = 100
+								ao.RigidityEnabled = false
+								ao.ReactionTorqueEnabled = false
+								ao.Parent = p
+								s.ao = ao
+								local vf = tagged("VectorForce") vf.Name = "_rvkG"
+								vf.Attachment0 = a0
+								vf.ApplyAtCenterOfMass = true
+								vf.RelativeTo = Enum.ActuatorRelativeTo.World
+								vf.Force = Vector3.new(0, p.Mass * WS.Gravity, 0) -- meniadakan gravitasi
+								vf.Parent = p
+								s.vf = vf
+							end)
+						end
+						local function release(p)
+							local s = K.saved[p]
+							K.saved[p] = nil
+							if not s then return end
+							pcall(function()
+								for _, k in ipairs({ "ap", "ao", "vf", "a0" }) do
+									local o = s[k]
+									if o then o:Destroy() end
+								end
+							end)
+							if p.Parent then
+								pcall(function()
+									p.CanCollide = s.cc
+									if s.ct ~= nil then p.CanTouch = s.ct end
+									p.CustomPhysicalProperties = s.pp
+									p.AssemblyLinearVelocity = Vector3.zero
+									p.AssemblyAngularVelocity = Vector3.zero
+								end)
+							end
+						end
+
+						local function frame(dt)
+							if not K.on then return end
+							local _, _, myR = H.me()
+							local now = os.clock()
+							for i = #K.parts, 1, -1 do
+								local p = K.parts[i]
+								local s = K.saved[p]
+								if not p.Parent then
+									K.saved[p] = nil
+									table.remove(K.parts, i)
+								elseif s and s.tool and isChar(p) then -- tool sudah ter-equip: lepas dari daftar (jangan ikut tertarik)
+									release(p)
+									table.remove(K.parts, i)
+								end
+							end
+							while #K.parts > K.count do release(table.remove(K.parts)) end
+							local n = #K.parts
+							local c = K.tgt or (myR and (myR.Position + Vector3.new(0, K.height + 2, 0)))
+							local t = now - K.t0
+							local noEq = state.noEquip ~= false
+							if c then
+								for i = 1, n do
+									local p = K.parts[i]
+									local s = K.saved[p]
+									if s and s.ap and s.ap.Parent then
+										local want = fpos(K.form, i, n, c, K.spread, t, K.spin)
+										s.ap.Position = want
+										s.ap.MaxVelocity = K.speed
+										if s.ao and s.ao.Parent then s.ao.CFrame = CFrame.Angles(0, t * K.spin + i, 0) end
+										local d = (p.Position - want).Magnitude
+										if K.instant or d > 2500 then
+											p.CFrame = CFrame.new(want)
+											p.AssemblyLinearVelocity = Vector3.zero
+										elseif d < 1.2 then
+											p.AssemblyLinearVelocity = Vector3.zero -- sudah sampai: matikan sisa kecepatan supaya tidak hanyut
+										end
+										if noEq and s.tool and p.CanTouch then pcall(function() p.CanTouch = false end) end
+									end
+								end
+							end
+							if now - K.lastGrav > 0.5 then
+								K.lastGrav = now
+								for _, p in ipairs(K.parts) do
+									local s = K.saved[p]
+									if s and s.vf and s.vf.Parent then pcall(function() s.vf.Force = Vector3.new(0, p.Mass * WS.Gravity, 0) end) end
+								end
+							end
+							if now - K.lastClaim > 0.25 then
+								K.lastClaim = now
+								if K.claim then
+									pcall(function() player.SimulationRadius = 1e9 player.MaximumSimulationRadius = 1e9 end)
+									H.shp(player, "SimulationRadius", 1e9)
+									H.shp(player, "MaximumSimulationRadius", 1e9)
+									pcall(function() player.ReplicationFocus = WS end)
+								end
+								local fe, vis = 0, 0
+								K.claimIdx += 1
+								for i = #K.parts, 1, -1 do
+									local p = K.parts[i]
+									local s = K.saved[p]
+									local own = U.PE.ownState(p)
+									if s and U.PE.judge(s, p, now, own) then -- terus-menerus visual-only (dipegang pemain lain / server): buang dari daftar
+										release(p)
+										table.remove(K.parts, i)
+										K.dropped += 1
+									elseif own == false then
+										vis += 1
+										-- JANGAN firetouchinterest ke part tool: sentuhan itu yang membuat tool ter-equip
+										if K.claim and fti and myR and not (s and s.tool) and (K.claimIdx + i) % 4 == 0 then pcall(function() fti(myR, p, 0) fti(myR, p, 1) end) end
+									else
+										fe += 1
+									end
+								end
+								K.nfe, K.nvis = fe, vis
+								if K.auto and #K.parts < K.count and now - K.lastGrab > 1.2 then
+									K.lastGrab = now
+									for _, q in ipairs(collect(K.count - #K.parts)) do engage(q) end
+								end
+								status()
+							end
+						end
+
+						local function stop(msg)
+							K.on = false
+							U.PE.free("click")
+							if K.conn then K.conn:Disconnect() K.conn = nil end
+							for i = #K.parts, 1, -1 do release(K.parts[i]) end
+							K.parts, K.saved, K.pend = {}, {}, nil
+							say(msg or "Stopped")
+						end
+						local function start()
+							if K.on then stop("Restarted") end
+							K.parts, K.saved, K.dropped = {}, {}, 0
+							local list = collect(K.count)
+							if #list == 0 then say("No loose (unanchored) parts within " .. K.gr .. " studs. Drop some parts near you or raise the search radius.") return end
+							U.PE.take("click")
+							for _, p in ipairs(list) do engage(p) end
+							K.t0 = os.clock()
+							K.on = true
+							K.conn = RunService.Heartbeat:Connect(function(dt)
+								local ok, e = pcall(frame, dt)
+								if not ok and K.err ~= tostring(e) then K.err = tostring(e) say("Error: " .. K.err) end
+							end)
+							say("Started: " .. #K.parts .. " parts. Click / tap the world to send them there.")
+						end
+						U.PE.stops.click = function() if K.on then stop("Stopped (another Control Part mode started)") end end
+
+						local function marker(pos)
+							pcall(function()
+								local m = tagged("Part")
+								m.Name = "rvkmark"
+								m.Shape = Enum.PartType.Ball
+								m.Size = Vector3.new(1.2, 1.2, 1.2)
+								m.Material = Enum.Material.Neon
+								m.Color = Color3.fromRGB(110, 200, 255)
+								m.Anchored, m.CanCollide, m.CanTouch, m.CanQuery, m.CastShadow = true, false, false, false, false
+								m.Transparency = 0.25
+								m.Position = pos
+								m.Parent = WS
+								Debris:AddItem(m, 0.9)
+								TweenService:Create(m, TweenInfo.new(0.8), { Transparency = 1, Size = Vector3.new(5, 5, 5) }):Play()
+							end)
+						end
+						local function pointAt(sp)
+							local cam = WS.CurrentCamera
+							if not cam then return nil end
+							local ray = cam:ScreenPointToRay(sp.X, sp.Y)
+							local rp = RaycastParams.new()
+							rp.FilterType = Enum.RaycastFilterType.Exclude
+							local ex = { player.Character }
+							for _, p in ipairs(K.parts) do ex[#ex + 1] = p end
+							rp.FilterDescendantsInstances = ex
+							local res = WS:Raycast(ray.Origin, ray.Direction * 3000, rp)
+							if res then return res.Position + res.Normal * 0.5 + Vector3.new(0, K.height, 0) end
+							return ray.Origin + ray.Direction * 120 -- klik langit: titik 120 stud di depan kamera
+						end
+						-- klik / tap pendek (bukan geser kamera) di dunia = kirim part ke titik itu
+						bind(UIS.InputBegan, function(input, gp)
+							if gp or not K.on then return end
+							local ut = input.UserInputType
+							if ut ~= Enum.UserInputType.MouseButton1 and ut ~= Enum.UserInputType.Touch then return end
+							K.pend = { input = input, ut = ut, x = input.Position.X, y = input.Position.Y, t = os.clock() }
+						end)
+						bind(UIS.InputEnded, function(input)
+							local d = K.pend
+							if not d or not K.on then return end
+							if d.input ~= input and d.ut ~= input.UserInputType then return end
+							K.pend = nil
+							local ex, ey = input.Position.X, input.Position.Y
+							if (ex - d.x) ^ 2 + (ey - d.y) ^ 2 > 196 or os.clock() - d.t > 0.45 then return end
+							local pt = pointAt(Vector2.new(d.x, d.y))
+							if not pt then return end
+							K.tgt = pt
+							marker(pt)
+							status()
+						end)
+
+						do
+							local pb = H.pin(pg, sc, 66)
+							local bS = H.button(sc, 20, "START / RESTART", function() start() end, true)
+							bS.Parent = pb bS.Position = UDim2.fromOffset(0, 0) bS.Size = UDim2.new(0.5, -3, 0, 30)
+							local bX = H.button(sc, 21, "STOP", function() stop("Stopped") end)
+							bX.Parent = pb bX.Position = UDim2.new(0.5, 3, 0, 0) bX.Size = UDim2.new(0.5, -3, 0, 30)
+							stat.Parent = pb stat.Position = UDim2.fromOffset(0, 34) stat.Size = UDim2.new(1, 0, 0, 30) stat.TextSize = 10 stat.TextTruncate = Enum.TextTruncate.AtEnd
+						end
+						H.header(sc, 2, "FORMATION AT THE CLICKED POINT")
+						H.chips(sc, 3, { { "Cluster", "Cluster" }, { "Ring", "Ring" }, { "Sphere", "Sphere" } }, function() return K.form end, function(v) K.form = v end)
+						H.header(sc, 4, "SETTINGS")
+						H.num(sc, 5, "Part count", function() return K.count end, function(v) K.count = v end, 1, 300, 1, 0)
+						H.num(sc, 6, "Search radius for loose parts (studs)", function() return K.gr end, function(v) K.gr = v end, 10, 500, 10, 0)
+						H.num(sc, 7, "Fly speed (studs/sec)", function() return K.speed end, function(v) K.speed = v end, 10, 2000, 10, 0)
+						H.num(sc, 8, "Formation size", function() return K.spread end, function(v) K.spread = v end, 1, 60, 1, 1)
+						H.num(sc, 9, "Height above clicked spot", function() return K.height end, function(v) K.height = v end, -10, 60, 1, 1)
+						H.num(sc, 10, "Spin speed", function() return K.spin end, function(v) K.spin = v end, 0, 20, 0.5, 1)
+						H.toggle(sc, 11, "Teleport instead of flying", false, function(v) K.instant = v end)
+						H.toggle(sc, 12, "Auto-collect more parts nearby", true, function(v) K.auto = v end)
+						H.toggle(sc, 13, "Claim physics (keeps parts yours, no falling)", true, function(v) K.claim = v end)
+						H.toggle(sc, 14, "No equip tools (tools can't be equipped while moved)", state.noEquip ~= false, function(v)
+							state.noEquip = v
+							saveSoon()
+							for p, s in pairs(K.saved) do
+								if s.tool and p.Parent then pcall(function() p.CanTouch = v and false or s.ct end) end
+							end
+						end)
+						U.PE.addToggles(H, sc, 14.1, 14.2)
+						H.button(sc, 15, "SEND PARTS BACK TO ME", function() K.tgt = nil status() end)
+						lab(sc, "Only unanchored (loose) parts are used. Anti-fall (ring-part method): collisions off, parts made light, held by AlignPosition + AlignOrientation, a VectorForce cancels gravity every frame, and your simulation radius is maxed so you keep physics ownership. Parts the server still owns move on your screen only (shown as 'visual').", 10, FONT, DIM, nil, UDim2.new(1, 0, 0, 72)).LayoutOrder = 30
+						task.spawn(function() while alive() do task.wait(1) end pcall(stop, "Closed") end)
+					end
+				end
+
+		-- ---------- Seat Bring: satu tab, dua metode (tool Seat / part lepas), bar BRING/STOP selalu di atas ----------
+		do
+			U.stage()
+			local pg = tPages["Seat Bring"]
+			local okSB, errSB = pcall(function()
+				if not pg then return end
+				local TEAL, AMB, REDC, DARK = C3(45, 212, 191), C3(255, 181, 71), C3(214, 76, 70), C3(30, 22, 6)
+				local Workspace = workspace
+				local H = U.H
+
+				if type(state.sbHit) ~= "number" then state.sbHit = 16 end
+				state.sbHit = math.clamp(math.floor(state.sbHit), 4, 40)
+				if type(state.tkSpeed) ~= "number" then state.tkSpeed = 400 end
+				state.tkSpeed = math.clamp(math.floor(state.tkSpeed), 50, 1500)
+				if state.sbMethod ~= "seat" and state.sbMethod ~= "part" then state.sbMethod = "seat" end
+				for _, k in ipairs({ "sbLoop", "sbAnti", "sbHl", "sbView", "sbReset", "sbKill", "sbRemote" }) do
+					if type(state[k]) ~= "boolean" then state[k] = false end
+				end
+
+				local sc = scroller(pg, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 1, 0))
+				local bar = H.pin(pg, sc, 66)
+				local ord = 0
+				local function O() ord = ord + 1 return ord end
+
+				-- ======================= STATE =======================
+				local sbMode = "spot" -- "spot" | "custom" | "void"
+				local sbCF = nil
+				local sbQueue = {}
+				local sbRows = {}
+				local sbBusy, sbCancelled, sbPicking = false, false, false
+				local sbMarker = nil
+				local sbSaved = {}
+				local sbCur = nil
+				local sbViewActive = false
+				local sbHist, sbLastRescue = {}, 0
+				local sbHlights = {}
+				local sbRunQueue, sbGetToolOnly, sbSetMode, applyMethod -- forward decl
+
+				-- ======================= BAR ATAS (sticky): metode + BRING/STOP + status =======================
+				local seatB = mk("TextButton", { Position = UDim2.fromOffset(0, 0), Size = UDim2.new(0.25, -3, 0, 30), BackgroundColor3 = SURF2, Text = "TOOL SEAT", Font = FONTB, TextSize = 10, TextColor3 = TXT, AutoButtonColor = false }, bar)
+				corner(seatB, 8)
+				local partB = mk("TextButton", { Position = UDim2.new(0.25, 0, 0, 0), Size = UDim2.new(0.25, -3, 0, 30), BackgroundColor3 = SURF2, Text = "PART", Font = FONTB, TextSize = 10, TextColor3 = TXT, AutoButtonColor = false }, bar)
+				corner(partB, 8)
+				local sbBringB = H.button(sc, O(), "BRING", function() task.spawn(sbRunQueue) end, true)
+				sbBringB.Parent = bar
+				sbBringB.Position = UDim2.new(0.5, 3, 0, 0)
+				sbBringB.Size = UDim2.new(0.5, -3, 0, 30)
+				local sbStat = lab(bar, "Siap.", 10, FONT, DIM, UDim2.fromOffset(0, 34), UDim2.new(1, 0, 0, 28), LEFT)
+				sbStat.TextWrapped = true
+				local function sbSet(t, c) sbStat.Text = t sbStat.TextColor3 = c or DIM end
+				local function sbUpdateBring()
+					if sbBusy then sbBringB.Text = "STOP" sbBringB.BackgroundColor3 = REDC sbBringB.TextColor3 = WHITE
+					else sbBringB.Text = #sbQueue > 0 and ("BRING  (" .. #sbQueue .. ")") or "BRING" sbBringB.BackgroundColor3 = TXT sbBringB.TextColor3 = INK end
+				end
+
+				local sbDesc = lab(sc, "", 10, FONT, DIM, nil, UDim2.new(1, 0, 0, 44), LEFT)
+				sbDesc.LayoutOrder = O()
+				sbDesc.TextWrapped = true
+
+				local function getChar()
+					local char = player.Character
+					if not char then return end
+					local hum = char:FindFirstChildOfClass("Humanoid")
+					local root = char:FindFirstChild("HumanoidRootPart")
+					if not hum or not root or hum.Health <= 0 then return end
+					return char, hum, root
+				end
+				local function stopped() return sbCancelled or not alive() end
+				local function seatIn(tool) return tool:FindFirstChildWhichIsA("Seat", true) or tool:FindFirstChildWhichIsA("VehicleSeat", true) end
+				local function findSeatTool()
+					local char = player.Character
+					if char then
+						for _, c in ipairs(char:GetChildren()) do
+							if c:IsA("Tool") then local s = seatIn(c) if s then return c, s end end
+						end
+					end
+					local bp = player:FindFirstChildOfClass("Backpack")
+					if bp then
+						for _, c in ipairs(bp:GetChildren()) do
+							if c:IsA("Tool") then local s = seatIn(c) if s then return c, s end end
+						end
+					end
+				end
+				local function gotTool() return findSeatTool() ~= nil end
+				local function applyHitbox(seat)
+					if not sbSaved[seat] then
+						sbSaved[seat] = { Size = seat.Size, CanCollide = seat.CanCollide, CanTouch = seat.CanTouch, Massless = seat.Massless }
+					end
+					local s = state.sbHit
+					seat.Size = Vector3.new(s, s, s)
+					seat.CanCollide = false
+					seat.CanTouch = true
+					seat.Massless = true
+					pcall(function() seat.Disabled = false end)
+				end
+				local function restoreHitboxSeat()
+					for seat, s in pairs(sbSaved) do
+						if seat and seat.Parent then
+							pcall(function()
+								seat.Size, seat.CanCollide, seat.CanTouch, seat.Massless = s.Size, s.CanCollide, s.CanTouch, s.Massless
+							end)
+						end
+					end
+					sbSaved = {}
+				end
+				local function voidY(kill)
+					local h = Workspace.FallenPartsDestroyHeight
+					if h ~= h or h < -5000 then h = -5000 end
+					return h + (kill and 8 or 60)
+				end
+				local function voidCFrame(base, kill) return CFrame.new(base.X, voidY(kill), base.Z) end
+				local function leadTime()
+					local ok, ping = pcall(function() return player:GetNetworkPing() end)
+					if not ok or type(ping) ~= "number" then ping = 0.05 end
+					return math.clamp(ping + 0.06, 0.04, 0.35)
+				end
+				local function setMarker(pos)
+					if sbMarker then sbMarker:Destroy() sbMarker = nil end
+					if not pos then return end
+					sbMarker = mk("Part", { Name = "RVSeatMarker", Shape = Enum.PartType.Ball, Size = Vector3.new(2.2, 2.2, 2.2), Material = Enum.Material.Neon, Color = TEAL, Transparency = 0.35, Anchored = true, CanCollide = false, CanQuery = false, CanTouch = false, CastShadow = false, Position = pos }, Workspace.CurrentCamera or Workspace)
+				end
+
+				-- ======================= highlight / view =======================
+				local function refreshHl()
+					local want = {}
+					if state.sbHl then
+						for _, uid in ipairs(sbQueue) do want[uid] = true end
+						if sbCur then want[sbCur] = true end
+					end
+					for uid, e in pairs(sbHlights) do
+						local p = Players:GetPlayerByUserId(uid)
+						local char = p and p.Character
+						if not want[uid] or not char or e.h.Parent ~= char or e.cur ~= (uid == sbCur) then
+							pcall(function() e.h:Destroy() end)
+							sbHlights[uid] = nil
+						end
+					end
+					for uid in pairs(want) do
+						local p = Players:GetPlayerByUserId(uid)
+						local char = p and p.Character
+						if char and not sbHlights[uid] then
+							local isCur = uid == sbCur
+							local h = mk("Highlight", { Name = "RVSeatHL", Adornee = char, FillColor = isCur and TEAL or AMB, OutlineColor = isCur and TEAL or REDC, FillTransparency = isCur and 0.35 or 0.6, OutlineTransparency = 0, DepthMode = Enum.HighlightDepthMode.AlwaysOnTop }, char)
+							sbHlights[uid] = { h = h, cur = isCur }
+						end
+					end
+				end
+				local function refreshView()
+					local cam = Workspace.CurrentCamera
+					if not cam then return end
+					local _, myHum = getChar()
+					local subject = nil
+					if state.sbView then
+						local uid = sbCur or sbQueue[1]
+						local p = uid and Players:GetPlayerByUserId(uid)
+						local c = p and p.Character
+						subject = c and c:FindFirstChildOfClass("Humanoid")
+					end
+					if subject then
+						if cam.CameraSubject ~= subject then cam.CameraSubject = subject end
+						sbViewActive = true
+					elseif sbViewActive then
+						if myHum then cam.CameraSubject = myHum end
+						sbViewActive = false
+					end
+				end
+				bind(RunService.Heartbeat, function()
+					if state.sbView then pcall(refreshView) end
+					local char, hum, root = getChar()
+					if not char then sbHist = {} return end
+					local now = os.clock()
+					local sp = hum.SeatPart
+					if sp ~= nil and not sp:IsDescendantOf(char) then
+						if state.sbAnti and now - sbLastRescue > 0.4 then
+							sbLastRescue = now
+							local back = sbHist[1]
+							for i = #sbHist, 1, -1 do
+								if sbHist[i].t <= now - 0.6 then back = sbHist[i] break end
+							end
+							hum.Sit = false
+							pcall(function() hum:ChangeState(Enum.HumanoidStateType.Jumping) end)
+							if back then root.CFrame = back.cf root.AssemblyLinearVelocity = Vector3.zero end
+							if not sbBusy then sbSet("Anti sit: dibebaskan & dikembalikan.", AMB) end
+						end
+						return
+					end
+					sbHist[#sbHist + 1] = { t = now, cf = root.CFrame }
+					while #sbHist > 0 and sbHist[1].t < now - 1.5 do table.remove(sbHist, 1) end
+				end)
+
+				-- ======================= auto-get tool seat (termasuk RemoteEvent, eksperimental) =======================
+				local SEAT_WORDS = { "seat", "chair", "sofa", "couch", "bench", "stool", "throne", "duduk", "kursi" }
+				local GIVER_WORDS = { "tool", "giver", "gear", "item", "weapon", "shop", "give", "claim", "spawn", "equip" }
+				local function hasAny(s, words)
+					s = string.lower(tostring(s or ""))
+					for _, w in ipairs(words) do if string.find(s, w, 1, true) then return true end end
+					return false
+				end
+				local function heldByAPlayer(inst)
+					for _, p in ipairs(Players:GetPlayers()) do
+						if p.Character and inst:IsDescendantOf(p.Character) then return true end
+						local bp = p:FindFirstChildOfClass("Backpack")
+						if bp and inst:IsDescendantOf(bp) then return true end
+					end
+					return false
+				end
+				local function positionOf(inst)
+					if not inst then return nil end
+					if inst:IsA("BasePart") then return inst.Position end
+					if inst:IsA("Attachment") then return inst.WorldPosition end
+					local h = inst:FindFirstChild("Handle")
+					if h and h:IsA("BasePart") then return h.Position end
+					if inst:IsA("Model") then return inst:GetPivot().Position end
+					return nil
+				end
+				local function scanWorkspace()
+					local tools, prompts = {}, {}
+					local n = 0
+					for _, d in ipairs(Workspace:GetDescendants()) do
+						n = n + 1
+						if n % 4000 == 0 then task.wait() end
+						if d:IsA("Tool") then
+							if seatIn(d) and not heldByAPlayer(d) then tools[#tools + 1] = d end
+						elseif d:IsA("ProximityPrompt") and d.Enabled then
+							prompts[#prompts + 1] = d
+						end
+					end
+					return tools, prompts
+				end
+				local function templateNames()
+					local names = {}
+					for _, svcName in ipairs({ "StarterPack", "ReplicatedStorage", "ReplicatedFirst" }) do
+						local ok, svc = pcall(game.GetService, game, svcName)
+						if ok and svc then
+							for _, d in ipairs(svc:GetDescendants()) do
+								if d:IsA("Tool") and seatIn(d) then names[#names + 1] = string.lower(d.Name) end
+							end
+						end
+					end
+					return names
+				end
+				local function starterHasSeatTool()
+					local containers = {}
+					local ok, sp = pcall(game.GetService, game, "StarterPack")
+					if ok and sp then containers[#containers + 1] = sp end
+					local sg = player:FindFirstChild("StarterGear")
+					if sg then containers[#containers + 1] = sg end
+					for _, c in ipairs(containers) do
+						for _, d in ipairs(c:GetChildren()) do
+							if d:IsA("Tool") and seatIn(d) then return true end
+						end
+					end
+					return false
+				end
+				local function pickupLoose(tool)
+					local handle = tool:FindFirstChild("Handle") or seatIn(tool)
+					if not handle then return false end
+					local t0 = os.clock()
+					while os.clock() - t0 < 2 do
+						if stopped() then return false end
+						if gotTool() then return true end
+						if heldByAPlayer(tool) or tool.Parent == nil then break end
+						local _, _, root = getChar()
+						if not root then return false end
+						root.CFrame = handle.CFrame
+						root.AssemblyLinearVelocity = Vector3.zero
+						RunService.Heartbeat:Wait()
+					end
+					return gotTool()
+				end
+				local function triggerPrompt(prompt)
+					local pos = positionOf(prompt.Parent)
+					if not pos then return false end
+					local _, _, root = getChar()
+					if not root then return false end
+					root.CFrame = CFrame.new(pos + Vector3.new(0, 3, 0))
+					root.AssemblyLinearVelocity = Vector3.zero
+					task.wait(0.2)
+					if fireproximityprompt then pcall(fireproximityprompt, prompt)
+					else
+						pcall(function() prompt:InputHoldBegin() end)
+						task.wait((prompt.HoldDuration or 0) + 0.25)
+						pcall(function() prompt:InputHoldEnd() end)
+					end
+					local t0 = os.clock()
+					while os.clock() - t0 < 1.2 do if gotTool() then return true end task.wait(0.1) end
+					return gotTool()
+				end
+				local function promptScore(pr, extraWords)
+					local texts = { pr.ActionText, pr.ObjectText, pr.Name }
+					local a = pr.Parent
+					for _ = 1, 4 do
+						if not a or a == Workspace then break end
+						texts[#texts + 1] = a.Name
+						a = a.Parent
+					end
+					for _, s in ipairs(texts) do if hasAny(s, SEAT_WORDS) or hasAny(s, extraWords) then return 2 end end
+					for _, s in ipairs(texts) do if hasAny(s, GIVER_WORDS) then return 1 end end
+					return 0
+				end
+				local function respawnForTool()
+					local oldChar, hum = getChar()
+					if not hum then return false end
+					sbSet("Reset untuk ambil tool seat dari starter...", AMB)
+					hum.Health = 0
+					local t0 = os.clock()
+					while os.clock() - t0 < 15 do
+						if stopped() then return false end
+						if player.Character and player.Character ~= oldChar and getChar() then break end
+						task.wait(0.1)
+					end
+					local t1 = os.clock()
+					while os.clock() - t1 < 5 do if gotTool() then return true end task.wait(0.1) end
+					return gotTool()
+				end
+				-- eksperimental: coba RemoteEvent/RemoteFunction yang namanya mirip "seat/chair/give/claim/equip",
+				-- pakai argumen asli yang pernah kerekam Remote Spy kalau ada (paling mungkin benar), kalau tidak coba beberapa tebakan.
+				local function tryRemoteSeat()
+					if not (U.spyList and state.sbRemote) then return false end
+					local ok, list = pcall(U.spyList)
+					if not ok or type(list) ~= "table" then return false end
+					local names = templateNames()
+					local cand = {}
+					for _, e in ipairs(list) do
+						if (e.kind == "Event" or e.kind == "Function") and e.inst and e.inst.Parent then
+							local score = (hasAny(e.name, SEAT_WORDS) and 2) or (hasAny(e.name, GIVER_WORDS) and 1) or 0
+							if score > 0 then cand[#cand + 1] = { e = e, s = score } end
+						end
+					end
+					table.sort(cand, function(a, b)
+						if a.s ~= b.s then return a.s > b.s end
+						return (a.e.t > 0) and (b.e.t <= 0 or a.e.t > b.e.t)
+					end)
+					for i = 1, math.min(#cand, 8) do
+						if stopped() then break end
+						local e = cand[i].e
+						sbSet("Coba RemoteEvent " .. e.name .. " ...", AMB)
+						local attempts = {}
+						if e.t > 0 and e.args then attempts[#attempts + 1] = e.args end
+						attempts[#attempts + 1] = { n = 0 }
+						for _, nm in ipairs(names) do attempts[#attempts + 1] = { n = 1, nm } end
+						for ai = 1, math.min(#attempts, 5) do
+							if stopped() or gotTool() then break end
+							local a = attempts[ai]
+							pcall(function()
+								if e.kind == "Event" then e.inst:FireServer(table.unpack(a, 1, a.n or #a))
+								else task.spawn(function() pcall(function() e.inst:InvokeServer(table.unpack(a, 1, a.n or #a)) end) end) end
+							end)
+							task.wait(0.35)
+							if gotTool() then break end
+						end
+						if gotTool() then return true end
+					end
+					return false
+				end
+				local function acquireSeatTool()
+					if gotTool() then return true end
+					local t0 = os.clock()
+					local function timedOut() return stopped() or os.clock() - t0 > 30 end
+					sbSet("Tidak ada tool seat. Mencari di map...", AMB)
+					local tools, prompts = scanWorkspace()
+					local _, _, root0 = getChar()
+					local function dist(inst)
+						local pos = positionOf(inst)
+						if not pos or not root0 then return math.huge end
+						return (pos - root0.CFrame.Position).Magnitude
+					end
+					table.sort(tools, function(a, b) return dist(a) < dist(b) end)
+					for i = 1, math.min(#tools, 5) do
+						if timedOut() then break end
+						sbSet("Mengambil tool lepas: " .. tools[i].Name, AMB)
+						if pickupLoose(tools[i]) then return true end
+					end
+					local names = templateNames()
+					local scored = {}
+					for _, pr in ipairs(prompts) do
+						local s = promptScore(pr, names)
+						if s > 0 then scored[#scored + 1] = { pr = pr, s = s, d = dist(pr.Parent) } end
+					end
+					table.sort(scored, function(a, b) if a.s ~= b.s then return a.s > b.s end return a.d < b.d end)
+					for i = 1, math.min(#scored, 6) do
+						if timedOut() then break end
+						local label = scored[i].pr.ActionText
+						if label == nil or label == "" then label = scored[i].pr.Name end
+						sbSet("Coba prompt " .. tostring(label), AMB)
+						if triggerPrompt(scored[i].pr) then return true end
+					end
+					if not timedOut() and state.sbRemote and tryRemoteSeat() then return true end
+					local hint = ""
+					if not timedOut() and starterHasSeatTool() then
+						if state.sbReset then if respawnForTool() then return true end
+						else hint = " Ada tool seat di starter: nyalakan RESET FALLBACK untuk respawn." end
+					end
+					if stopped() then return false, "Dihentikan." end
+					return false, "Tool seat tidak ditemukan (inventori, tool lepas, prompt, remote)." .. hint
+				end
+
+				-- ======================= UI: pemain =======================
+				local function sec(t) return H.header(sc, O(), t) end
+				sec("TARGET (bisa pilih banyak)")
+				local sbSearchRow = mk("Frame", { Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, LayoutOrder = O() }, sc)
+				local sbBox = mk("TextBox", { Size = UDim2.new(1, -124, 1, 0), BackgroundColor3 = SURF, Text = "", PlaceholderText = "Cari pemain...", PlaceholderColor3 = DIM, Font = FONT, TextSize = 11, TextColor3 = TXT, ClearTextOnFocus = false, TextXAlignment = LEFT }, sbSearchRow)
+				corner(sbBox, 8)
+				mk("UIPadding", { PaddingLeft = UDim.new(0, 8) }, sbBox)
+				local sbAllB = mk("TextButton", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -62, 0, 0), Size = UDim2.fromOffset(58, 30), BackgroundColor3 = SURF2, Text = "SEMUA", Font = FONTB, TextSize = 10, TextColor3 = TEAL, AutoButtonColor = false }, sbSearchRow)
+				corner(sbAllB, 8)
+				local sbNoneB = mk("TextButton", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, 0), Size = UDim2.fromOffset(58, 30), BackgroundColor3 = SURF2, Text = "BATAL", Font = FONTB, TextSize = 10, TextColor3 = REDC, AutoButtonColor = false }, sbSearchRow)
+				corner(sbNoneB, 8)
+				local sbList = mk("ScrollingFrame", { Size = UDim2.new(1, 0, 0, 120), BackgroundColor3 = SURF, BorderSizePixel = 0, ScrollBarThickness = 3, CanvasSize = UDim2.new(), AutomaticCanvasSize = Enum.AutomaticSize.Y, LayoutOrder = O() }, sc)
+				corner(sbList, 8)
+				mk("UIListLayout", { Padding = UDim.new(0, 3), SortOrder = Enum.SortOrder.LayoutOrder }, sbList)
+				mk("UIPadding", { PaddingTop = UDim.new(0, 3), PaddingLeft = UDim.new(0, 3), PaddingRight = UDim.new(0, 3), PaddingBottom = UDim.new(0, 3) }, sbList)
+				local sbEmpty = lab(sc, "Belum ada pemain lain di server ini.", 10, FONT, DIM, nil, UDim2.new(1, 0, 0, 16), Enum.TextXAlignment.Center)
+				sbEmpty.LayoutOrder = O()
+
+				-- ======================= UI: tujuan =======================
+				sec("TUJUAN")
+				local sbChipsPaint = H.chips(sc, O(), { { "spot", "SPOTKU" }, { "custom", "SPOT PILIHAN" }, { "void", "VOID" } }, function() return sbMode end, function(v) sbSetMode(v) end)
+				local sbDestInfo = lab(sc, "", 10, FONT, DIM, nil, UDim2.new(1, 0, 0, 28), LEFT)
+				sbDestInfo.LayoutOrder = O()
+				sbDestInfo.TextWrapped = true
+				local sbPickRow = mk("Frame", { Size = UDim2.new(1, 0, 0, 30), BackgroundTransparency = 1, LayoutOrder = O() }, sc)
+				local sbPickB = mk("TextButton", { Size = UDim2.new(1, 0, 1, 0), BackgroundColor3 = SURF2, Text = "KLIK UNTUK PILIH SPOT", Font = FONTB, TextSize = 11, TextColor3 = TEAL, AutoButtonColor = false }, sbPickRow)
+				corner(sbPickB, 8)
+				local sbFallB = mk("TextButton", { Size = UDim2.new(0.5, -3, 1, 0), BackgroundColor3 = SURF2, Text = "FALL", Font = FONTB, TextSize = 11, TextColor3 = TXT, AutoButtonColor = false, Visible = false }, sbPickRow)
+				corner(sbFallB, 8)
+				local sbKillB = mk("TextButton", { Position = UDim2.new(0.5, 3, 0, 0), Size = UDim2.new(0.5, -3, 1, 0), BackgroundColor3 = SURF2, Text = "KILL", Font = FONTB, TextSize = 11, TextColor3 = TXT, AutoButtonColor = false, Visible = false }, sbPickRow)
+				corner(sbKillB, 8)
+
+				-- ======================= UI: opsi =======================
+				sec("OPSI")
+				local seatRows, partRows = {}, {}
+				H.toggle(sc, O(), "LOOP (ulang antrean sampai distop)", state.sbLoop, function(v) state.sbLoop = v saveSoon() end)
+				H.toggle(sc, O(), "HIGHLIGHT target", state.sbHl, function(v) state.sbHl = v saveSoon() refreshHl() end)
+				H.toggle(sc, O(), "VIEW (kamera ikut target)", state.sbView, function(v) state.sbView = v saveSoon() refreshView() end)
+				H.num(sc, O(), "Hitbox seat (stud)", function() return state.sbHit end, function(v) state.sbHit = v saveSoon() end, 4, 40, 1, 0)
+				seatRows[#seatRows + 1] = H.lastRow
+				H.toggle(sc, O(), "ANTI SIT (dibebaskan + dikembalikan kalau didudukkan)", state.sbAnti, function(v) state.sbAnti = v saveSoon() end)
+				seatRows[#seatRows + 1] = H.lastRow
+				H.toggle(sc, O(), "RESET FALLBACK (respawn ambil tool starter)", state.sbReset, function(v) state.sbReset = v saveSoon() end)
+				seatRows[#seatRows + 1] = H.lastRow
+				H.toggle(sc, O(), "COBA REMOTEEVENT (eksperimental, nebak remote 'give tool/seat')", state.sbRemote, function(v) state.sbRemote = v saveSoon() end)
+				seatRows[#seatRows + 1] = H.lastRow
+				seatRows[#seatRows + 1] = H.button(sc, O(), "AMBIL TOOL SEAT SAJA", function() task.spawn(sbGetToolOnly) end)
+				H.num(sc, O(), "Kecepatan part (stud/dtk)", function() return state.tkSpeed end, function(v) state.tkSpeed = v saveSoon() end, 50, 1500, 25, 0)
+				partRows[#partRows + 1] = H.lastRow
+
+				local function sbUpdateDest()
+					sbFallB.BackgroundColor3 = state.sbKill and SURF2 or TXT
+					sbFallB.TextColor3 = state.sbKill and TXT or INK
+					sbKillB.BackgroundColor3 = state.sbKill and REDC or SURF2
+					if sbMode == "spot" then sbDestInfo.Text = "Diturunkan di tempatmu berdiri sebelum mulai." sbDestInfo.TextColor3 = DIM
+					elseif sbMode == "void" then sbDestInfo.Text = state.sbKill and "Dibunuh di garis void." or "Dijatuhkan dari tinggi di void." sbDestInfo.TextColor3 = state.sbKill and REDC or DIM
+					elseif sbCF then
+						local p = sbCF.Position
+						sbDestInfo.Text = string.format("Spot: %d, %d, %d", math.floor(p.X + 0.5), math.floor(p.Y + 0.5), math.floor(p.Z + 0.5))
+						sbDestInfo.TextColor3 = TEAL
+					else sbDestInfo.Text = "Belum ada spot. Tekan KLIK UNTUK PILIH SPOT." sbDestInfo.TextColor3 = AMB end
+				end
+				sbSetMode = function(id)
+					sbMode = id
+					local isVoid = id == "void"
+					sbPickB.Visible = not isVoid
+					sbFallB.Visible = isVoid
+					sbKillB.Visible = isVoid
+					sbChipsPaint()
+					sbUpdateDest()
+				end
+				sbFallB.MouseButton1Click:Connect(function() click() state.sbKill = false saveSoon() sbUpdateDest() end)
+				sbKillB.MouseButton1Click:Connect(function() click() state.sbKill = true saveSoon() sbUpdateDest() end)
+
+				applyMethod = function()
+					local seat = state.sbMethod == "seat"
+					for _, r in ipairs(seatRows) do r.Visible = seat end
+					for _, r in ipairs(partRows) do r.Visible = not seat end
+					seatB.BackgroundColor3 = seat and TXT or SURF2
+					seatB.TextColor3 = seat and INK or TXT
+					partB.BackgroundColor3 = seat and SURF2 or TXT
+					partB.TextColor3 = seat and TXT or INK
+					if seat then
+						sbDesc.Text = "TOOL SEAT: equip tool yang punya Seat/VehicleSeat, dudukkan target di hitbox-nya, lalu bawa ke tujuan. Tool dicari otomatis kalau belum punya. Paling bisa diandalkan."
+					else
+						sbDesc.Text = "PART: ambil satu part unanchored terdekat (maks 60 stud), dorong sampai nyentuh target, lalu bawa dengan kecepatan tinggi ke tujuan. Kamu tidak berpindah. Butuh part CanCollide dan game yang tidak memblokir dorongan fisik antar pemain, jadi kurang pasti dibanding TOOL SEAT."
+					end
+				end
+				seatB.MouseButton1Click:Connect(function() click() if sbBusy then return end state.sbMethod = "seat" saveSoon() applyMethod() end)
+				partB.MouseButton1Click:Connect(function() click() if sbBusy then return end state.sbMethod = "part" saveSoon() applyMethod() end)
+
+				-- ======================= daftar pemain =======================
+				local function sbRefreshBadges()
+					for uid, r in pairs(sbRows) do
+						local idx = nil
+						for i, id in ipairs(sbQueue) do if id == uid then idx = i break end end
+						r.badge.Visible = idx ~= nil
+						if idx then r.badge.Text = tostring(idx) end
+						r.frame.BackgroundColor3 = idx and SURF2 or SURF
+					end
+					sbUpdateBring()
+					refreshHl()
+					refreshView()
+				end
+				local function sbToggleSel(uid)
+					for i, id in ipairs(sbQueue) do if id == uid then table.remove(sbQueue, i) sbRefreshBadges() return end end
+					sbQueue[#sbQueue + 1] = uid
+					sbRefreshBadges()
+				end
+				local sbSig = ""
+				local function sbRefreshList()
+					local arr, ids = {}, {}
+					local fq = sbBox.Text:lower()
+					for _, pl in ipairs(Players:GetPlayers()) do
+						if pl ~= player and (fq == "" or pl.DisplayName:lower():find(fq, 1, true) or pl.Name:lower():find(fq, 1, true)) then arr[#arr + 1] = pl end
+					end
+					table.sort(arr, function(a, b) return a.DisplayName:lower() < b.DisplayName:lower() end)
+					for _, pl in ipairs(arr) do ids[#ids + 1] = pl.UserId end
+					for i = #sbQueue, 1, -1 do if not Players:GetPlayerByUserId(sbQueue[i]) then table.remove(sbQueue, i) end end
+					local s = table.concat(ids, ",") .. "|" .. fq
+					if s ~= sbSig then
+						sbSig = s
+						for _, c in ipairs(sbList:GetChildren()) do if c:IsA("TextButton") then c:Destroy() end end
+						sbRows = {}
+						for i, pl in ipairs(arr) do
+							local uid = pl.UserId
+							local r = mk("TextButton", { Size = UDim2.new(1, -2, 0, 34), BackgroundColor3 = SURF, Text = "", AutoButtonColor = false, BorderSizePixel = 0, LayoutOrder = i }, sbList)
+							corner(r, 8)
+							local av = mk("ImageLabel", { Position = UDim2.fromOffset(5, 3), Size = UDim2.fromOffset(28, 28), BackgroundColor3 = SURF2, Image = "rbxthumb://type=AvatarHeadShot&id=" .. uid .. "&w=100&h=100", BorderSizePixel = 0 }, r)
+							corner(av, 14)
+							local n = lab(r, pl.DisplayName, 12, FONTB, TXT, UDim2.fromOffset(40, 2), UDim2.new(1, -56, 0, 16))
+							n.TextTruncate = Enum.TextTruncate.AtEnd
+							lab(r, "@" .. pl.Name, 10, FONT, DIM, UDim2.fromOffset(40, 18), UDim2.new(1, -56, 0, 14)).TextTruncate = Enum.TextTruncate.AtEnd
+							local badge = mk("TextLabel", { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -6, 0.5, 0), Size = UDim2.fromOffset(22, 22), BackgroundColor3 = AMB, Text = "", Font = FONTK, TextSize = 12, TextColor3 = DARK, Visible = false }, r)
+							corner(badge, 11)
+							sbRows[uid] = { frame = r, badge = badge }
+							r.MouseButton1Click:Connect(function() click() sbToggleSel(uid) end)
+						end
+						sbEmpty.Visible = #arr == 0
+					end
+					sbRefreshBadges()
+				end
+				sbBox:GetPropertyChangedSignal("Text"):Connect(function() sbSig = "" pcall(sbRefreshList) end)
+				sbAllB.MouseButton1Click:Connect(function()
+					click()
+					local have = {}
+					for _, id in ipairs(sbQueue) do have[id] = true end
+					local vis = {}
+					for uid, r in pairs(sbRows) do vis[#vis + 1] = { uid = uid, o = r.frame.LayoutOrder } end
+					table.sort(vis, function(a, b) return a.o < b.o end)
+					for _, v in ipairs(vis) do if not have[v.uid] then sbQueue[#sbQueue + 1] = v.uid end end
+					sbRefreshBadges()
+				end)
+				sbNoneB.MouseButton1Click:Connect(function() click() sbQueue = {} sbRefreshBadges() end)
+
+				-- ======================= pilih spot =======================
+				local function sbStopPick(msg, color)
+					sbPicking = false
+					sbPickB.Text = "KLIK UNTUK PILIH SPOT"
+					if msg then sbSet(msg, color) end
+				end
+				sbPickB.MouseButton1Click:Connect(function()
+					click()
+					if sbBusy then return end
+					if sbPicking then sbStopPick("Pemilihan dibatalkan.", DIM) return end
+					sbPicking = true
+					sbSetMode("custom")
+					sbPickB.Text = "KLIK DUNIA..."
+					sbSet("Klik / ketuk dunia untuk set spot. Esc membatalkan.", AMB)
+				end)
+				bind(UserInputService.InputBegan, function(io, processed)
+					if not sbPicking then return end
+					if io.KeyCode == Enum.KeyCode.Escape then sbStopPick("Pemilihan dibatalkan.", DIM) return end
+					if processed then return end
+					if io.UserInputType == Enum.UserInputType.MouseButton1 or io.UserInputType == Enum.UserInputType.Touch then
+						local cam = Workspace.CurrentCamera
+						if not cam then return end
+						local ray = cam:ScreenPointToRay(io.Position.X, io.Position.Y)
+						local ignore = {}
+						if player.Character then ignore[#ignore + 1] = player.Character end
+						if sbMarker then ignore[#ignore + 1] = sbMarker end
+						local params = RaycastParams.new()
+						params.FilterType = Enum.RaycastFilterType.Exclude
+						params.FilterDescendantsInstances = ignore
+						local hit = Workspace:Raycast(ray.Origin, ray.Direction * 2000, params)
+						if hit then
+							sbCF = CFrame.new(hit.Position + Vector3.new(0, 3.5, 0))
+							setMarker(hit.Position + Vector3.new(0, 1.2, 0))
+							sbSetMode("custom")
+							sbStopPick("Spot tersimpan.", TEAL)
+						else
+							sbSet("Tidak ada apa-apa di sana.", REDC)
+						end
+					end
+				end)
+
+				-- ======================= metode 1: tool Seat =======================
+				local function sbDeliver(target, origin)
+					if not gotTool() then
+						local found, why = acquireSeatTool()
+						local _, _, r0 = getChar()
+						if r0 then r0.CFrame = origin r0.AssemblyLinearVelocity = Vector3.zero end
+						if not found then return false, why end
+					end
+					local char, hum, root = getChar()
+					if not char then return false, "Karaktermu belum siap." end
+					local tool, seat = findSeatTool()
+					if not tool then return false, "Tidak ada tool dengan Seat di inventorimu." end
+					local function abort(msg)
+						local _, h, r = getChar()
+						if h then h:UnequipTools() end
+						if r then r.CFrame = origin r.AssemblyLinearVelocity = Vector3.zero end
+						return false, msg
+					end
+					if tool.Parent ~= char then
+						hum:EquipTool(tool)
+						local e0 = os.clock()
+						while tool.Parent ~= char and os.clock() - e0 < 2 do task.wait() end
+						if tool.Parent ~= char then return false, "Gagal equip tool seat." end
+					end
+					applyHitbox(seat)
+					local t0 = os.clock()
+					local seated = false
+					local flip = 1
+					while os.clock() - t0 < 6 do
+						if stopped() then return abort("Dihentikan.") end
+						char, hum, root = getChar()
+						if not char then return false, "Kamu mati." end
+						if tool.Parent ~= char then hum:EquipTool(tool) end
+						if seat.Size.X ~= state.sbHit then applyHitbox(seat) end
+						local tChar = target.Character
+						local tHum = tChar and tChar:FindFirstChildOfClass("Humanoid")
+						local tRoot = tChar and tChar:FindFirstChild("HumanoidRootPart")
+						if not tHum or not tRoot or tHum.Health <= 0 then return abort("Target tidak tersedia.") end
+						if tHum.SeatPart == seat then seated = true break end
+						if tHum.SeatPart ~= nil then return abort("Target sedang duduk di tempat lain.") end
+						flip = -flip
+						local base = tRoot.CFrame
+						if flip > 0 then
+							local vel = tRoot.AssemblyLinearVelocity or Vector3.zero
+							base = CFrame.new(base.Position + vel * leadTime())
+						end
+						local want = base * CFrame.new(0, 0.25 * flip, 0)
+						root.CFrame = want * seat.CFrame:ToObjectSpace(root.CFrame)
+						root.AssemblyLinearVelocity = Vector3.zero
+						RunService.PreSimulation:Wait()
+					end
+					char, hum, root = getChar()
+					if not char then return false, "Kamu mati." end
+					if not seated then return abort("Gagal mendudukkan target.") end
+					local destCF = origin
+					if sbMode == "void" then destCF = voidCFrame(origin.Position, state.sbKill)
+					elseif sbMode == "custom" and sbCF then destCF = sbCF end
+					local nearDist = state.sbHit / 2 + 14
+					local c0 = os.clock()
+					local frames = 0
+					while os.clock() - c0 < 1.2 do
+						if stopped() then return abort("Dihentikan.") end
+						char, hum, root = getChar()
+						if not char then return false, "Kamu mati." end
+						local tChar = target.Character
+						local tHum = tChar and tChar:FindFirstChildOfClass("Humanoid")
+						local tRoot = tChar and tChar:FindFirstChild("HumanoidRootPart")
+						if not tHum or not tRoot or tHum.SeatPart ~= seat then return abort("Target lolos.") end
+						root.CFrame = destCF
+						root.AssemblyLinearVelocity = Vector3.zero
+						RunService.PreSimulation:Wait()
+						frames = frames + 1
+						if frames >= 2 and (tRoot.CFrame.Position - destCF.Position).Magnitude <= nearDist then break end
+					end
+					char, hum, root = getChar()
+					if hum then hum:UnequipTools() end
+					local r0 = os.clock()
+					while os.clock() - r0 < 0.7 do
+						local _, _, r = getChar()
+						if r then r.CFrame = destCF r.AssemblyLinearVelocity = Vector3.zero end
+						local tChar = target.Character
+						local tHum = tChar and tChar:FindFirstChildOfClass("Humanoid")
+						if not tHum or tHum.SeatPart ~= seat then break end
+						RunService.Heartbeat:Wait()
+					end
+					local _, _, r = getChar()
+					if r then r.CFrame = origin r.AssemblyLinearVelocity = Vector3.zero end
+					return true, "Terantar " .. target.DisplayName
+				end
+
+				-- ======================= metode 2: part lepas =======================
+				local function tkLoosePart(near, radius)
+					local best, bd
+					local n = 0
+					for _, d in ipairs(Workspace:GetDescendants()) do
+						n = n + 1
+						if n % 4000 == 0 then task.wait() end
+						if d:IsA("BasePart") and not d:IsA("Terrain") and not d.Anchored and d.Size.Magnitude < 40 then
+							local ar = d.AssemblyRootPart
+							if not (ar and ar.Anchored) and not d:FindFirstAncestorWhichIsA("Tool") then
+								local ok = true
+								for _, p in ipairs(Players:GetPlayers()) do
+									if p.Character and d:IsDescendantOf(p.Character) then ok = false break end
+								end
+								if ok then
+									local dist = (d.Position - near).Magnitude
+									if dist <= radius and (not bd or dist < bd) then best, bd = d, dist end
+								end
+							end
+						end
+					end
+					return best
+				end
+				local function tkDeliver(target, origin)
+					local _, _, myRoot = getChar()
+					if not myRoot then return false, "Karaktermu belum siap." end
+					local part = tkLoosePart(myRoot.Position, 60)
+					if not part then return false, "Tidak ada part lepas (unanchored) dalam 60 stud." end
+					local saved = { CanCollide = part.CanCollide, Massless = part.Massless }
+					part.CanCollide = true
+					part.Massless = true
+					local function tRoot()
+						local tc = target.Character
+						local th = tc and tc:FindFirstChildOfClass("Humanoid")
+						local tr = tc and tc:FindFirstChild("HumanoidRootPart")
+						if th and th.Health > 0 and tr then return tr end
+					end
+					local function done(ok, msg)
+						pcall(function()
+							part.AssemblyLinearVelocity = Vector3.zero
+							part.CanCollide = saved.CanCollide
+							part.Massless = saved.Massless
+						end)
+						return ok, msg
+					end
+					local t0 = os.clock()
+					local attached = false
+					local flip = 1
+					while os.clock() - t0 < 8 do
+						if stopped() then return done(false, "Dihentikan.") end
+						local tr = tRoot()
+						if not tr then return done(false, "Target tidak ada / mati.") end
+						if (part.Position - tr.Position).Magnitude <= 4 then attached = true break end
+						flip = -flip
+						local dt = RunService.Heartbeat:Wait()
+						local dv = tr.Position - part.Position
+						local step = math.min(state.tkSpeed * dt, dv.Magnitude)
+						local dir = dv.Magnitude > 0.01 and dv.Unit or Vector3.zero
+						part.CFrame = CFrame.new(part.Position + dir * step + Vector3.new(0, 0.2 * flip, 0))
+						part.AssemblyLinearVelocity = Vector3.zero
+					end
+					if not attached then return done(false, "Part gagal nyentuh target (timeout).") end
+					local c0 = os.clock()
+					while os.clock() - c0 < 60 do
+						if stopped() then return done(false, "Dihentikan.") end
+						local tr = tRoot()
+						if not tr then return done(false, "Target lolos / mati.") end
+						local goal
+						if sbMode == "void" then goal = Vector3.new(tr.Position.X, voidY(state.sbKill), tr.Position.Z)
+						elseif sbMode == "custom" and sbCF then goal = sbCF.Position
+						else goal = origin.Position end
+						local toGoal = goal - tr.Position
+						local dist = toGoal.Magnitude
+						if dist <= ((sbMode == "void") and 2 or 6) then return done(true, "Terantar " .. target.DisplayName) end
+						local dt = RunService.Heartbeat:Wait()
+						local step = math.min(state.tkSpeed * dt, dist)
+						flip = -flip
+						part.CFrame = CFrame.new(tr.Position + toGoal.Unit * math.max(step, 2) + Vector3.new(0, 0.2 * flip, 0))
+						part.AssemblyLinearVelocity = Vector3.zero
+						sbSet(string.format("Membawa %s... (%d stud lagi)", target.DisplayName, math.floor(dist)), AMB)
+					end
+					return done(false, "Batas waktu bawa habis.")
+				end
+
+				-- ======================= antrean =======================
+				sbRunQueue = function()
+					if sbBusy then sbCancelled = true sbSet("Menghentikan...", AMB) return end
+					if #sbQueue == 0 then sbSet("Pilih minimal satu pemain.", REDC) return end
+					if sbMode == "custom" and not sbCF then sbSet("Pilih spot dulu.", REDC) return end
+					local char, hum, root = getChar()
+					if not char then sbSet("Karaktermu belum siap.", REDC) return end
+					local seatMethod = state.sbMethod == "seat"
+					sbBusy, sbCancelled = true, false
+					sbUpdateBring()
+					local origin = root.CFrame
+					local good, bad, lastErr = 0, 0, ""
+					local round = 0
+					repeat
+						round = round + 1
+						local ids = {}
+						for _, uid in ipairs(sbQueue) do ids[#ids + 1] = uid end
+						if #ids == 0 then break end
+						local prefix = state.sbLoop and ("[Loop " .. round .. "] ") or ""
+						for i, uid in ipairs(ids) do
+							if stopped() then break end
+							local target = Players:GetPlayerByUserId(uid)
+							if target then
+								sbSet(string.format("%s(%d/%d) Mengambil %s...", prefix, i, #ids, target.DisplayName), AMB)
+								sbCur = uid
+								refreshHl()
+								refreshView()
+								local ok, success, msg = pcall(seatMethod and sbDeliver or tkDeliver, target, origin)
+								sbCur = nil
+								if not ok then success, msg = false, tostring(success) end
+								if success then good = good + 1 else bad = bad + 1 lastErr = target.DisplayName .. ": " .. tostring(msg) end
+								task.wait(0.05)
+							else bad = bad + 1 lastErr = "Ada target yang keluar." end
+						end
+						if state.sbLoop and not stopped() then task.wait(0.15) end
+					until not state.sbLoop or stopped()
+					sbCur = nil
+					refreshHl()
+					refreshView()
+					restoreHitboxSeat()
+					if seatMethod then
+						local _, h, r = getChar()
+						if h then h:UnequipTools() end
+						if r then r.CFrame = origin r.AssemblyLinearVelocity = Vector3.zero end
+					end
+					local wasCancelled = sbCancelled
+					sbBusy = false
+					sbUpdateBring()
+					if wasCancelled then sbSet(string.format("Dihentikan. %d terantar.", good), AMB)
+					elseif bad == 0 then sbSet(string.format("Selesai. %d terantar.", good), TEAL)
+					else sbSet(string.format("%d terantar, %d gagal. %s", good, bad, lastErr), AMB) end
+				end
+				sbGetToolOnly = function()
+					if sbBusy then sbCancelled = true return end
+					local _, _, root = getChar()
+					if not root then sbSet("Karaktermu belum siap.", REDC) return end
+					sbBusy, sbCancelled = true, false
+					sbUpdateBring()
+					local origin = root.CFrame
+					local ok, found, msg = pcall(acquireSeatTool)
+					local _, _, r = getChar()
+					if r then r.CFrame = origin r.AssemblyLinearVelocity = Vector3.zero end
+					sbBusy = false
+					sbUpdateBring()
+					local tool = findSeatTool()
+					if tool then sbSet("Dapat tool seat: " .. tool.Name, TEAL)
+					else sbSet(ok and tostring(msg or "Tool seat tidak ditemukan.") or ("Error: " .. tostring(found)), REDC) end
+				end
+
+				sbSetMode("spot")
+				applyMethod()
+				sbUpdateBring()
+				pcall(sbRefreshList)
+				task.spawn(function()
+					while alive() do
+						if pg.Visible then pcall(sbRefreshList) end
+						if state.sbHl or next(sbHlights) then pcall(refreshHl) end
+						task.wait(1)
+					end
+				end)
+
+				local sbPrevCleanup = U.cleanup
+				U.cleanup = function()
+					sbCancelled = true
+					sbCur = nil
+					pcall(restoreHitboxSeat)
+					for uid, e in pairs(sbHlights) do pcall(function() e.h:Destroy() end) sbHlights[uid] = nil end
+					pcall(function() if sbMarker then sbMarker:Destroy() sbMarker = nil end end)
+					if sbPrevCleanup then return sbPrevCleanup() end
+				end
+			end)
+			if not okSB then warn("[RV] Seat Bring gagal dibuat: " .. tostring(errSB)) end
+		end
+
+
+		-- ---------- Stress Test: uji remote (FireServer / InvokeServer berulang dengan laju & durasi yang diatur) ----------
+		do
+			U.stage()
+			local pg = tPages["Stress Test"]
+			local okST, errST = pcall(function()
+				if not pg then return end
+				local TEAL, AMB, REDC, DARK = C3(45, 212, 191), C3(255, 181, 71), C3(214, 76, 70), C3(30, 22, 6)
+				local H = U.H
+				local sc = scroller(pg, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 1, 0))
+				local pinBar = H.pin(pg, sc, 66)
+				local ord = 0
+				local function O() ord = ord + 1 return ord end
+				local ST = { target = nil, payload = "empty", rate = 10, dur = 10, running = false, cancel = false, sent = 0, err = 0, t0 = 0 }
+
+				local head = lab(sc, "Remote Stress Tester", 14, FONTK, TXT, nil, UDim2.new(1, 0, 0, 20), LEFT)
+				head.LayoutOrder = O()
+				local note = lab(sc, "Pilih RemoteEvent / RemoteFunction dari daftar (diisi otomatis oleh Remote Spy) atau ketik path manual. Menembak dari client ini saja, jadi ini menguji kemampuan server menangani satu client yang spam. Nyalakan 'Remote spy' di Utilities supaya argumen asli ikut terekam untuk mode ULANG TERAKHIR.", 10, FONT, DIM, nil, UDim2.new(1, 0, 0, 56), LEFT)
+				note.LayoutOrder = O()
+				note.TextWrapped = true
+				local selL = lab(sc, "Target: (belum dipilih)", 11, FONTK, TEAL, nil, UDim2.new(1, 0, 0, 18), LEFT)
+				selL.LayoutOrder = O()
+
+				local qBox = mk("TextBox", { Size = UDim2.new(1, 0, 0, 28), BackgroundColor3 = SURF, Text = "", PlaceholderText = "Cari remote (nama)...", PlaceholderColor3 = DIM, Font = FONT, TextSize = 11, TextColor3 = TXT, ClearTextOnFocus = false, TextXAlignment = LEFT, LayoutOrder = O() }, sc)
+				corner(qBox, 8)
+				mk("UIPadding", { PaddingLeft = UDim.new(0, 8) }, qBox)
+				local list = mk("ScrollingFrame", { Size = UDim2.new(1, 0, 0, 150), BackgroundColor3 = SURF, BorderSizePixel = 0, ScrollBarThickness = 3, CanvasSize = UDim2.new(), AutomaticCanvasSize = Enum.AutomaticSize.Y, LayoutOrder = O() }, sc)
+				corner(list, 8)
+				mk("UIListLayout", { Padding = UDim.new(0, 3), SortOrder = Enum.SortOrder.LayoutOrder }, list)
+				mk("UIPadding", { PaddingTop = UDim.new(0, 3), PaddingLeft = UDim.new(0, 3), PaddingRight = UDim.new(0, 3), PaddingBottom = UDim.new(0, 3) }, list)
+
+				local function argPreview(e)
+					if not e.args or (e.args.n or 0) == 0 then return "()" end
+					local o = {}
+					for i = 1, math.min(e.args.n, 3) do o[i] = tostring(e.args[i]) end
+					return "(" .. table.concat(o, ", ") .. (e.args.n > 3 and ", ..." or "") .. ")"
+				end
+				local function pickRemote(inst, kind, e, name)
+					ST.target = { inst = inst, kind = kind, e = e, name = name }
+					selL.Text = "Target: " .. name .. "  [" .. kind .. "]"
+				end
+				local sig = ""
+				local function refresh()
+					local q = qBox.Text:lower()
+					local src = (U.spyList and U.spyList()) or {}
+					local arr = {}
+					for _, e in ipairs(src) do
+						if (e.kind == "Event" or e.kind == "Function") and e.inst and e.inst.Parent and (q == "" or e.name:lower():find(q, 1, true)) then arr[#arr + 1] = e end
+					end
+					table.sort(arr, function(a, b)
+						if (a.t > 0) ~= (b.t > 0) then return a.t > 0 end
+						return a.name < b.name
+					end)
+					local s = #arr .. "|" .. q .. "|" .. (ST.target and ST.target.name or "")
+					for i = 1, math.min(#arr, 8) do s = s .. arr[i].name .. arr[i].n end
+					if s == sig then return end
+					sig = s
+					for _, c in ipairs(list:GetChildren()) do if c:IsA("GuiObject") then c:Destroy() end end
+					for i, e in ipairs(arr) do
+						if i > 60 then break end
+						local on = ST.target and ST.target.inst == e.inst
+						local r = mk("TextButton", { Size = UDim2.new(1, -2, 0, 34), BackgroundColor3 = on and SURF2 or SURF, Text = "", AutoButtonColor = false, BorderSizePixel = 0, LayoutOrder = i }, list)
+						corner(r, 8)
+						local nm = lab(r, ((e.t > 0) and "{i:dot} " or "") .. e.name .. "   " .. e.kind, 11, FONTB, on and TEAL or TXT, UDim2.fromOffset(8, 2), UDim2.new(1, -16, 0, 16))
+						nm.TextTruncate = Enum.TextTruncate.AtEnd
+						local ad = lab(r, (e.t > 0) and argPreview(e) or (e.inst.Parent and e.inst.Parent.Name or "?"), 9, FONT, DIM, UDim2.fromOffset(8, 18), UDim2.new(1, -16, 0, 14))
+						ad.TextTruncate = Enum.TextTruncate.AtEnd
+						r.MouseButton1Click:Connect(function()
+							click()
+							pickRemote(e.inst, e.kind, e, e.name)
+							sig = ""
+							pcall(refresh)
+						end)
+					end
+					if #arr == 0 then
+						local l = lab(list, "Tidak ada remote yang cocok (atau Remote Spy belum selesai memindai).", 10, FONT, DIM, nil, UDim2.new(1, 0, 0, 30), LEFT)
+						l.TextWrapped = true
+					end
+				end
+				qBox:GetPropertyChangedSignal("Text"):Connect(function() sig = "" pcall(refresh) end)
+
+				-- path manual: ReplicatedStorage.Remotes.Foo
+				local pBox = mk("TextBox", { Size = UDim2.new(1, -86, 0, 28), BackgroundColor3 = SURF, Text = "", PlaceholderText = "atau path: ReplicatedStorage.Remotes.Foo", PlaceholderColor3 = DIM, Font = FONT, TextSize = 11, TextColor3 = TXT, ClearTextOnFocus = false, TextXAlignment = LEFT }, nil)
+				corner(pBox, 8)
+				mk("UIPadding", { PaddingLeft = UDim.new(0, 8) }, pBox)
+				local pRow = mk("Frame", { Size = UDim2.new(1, 0, 0, 28), BackgroundTransparency = 1, LayoutOrder = O() }, sc)
+				pBox.Parent = pRow
+				local pGo = mk("TextButton", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, 0, 0, 0), Size = UDim2.fromOffset(80, 28), BackgroundColor3 = SURF2, Text = "PAKAI PATH", Font = FONTB, TextSize = 10, TextColor3 = TXT, AutoButtonColor = false }, pRow)
+				corner(pGo, 8)
+				pGo.MouseButton1Click:Connect(function()
+					click()
+					local cur = game
+					for seg in pBox.Text:gsub("^game%.?", ""):gmatch("[^%.]+") do
+						cur = cur and cur:FindFirstChild(seg)
+						if not cur then break end
+					end
+					if cur and cur ~= game and (cur:IsA("RemoteEvent") or cur:IsA("UnreliableRemoteEvent") or cur:IsA("RemoteFunction")) then
+						pickRemote(cur, cur:IsA("RemoteFunction") and "Function" or "Event", nil, cur.Name)
+						sig = ""
+						pcall(refresh)
+					else
+						selL.Text = "Path tidak ketemu / bukan remote."
+					end
+				end)
+
+				H.chips(sc, O(), { { "empty", "KOSONG" }, { "last", "ULANG TERAKHIR" }, { "num", "ANGKA ACAK" }, { "str", "TEKS ACAK" } }, function() return ST.payload end, function(v) ST.payload = v end)
+				H.num(sc, O(), "Panggilan / detik", function() return ST.rate end, function(v) ST.rate = v end, 1, 200, 5, 0)
+				H.num(sc, O(), "Durasi detik (0 = sampai distop)", function() return ST.dur end, function(v) ST.dur = v end, 0, 600, 5, 0)
+
+				local stat = lab(sc, "Siap.", 10, FONT, DIM, nil, UDim2.new(1, 0, 0, 30), LEFT)
+				stat.LayoutOrder = O()
+				stat.TextWrapped = true
+				local go
+
+				local function buildArgs(t)
+					if ST.payload == "last" and t.e and t.e.t > 0 and t.e.args then return t.e.args end
+					if ST.payload == "num" then return { n = 1, math.random(0, 100) } end
+					if ST.payload == "str" then
+						local s = {}
+						for i = 1, 8 do s[i] = string.char(math.random(97, 122)) end
+						return { n = 1, table.concat(s) }
+					end
+					return { n = 0 }
+				end
+				local function start()
+					if ST.running then ST.cancel = true return end
+					local t = ST.target
+					if not t or not t.inst or not t.inst.Parent then stat.Text = "Pilih remote dulu." stat.TextColor3 = REDC return end
+					ST.running, ST.cancel, ST.sent, ST.err, ST.t0 = true, false, 0, 0, os.clock()
+					go.Text = "STOP"
+					go.BackgroundColor3 = REDC
+					go.TextColor3 = WHITE
+					local rate = math.clamp(ST.rate, 1, 200)
+					local dur = ST.dur
+					local lastUI = 0
+					local nextAt = os.clock()
+					while alive() and not ST.cancel do
+						local now = os.clock()
+						if dur > 0 and now - ST.t0 >= dur then break end
+						if not t.inst.Parent then stat.Text = "Remote hilang dari game." break end
+						-- kejar jadwal: kirim sebanyak yang seharusnya sudah terkirim (maks 25 per frame supaya client tidak macet)
+						local burst = 0
+						while nextAt <= now and burst < 25 do
+							local a = buildArgs(t)
+							local ok = pcall(function()
+								if t.kind == "Event" then t.inst:FireServer(table.unpack(a, 1, a.n or #a))
+								else task.spawn(function() local ok2 = pcall(function() t.inst:InvokeServer(table.unpack(a, 1, a.n or #a)) end) if not ok2 then ST.err = ST.err + 1 end end) end
+							end)
+							if ok then ST.sent = ST.sent + 1 else ST.err = ST.err + 1 end
+							nextAt = nextAt + 1 / rate
+							burst = burst + 1
+						end
+						if nextAt < now - 1 then nextAt = now end
+						if now - lastUI > 0.2 then
+							lastUI = now
+							local el = now - ST.t0
+							stat.Text = string.format("Terkirim: %d   Error: %d   Laju: %.1f/dtk   Berjalan: %.1fs%s", ST.sent, ST.err, ST.sent / math.max(el, 0.001), el, dur > 0 and string.format("   Sisa: %.1fs", math.max(dur - el, 0)) or "")
+							stat.TextColor3 = AMB
+						end
+						RunService.Heartbeat:Wait()
+					end
+					local el = os.clock() - ST.t0
+					stat.Text = string.format("Selesai. Terkirim: %d   Error: %d   Rata-rata: %.1f/dtk   Durasi: %.1fs", ST.sent, ST.err, ST.sent / math.max(el, 0.001), el)
+					stat.TextColor3 = TEAL
+					ST.running = false
+					go.Text = "MULAI STRESS TEST"
+					go.BackgroundColor3 = TXT
+					go.TextColor3 = INK
+				end
+				go = H.button(sc, O(), "MULAI STRESS TEST", function() task.spawn(start) end, true)
+				go.Parent = pinBar go.Position = UDim2.fromOffset(0, 0) go.Size = UDim2.new(1, 0, 0, 30)
+				stat.Parent = pinBar stat.Position = UDim2.fromOffset(0, 34) stat.Size = UDim2.new(1, 0, 0, 30) stat.TextTruncate = Enum.TextTruncate.AtEnd
+
+				task.spawn(function()
+					while alive() do
+						if pg.Visible then pcall(refresh) end
+						task.wait(1)
+					end
+					ST.cancel = true
+				end)
+				pcall(refresh)
+			end)
+			if not okST then warn("[RV] Stress Test gagal dibuat: " .. tostring(errST)) end
 		end
 
 		-- ---------- YouTube: cari video / script dari deskripsi, tonton (unduh mp4) ----------
@@ -29824,7 +30929,7 @@ local function buildUI()
 					thumbInto(big, v.id)
 					local pbg = mk("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(46, 46), BackgroundColor3 = C3n(255, 60, 60), BackgroundTransparency = 0.1, ZIndex = 8 }, big)
 					corner(pbg, 23)
-					mk("TextLabel", { Size = UDim2.fromScale(1, 1), Position = UDim2.fromOffset(2, 0), BackgroundTransparency = 1, Text = "\u{25B6}", Font = FONTB, TextSize = 20, TextColor3 = WHITE, ZIndex = 9 }, pbg)
+					mk("TextLabel", { Size = UDim2.fromScale(1, 1), Position = UDim2.fromOffset(2, 0), BackgroundTransparency = 1, Text = "{i:play}", Font = FONTB, TextSize = 20, TextColor3 = WHITE, ZIndex = 9 }, pbg)
 					sBtn("COPY VIDEO LINK", 3, function() copyText("https://www.youtube.com/watch?v=" .. v.id) U.note("Link copied") end)
 					task.spawn(function()
 						local desc, mp4, meta, RR = detail(v.id)
@@ -30039,7 +31144,7 @@ local function buildUI()
 								end)
 							end)
 						end
-						wb = sBtn("\u{25B6} PLAY VIDEO (with sound)", 5, playIt, true)
+						wb = sBtn("{i:play} PLAY VIDEO (with sound)", 5, playIt, true)
 						big.MouseButton1Click:Connect(function() click() playIt(wb) end)
 					end)
 				end
@@ -30695,7 +31800,7 @@ local function buildUI()
 						while alive() and run and token == my and os.clock() - t0 < 20 do
 							if up > 0 then cells[up].Text, cells[up].BackgroundColor3 = "", SURF2 end
 							up = math.random(1, 9)
-							cells[up].Text, cells[up].BackgroundColor3 = "\u{25CF}", C3n(90, 200, 110)
+							cells[up].Text, cells[up].BackgroundColor3 = "{i:dot}", C3n(90, 200, 110)
 							tm.Text = string.format("Time %.1fs", 20 - (os.clock() - t0))
 							local gap = math.max(0.35, 0.8 - score * 0.02)
 							task.wait(gap)
@@ -32472,7 +33577,7 @@ local function buildUI()
 						local nl = select(2, src:gsub("\n", "\n")) + 1
 						local g = {}
 						for k = 1, math.min(nl, 2000) do
-							g[k] = (k == errLine) and ('<font color="#FF6B63"><b>' .. k .. ' \u{25B6}</b></font>') or ('<font color="#5A6678">' .. k .. "</font>")
+							g[k] = (k == errLine) and ('<font color="#FF6B63"><b>' .. k .. ' &gt;</b></font>') or ('<font color="#5A6678">' .. k .. "</font>")
 						end
 						gut.Text = table.concat(g, "\n")
 						body.Text = (#src > 24000) and ex(src) or hl(src)
@@ -34626,7 +35731,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 						local used = e.t > 0
 						local rf = mk("Frame", { Size = UDim2.new(1, 0, 0, 44), BackgroundColor3 = used and SURF2 or SURF, LayoutOrder = shown }, rpanel)
 						corner(rf, 8)
-						local nm = lab(rf, (used and "\u{25CF} " or "") .. e.name .. "   " .. e.kind .. (e.n > 0 and ("  x" .. e.n) or ""), 11, FONTB, used and ACCG or TXT, UDim2.fromOffset(8, 3), UDim2.new(1, -130, 0, 18))
+						local nm = lab(rf, (used and "{i:dot} " or "") .. e.name .. "   " .. e.kind .. (e.n > 0 and ("  x" .. e.n) or ""), 11, FONTB, used and ACCG or TXT, UDim2.fromOffset(8, 3), UDim2.new(1, -130, 0, 18))
 						nm.TextTruncate = Enum.TextTruncate.AtEnd
 						local ad = lab(rf, used and (e.kind == "Prompt" and "triggered by you" or ("(" .. argStr(e.args) .. ")")) or e.inst.Parent.Name .. "  (not used yet)", 9, FONT, DIM, UDim2.fromOffset(8, 22), UDim2.new(1, -130, 0, 16))
 						ad.TextTruncate = Enum.TextTruncate.AtEnd
@@ -34807,7 +35912,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 		end)()
 
 		-- SERVER HOP
-		hdr("SERVER HOP")
+		hdr("{i:server} Servers")
 		local myCountry = "?"
 		pcall(function() myCountry = game:GetService("LocalizationService"):GetCountryRegionForPlayerAsync(Players.LocalPlayer) end)
 		local info = note("", 16)
@@ -35864,19 +36969,36 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 			-- ---------- UI micro interactions ----------
 			hdr("UI MICRO-INTERACTIONS")
 			local MF = { seen = setmetatable({}, { __mode = "k" }) }
+			-- efek mikro HANYA saat klik / tap (tidak ada efek hover): transparansi (atau transparansi teks / ikon) berubah sedikit lalu kembali
 			local function fxBtn(b)
-				if MF.seen[b] or not b:IsA("TextButton") then return end
+				if MF.seen[b] or not (b:IsA("TextButton") or b:IsA("ImageButton")) then return end
 				MF.seen[b] = true
-				if b:FindFirstChildOfClass("UIScale") then return end
-				local us = Instance.new("UIScale")
-				us.Name = ".mfx"
-				us.Parent = b
-				local info = TweenInfo.new(0.12, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-				local function to(s) if state.microFx then TweenService:Create(us, info, { Scale = s }):Play() end end
-				b.MouseEnter:Connect(function() to(1.025) end)
-				b.MouseLeave:Connect(function() to(1) end)
-				b.MouseButton1Down:Connect(function() to(0.94) end)
-				b.MouseButton1Up:Connect(function() to(1.025) end)
+				local info = TweenInfo.new(0.1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+				local down, prop, base, pressed = false, nil, 0, 0
+				local function press()
+					if down or not state.microFx then return end
+					local p, amt
+					if b.BackgroundTransparency < 0.95 then p, amt = "BackgroundTransparency", 0.16
+					elseif b:IsA("ImageButton") then p, amt = "ImageTransparency", 0.3
+					elseif b.Text ~= "" then p, amt = "TextTransparency", 0.35 end
+					if not p then return end
+					down, prop, base = true, p, b[p]
+					pressed = math.min(1, base + amt)
+					TweenService:Create(b, info, { [p] = pressed }):Play()
+				end
+				local function release()
+					if not down then return end
+					down = false
+					local cur = b[prop]
+					if cur < math.min(base, pressed) - 0.03 or cur > math.max(base, pressed) + 0.03 then return end -- diubah script lain saat ditekan: jangan ditimpa
+					TweenService:Create(b, info, { [prop] = base }):Play()
+				end
+				b.MouseButton1Down:Connect(press)
+				b.MouseButton1Up:Connect(release)
+				b.MouseLeave:Connect(release)
+				b.InputEnded:Connect(function(i)
+					if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then release() end
+				end)
 			end
 			U.microFx = function()
 				task.spawn(function()
@@ -35889,7 +37011,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 				end)
 			end
 			panel.DescendantAdded:Connect(function(d) if d:IsA("TextButton") then task.defer(fxBtn, d) end end)
-			switchRow(sc, nxt(), "Button hover / press animation", "microFx", function() end)
+			switchRow(sc, nxt(), "Button click effect (slight transparency change, no hover)", "microFx", function() end)
 			U.microFx()
 
 			U.cmdPackD = function(addCmd, toggleCmd, say2)
@@ -36367,7 +37489,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 		end
 		local function gameBrowser()
 			gbEnsure()
-			local hh = lab(list, "\u{1F3AE} GAME BROWSER", 12, FONTK, TXT, nil, UDim2.new(1, 0, 0, 22))
+			local hh = lab(list, "{i:gamepad-2} GAME BROWSER", 12, FONTK, TXT, nil, UDim2.new(1, 0, 0, 22))
 			hh.LayoutOrder = nextOrd()
 			acc(hh, "TextColor3")
 			bigNote("Beranda game: ketik nama atau singkatan (mm2, ps99, bf, tsb...) lalu CARI. Hasil paling cocok ada di paling kiri. Geser ke kanan atau pakai panah, lalu tekan \"Muat lebih\" di ujung. Ketuk game untuk join / scan pemain di game itu.", 44)
@@ -36415,7 +37537,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 					renderCreator()
 				end)
 			end
-			local hb = mk("TextButton", { Size = UDim2.fromOffset(78, 24), BackgroundColor3 = SURF2, Text = GB.q ~= "" and "\u{1F3E0} Beranda" or "\u{1F504} Muat ulang", Font = FONTB, TextSize = 11, TextColor3 = TXT, AutoButtonColor = false, LayoutOrder = 10 }, cr)
+			local hb = mk("TextButton", { Size = UDim2.fromOffset(78, 24), BackgroundColor3 = SURF2, Text = GB.q ~= "" and "{i:home} Beranda" or "{i:refresh-cw} Muat ulang", Font = FONTB, TextSize = 11, TextColor3 = TXT, AutoButtonColor = false, LayoutOrder = 10 }, cr)
 			corner(hb, 12)
 			hb.MouseButton1Click:Connect(function()
 				click()
@@ -36439,7 +37561,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 				local tl = lab(top, g.name, 14, FONTK, TXT, UDim2.fromOffset(98, 0), UDim2.new(1, -98, 0, 40))
 				tl.TextWrapped = true
 				tl.TextYAlignment = Enum.TextYAlignment.Top
-				lab(top, "\u{1F465} " .. gbFmt(g.playing) .. " bermain" .. (g.likePct and ("   \u{1F44D} " .. g.likePct .. "%") or ""), 12, FONTB, C3(90, 220, 130), UDim2.fromOffset(98, 44), UDim2.new(1, -98, 0, 16))
+				lab(top, "{i:users} " .. gbFmt(g.playing) .. " bermain" .. (g.likePct and ("   {i:thumbs-up} " .. g.likePct .. "%") or ""), 12, FONTB, C3(90, 220, 130), UDim2.fromOffset(98, 44), UDim2.new(1, -98, 0, 16))
 				lab(top, (g.creator and ("oleh " .. tostring(g.creator) .. "  \u{2022}  ") or "") .. "Universe " .. tostring(g.uid) .. (g.pid and ("  \u{2022}  Place " .. g.pid) or ""), 10, FONT, DIM, UDim2.fromOffset(98, 64), UDim2.new(1, -98, 0, 14)).TextTruncate = Enum.TextTruncate.AtEnd
 				local function pbtn(text, ord, fn, accent)
 					local b = mk("TextButton", { Size = UDim2.new(1, 0, 0, 30), BackgroundColor3 = SURF2, Text = text, Font = FONTB, TextSize = 12, TextColor3 = TXT, AutoButtonColor = false, LayoutOrder = ord }, panel)
@@ -36447,12 +37569,12 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 					if accent then acc(b, "BackgroundColor3") b.TextColor3 = INK end
 					b.MouseButton1Click:Connect(function() click() fn() end)
 				end
-				pbtn("\u{1F680} Masuk game ini (server acak)", 2, function()
+				pbtn("{i:rocket} Masuk game ini (server acak)", 2, function()
 					say("Menyiapkan " .. g.name .. "...")
 					gbPid(g, function(pid) if pid then say("Masuk " .. g.name .. "...") U.joinGame(pid) else say("PlaceId game tidak terbaca.") end end)
 				end, true)
 				if lookRes then
-					pbtn("\u{1F50E} Scan " .. tostring(lookRes.display or lookRes.name) .. " di game ini", 3, function()
+					pbtn("{i:scan-search} Scan " .. tostring(lookRes.display or lookRes.name) .. " di game ini", 3, function()
 						gbPid(g, function(pid)
 							if not pid then say("PlaceId game tidak terbaca.") return end
 							say("Scan " .. tostring(lookRes.display or lookRes.name) .. " di " .. g.name .. "...")
@@ -36504,9 +37626,9 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 					local th = mk("ImageLabel", { Size = UDim2.fromOffset(142, 142), BackgroundColor3 = gbHue(it.name), BorderSizePixel = 0, ScaleType = Enum.ScaleType.Crop, Image = it.uid and ("rbxthumb://type=GameIcon&id=" .. it.uid .. "&w=150&h=150") or "" }, cd)
 					corner(th, 12)
 					local bar = mk("Frame", { AnchorPoint = Vector2.new(0, 1), Position = UDim2.fromScale(0, 1), Size = UDim2.new(1, 0, 0, 20), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.4, BorderSizePixel = 0, ZIndex = 3 }, th)
-					lab(bar, "\u{1F465} " .. gbFmt(it.playing) .. (it.likePct and ("   \u{1F44D} " .. it.likePct .. "%") or ""), 10, FONTB, WHITE, UDim2.fromOffset(6, 0), UDim2.new(1, -8, 1, 0)).ZIndex = 4
+					lab(bar, "{i:users} " .. gbFmt(it.playing) .. (it.likePct and ("   {i:thumbs-up} " .. it.likePct .. "%") or ""), 10, FONTB, WHITE, UDim2.fromOffset(6, 0), UDim2.new(1, -8, 1, 0)).ZIndex = 4
 					if row.kind == "search" and i == 1 and row.q ~= "" then
-						local bd = acc(mk("TextLabel", { Position = UDim2.fromOffset(6, 6), Size = UDim2.fromOffset(96, 18), Text = "\u{2B50} PALING COCOK", Font = FONTK, TextSize = 9, TextColor3 = INK, ZIndex = 4 }, th))
+						local bd = acc(mk("TextLabel", { Position = UDim2.fromOffset(6, 6), Size = UDim2.fromOffset(96, 18), Text = "{i:star} PALING COCOK", Font = FONTK, TextSize = 9, TextColor3 = INK, ZIndex = 4 }, th))
 						corner(bd, 9)
 					end
 					local nm = lab(cd, it.name, 11, FONTB, TXT, UDim2.fromOffset(6, 146), UDim2.new(1, -12, 0, 40))
@@ -36522,7 +37644,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 					end)
 				end
 				if row.more and not row.err then
-					local mb = mk("TextButton", { Size = UDim2.fromOffset(110, 192), BackgroundColor3 = SURF2, Text = row.loading and "Memuat..." or ("Muat lebih\n\u{23E9}\n+" .. GB.n), Font = FONTB, TextSize = 13, TextColor3 = TXT, AutoButtonColor = false, LayoutOrder = #row.items + 1 }, sf)
+					local mb = mk("TextButton", { Size = UDim2.fromOffset(110, 192), BackgroundColor3 = SURF2, Text = row.loading and "Memuat..." or ("Muat lebih\n{i:fast-forward}\n+" .. GB.n), Font = FONTB, TextSize = 13, TextColor3 = TXT, AutoButtonColor = false, LayoutOrder = #row.items + 1 }, sf)
 					corner(mb, 12)
 					mb.MouseButton1Click:Connect(function()
 						click()
@@ -36797,7 +37919,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 						if pl ~= player then
 							any = true
 							local on = U.hlIs(pl)
-							local pb = cbtn((on and "\u{1F518} " or "- ") .. pl.DisplayName .. "  (@" .. pl.Name .. ")", function() U.hlSet(pl, not U.hlIs(pl)) renderCreator() end, 28)
+							local pb = cbtn((on and "{i:circle-dot} " or "- ") .. pl.DisplayName .. "  (@" .. pl.Name .. ")", function() U.hlSet(pl, not U.hlIs(pl)) renderCreator() end, 28)
 							pb.TextXAlignment = LEFT
 							mk("UIPadding", { PaddingLeft = UDim.new(0, 10) }, pb)
 							if on then acc(pb, "TextColor3") end
@@ -36981,9 +38103,9 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 					local srcTag = U.cookieSource and (" · sumber: " .. tostring(U.cookieSource)) or ""
 					local ckTxt
 					if U.cookie then
-						ckTxt = "\u{1F512} Cookie akun: TERPASANG" .. srcTag .. "\n" .. U.cookieMask(U.cookie) .. "\n(hanya memori/tab Creator · hanya dikirim ke roblox.com · tidak di kode script)"
+						ckTxt = "{i:lock} Cookie akun: TERPASANG" .. srcTag .. "\n" .. U.cookieMask(U.cookie) .. "\n(hanya memori/tab Creator · hanya dikirim ke roblox.com · tidak di kode script)"
 					else
-						ckTxt = "\u{1F513} Cookie akun: belum dipasang — tekan Ambil dari executor atau tempel manual (bikin presence/JobId akurat)"
+						ckTxt = "{i:lock-open} Cookie akun: belum dipasang — tekan Ambil dari executor atau tempel manual (bikin presence/JobId akurat)"
 					end
 					local ck = lab(list, ckTxt, 10, FONTB, U.cookie and C3(70, 220, 120) or DIM, nil, UDim2.new(1, 0, 0, U.cookie and 48 or 32))
 					ck.LayoutOrder = nextOrd()
@@ -37068,7 +38190,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 					end
 					local cl = U.ckLoad()
 					if #cl > 0 then
-						local ch = lab(list, "\u{1F4BE} COOKIE TERSIMPAN / RIWAYAT (" .. #cl .. ")  \u{2022}  file lokal, bukan di kode script", 10, FONTK, TXT, nil, UDim2.new(1, 0, 0, 20))
+						local ch = lab(list, "{i:save} COOKIE TERSIMPAN / RIWAYAT (" .. #cl .. ")  \u{2022}  file lokal, bukan di kode script", 10, FONTK, TXT, nil, UDim2.new(1, 0, 0, 20))
 						ch.LayoutOrder = nextOrd()
 						acc(ch, "TextColor3")
 						for i, e in ipairs(cl) do
@@ -37097,7 +38219,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 								say(okU and ("Cookie " .. tostring(nm) .. " dipakai.") or "Gagal.")
 								renderCreator()
 							end)
-							local db = mk("TextButton", { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -8, 0.5, 0), Size = UDim2.fromOffset(30, 24), BackgroundColor3 = C3(150, 55, 62), Text = "\u{274C}", Font = FONTB, TextSize = 11, TextColor3 = WHITE, AutoButtonColor = false }, rowF)
+							local db = mk("TextButton", { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -8, 0.5, 0), Size = UDim2.fromOffset(30, 24), BackgroundColor3 = C3(150, 55, 62), Text = "{i:x}", Font = FONTB, TextSize = 11, TextColor3 = WHITE, AutoButtonColor = false }, rowF)
 							corner(db, 12)
 							db.MouseButton1Click:Connect(function() click() U.ckDel(i) renderCreator() end)
 						end
@@ -37109,7 +38231,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 				mk("UIPadding", { PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10) }, box)
 				mk("UIPadding", { PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 36) }, box):Destroy()
 				box:FindFirstChildOfClass("UIPadding").PaddingRight = UDim.new(0, 36)
-				local xb = mk("TextButton", { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -6, 0.5, 0), Size = UDim2.fromOffset(24, 24), BackgroundColor3 = SURF2, Text = "\u{274C}", Font = FONTB, TextSize = 12, TextColor3 = TXT, AutoButtonColor = false, Visible = lookDraft ~= "", ZIndex = 3 }, box)
+				local xb = mk("TextButton", { AnchorPoint = Vector2.new(1, 0.5), Position = UDim2.new(1, -6, 0.5, 0), Size = UDim2.fromOffset(24, 24), BackgroundColor3 = SURF2, Text = "{i:x}", Font = FONTB, TextSize = 12, TextColor3 = TXT, AutoButtonColor = false, Visible = lookDraft ~= "", ZIndex = 3 }, box)
 				corner(xb, 12)
 				box:GetPropertyChangedSignal("Text"):Connect(function() lookDraft = box.Text xb.Visible = box.Text ~= "" end)
 				xb.MouseButton1Click:Connect(function()
@@ -37170,16 +38292,16 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 							corner(go, 11)
 							acc(go, "BackgroundColor3")
 							go.MouseButton1Click:Connect(function() click() lookDraft = tostring(it.uid) doLook() end)
-							local st = mk("TextButton", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -70, 0, 15), Size = UDim2.fromOffset(30, 22), BackgroundColor3 = SURF2, Text = U.savedHas(it.uid) and "\u{2B50}" or "\u{2795}", Font = FONTB, TextSize = 14, TextColor3 = TXT, AutoButtonColor = false }, rowF)
+							local st = mk("TextButton", { AnchorPoint = Vector2.new(1, 0), Position = UDim2.new(1, -70, 0, 15), Size = UDim2.fromOffset(30, 22), BackgroundColor3 = SURF2, Text = U.savedHas(it.uid) and "{i:star}" or "{i:plus}", Font = FONTB, TextSize = 14, TextColor3 = TXT, AutoButtonColor = false }, rowF)
 							corner(st, 11)
 							st.MouseButton1Click:Connect(function()
 								click()
 								local on = U.savedToggle(it.uid, it.name, it.display)
-								st.Text = on and "\u{2B50}" or "\u{2795}"
+								st.Text = on and "{i:star}" or "{i:plus}"
 							end)
 						end
 					end
-					personRows("\u{2B50} TERSIMPAN (" .. #(state.lookSaved or {}) .. ")", state.lookSaved or {})
+					personRows("{i:star} TERSIMPAN (" .. #(state.lookSaved or {}) .. ")", state.lookSaved or {})
 					personRows("RIWAYAT PENCARIAN (" .. #(state.lookHist or {}) .. ")", state.lookHist or {})
 					if #(state.lookHist or {}) > 0 then
 						cbtn("Hapus riwayat", function() U.histClear() renderCreator() end, 28)
@@ -37224,7 +38346,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 						mk("UIStroke", { Color = col, Thickness = 1.5, Transparency = 0.35 }, panel)
 						mk("UIPadding", { PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10), PaddingTop = UDim.new(0, 8), PaddingBottom = UDim.new(0, 8) }, panel)
 						mk("UIListLayout", { Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder }, panel)
-						local hd = lab(panel, "\u{1F310} SCAN SERVER", 11, FONTK, col, nil, UDim2.new(1, 0, 0, 16))
+						local hd = lab(panel, "{i:globe} SCAN SERVER", 11, FONTK, col, nil, UDim2.new(1, 0, 0, 16))
 						hd.LayoutOrder = 1
 						local fst = lab(panel, F.status, 11, FONTB, TXT, nil, UDim2.new(1, 0, 0, 30))
 						fst.LayoutOrder = 2
@@ -37240,19 +38362,19 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 						if F.hit then
 							local h = F.hit
 							do
-								local ct = lookRes.srvCountry and ("\u{1F4CD} Negara server: " .. lookRes.srvCountry .. (lookRes.srvLoc and ("\n    Kota/region: " .. lookRes.srvLoc) or ""))
-									or (lookRes.geoErr and ("\u{1F4CD} Lokasi server belum terbaca: " .. tostring(lookRes.geoErr)) or "\u{1F4CD} Mencari lokasi server...")
+								local ct = lookRes.srvCountry and ("{i:map-pin} Negara server: " .. lookRes.srvCountry .. (lookRes.srvLoc and ("\n    Kota/region: " .. lookRes.srvLoc) or ""))
+									or (lookRes.geoErr and ("{i:map-pin} Lokasi server belum terbaca: " .. tostring(lookRes.geoErr)) or "{i:map-pin} Mencari lokasi server...")
 								local cl = lab(panel, ct, 13, FONTK, lookRes.srvCountry and C3(255, 205, 90) or DIM, nil, UDim2.new(1, 0, 0, lookRes.srvCountry and 36 or 20))
 								cl.LayoutOrder = 2
 								cl.TextWrapped = true
 							end
 							do
-								local vt = h.verified and "\u{2705} Terverifikasi (presence Roblox cocok dengan server ini)" or h.weak and "\u{26A0}\u{FE0F} Kepala cocok tapi badan beda (kemungkinan orang lain atau baru ganti avatar)" or ("\u{26A0}\u{FE0F} Avatar cocok, belum terverifikasi" .. (h.ambiguous and (" (" .. tostring(h.ambiguous) .. " pemain beravatar sama, bisa salah orang)") or ""))
+								local vt = h.verified and "{i:circle-check} Terverifikasi (presence Roblox cocok dengan server ini)" or h.weak and "{i:triangle-alert} Kepala cocok tapi badan beda (kemungkinan orang lain atau baru ganti avatar)" or ("{i:triangle-alert} Avatar cocok, belum terverifikasi" .. (h.ambiguous and (" (" .. tostring(h.ambiguous) .. " pemain beravatar sama, bisa salah orang)") or ""))
 								local vl = lab(panel, vt, 11, FONTB, h.verified and C3(70, 220, 120) or C3(255, 190, 70), nil, UDim2.new(1, 0, 0, 30))
 								vl.LayoutOrder = 2
 								vl.TextWrapped = true
 							end
-							pb("\u{1F680} Join server dia" .. (h.playing and (" (" .. tostring(h.playing) .. "/" .. tostring(h.maxPlayers) .. ")") or ""), 3, function()
+							pb("{i:rocket} Join server dia" .. (h.playing and (" (" .. tostring(h.playing) .. "/" .. tostring(h.maxPlayers) .. ")") or ""), 3, function()
 								if tostring(h.jobId) == tostring(game.JobId) then say("Kamu sudah di server yang sama.") return end
 								say("Join server...")
 								U.quiet("Mencoba join server hasil scan...")
@@ -37269,7 +38391,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 							end)
 						else
 							if F.paused and F.uid == lookRes.uid and (F.checked or 0) > 0 then
-								pb("\u{23E9} Lanjutkan scan", 3, function()
+								pb("{i:fast-forward} Lanjutkan scan", 3, function()
 									U.autoFind(lookRes, function() if U.fndUpd then U.fndUpd() end end, function() if alive() and cSub == "Find" then renderCreator() end end, true)
 									task.wait(0.25)
 									renderCreator()
@@ -37292,7 +38414,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 					end
 				end
 				if lookRes and lookRes.src ~= "server ini" and not U.fnd.running and not (U.fnd.uid == lookRes.uid and U.fnd.status ~= "") then
-					local fb = cbtn("\u{1F50D} Find players (scan server & game lain)", function()
+					local fb = cbtn("{i:search} Find players (scan server & game lain)", function()
 						U.autoFind(lookRes, function() if U.fndUpd then U.fndUpd() end end, function() if alive() and cSub == "Find" then renderCreator() end end)
 						task.wait(0.25)
 						if alive() and cSub == "Find" then renderCreator() end
@@ -37312,7 +38434,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 						state.scanCrossN = t
 						saveSoon()
 					end)
-					cbtn("\u{1F310} Cari lintas game (scan game populer)", function()
+					cbtn("{i:globe} Cari lintas game (scan game populer)", function()
 						say("Mengambil daftar game populer...")
 						task.spawn(function()
 							local pl = U.popularPlaces(tonumber(state.scanCrossN) or 5)
@@ -37429,9 +38551,9 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 						cardBtn("Masuk ke game terakhirnya: " .. tostring(r.act.game or r.act.place) .. " (server acak)", 3, function() U.joinGame(r.act.place) end)
 					end
 					local svBtn
-					svBtn = cardBtn(U.savedHas(r.uid) and "\u{2B50} Tersimpan (ketuk untuk hapus)" or "\u{2795} Simpan pemain ini", 4, function()
+					svBtn = cardBtn(U.savedHas(r.uid) and "{i:star} Tersimpan (ketuk untuk hapus)" or "{i:plus} Simpan pemain ini", 4, function()
 						local on = U.savedToggle(r.uid, r.name, r.display)
-						svBtn.Text = on and "\u{2B50} Tersimpan (ketuk untuk hapus)" or "\u{2795} Simpan pemain ini"
+						svBtn.Text = on and "{i:star} Tersimpan (ketuk untuk hapus)" or "{i:plus} Simpan pemain ini"
 						say(on and "Disimpan." or "Dihapus dari simpanan.")
 					end)
 					cardBtn("Refresh status", 4, function() lookDraft = tostring(r.uid) doLook() end)
@@ -37664,7 +38786,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 						local line = "x" .. it.c .. "  \u{2022}  " .. os.date("%d/%m %H:%M", math.floor(it.t / 1000)) .. "  \u{2022}  " .. tostring(it.dev or "?") .. "  \u{2022}  " .. tostring(it.ex or "?")
 						local btns
 						if isOwn then btns = { { "Owner", 56, SURF2, DIM } }
-						elseif owned then btns = { { "\u{2713} Access", 76, SURF2, GREENC } }
+						elseif owned then btns = { { "{i:check} Access", 76, SURF2, GREENC } }
 						else btns = { { "Allow", 56, GREENC, INK, function() giveAccess(it.uid, it.n) end } } end
 						saRow(it.uid, it.d, it.n, line, btns)
 					end
@@ -38497,20 +39619,25 @@ local panDrag, panStart, panX, panY, panInp, panMoved = false, nil, 0, 0, nil, f
 	end)
 	-- handle resize: tanda panah di luar sudut kanan bawah, arahnya mengikuti tarikan
 	local grip = mk("TextButton", { AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(1, -34, 1, -34), Size = UDim2.fromOffset(32, 32), BackgroundTransparency = 1, Text = "", AutoButtonColor = false, ZIndex = 30 }, holder)
-	local arr = mk("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(30, 30), BackgroundColor3 = BG, BackgroundTransparency = 0.12, Rotation = 45, ZIndex = 31 }, grip)
-	corner(arr, 15)
-	mk("UIStroke", { Color = WHITE, Transparency = 0.8, Thickness = 1.5 }, arr)
-	acc(mk("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromOffset(14, 15), Size = UDim2.fromOffset(16, 3), BorderSizePixel = 0, ZIndex = 32 }, arr))
-	for _, hd in ipairs({ { -3.4, -2.9, 40 }, { -3.4, 2.9, -40 } }) do
-		acc(mk("Frame", { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromOffset(23 + hd[1], 15 + hd[2]), Size = UDim2.fromOffset(9, 3), BorderSizePixel = 0, Rotation = hd[3], ZIndex = 32 }, arr))
+	-- handle bentuk "」" (dua garis + diagonal kecil) seperti script contoh; menyala saat hover / ditarik
+	local arr = mk("Frame", { BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), ZIndex = 31 }, grip)
+	local gripLines = {}
+	local function gline(x, y, w, h, rot)
+		local f = acc(mk("Frame", { Position = UDim2.fromOffset(x, y), Size = UDim2.fromOffset(w, h), BorderSizePixel = 0, Rotation = rot or 0, BackgroundTransparency = 0.55, ZIndex = 32 }, arr))
+		corner(f, 1)
+		gripLines[#gripLines + 1] = f
 	end
-	local arrNow = 45
-	local function pointArrow(deg, t)
-		while deg - arrNow > 180 do deg -= 360 end
-		while deg - arrNow < -180 do deg += 360 end
-		arrNow = deg
-		tween(arr, t, { Rotation = deg }, Enum.EasingStyle.Quad)
+	gline(10, 24, 12, 2)
+	gline(20, 14, 2, 12)
+	gline(13, 20, 8, 2, -45)
+	local gripHot = false
+	local function gripHi(on)
+		if on == gripHot then return end
+		gripHot = on
+		for _, f in ipairs(gripLines) do tween(f, 0.12, { BackgroundTransparency = on and 0 or 0.55 }) end
 	end
+	grip.MouseEnter:Connect(function() gripHi(true) end)
+	grip.MouseLeave:Connect(function() if not rsz then gripHi(false) end end)
 	local rStart, rW, rH = nil, 660, 420
 	rsz = false
 	grip.InputBegan:Connect(function(input)
@@ -38530,7 +39657,7 @@ local panDrag, panStart, panX, panY, panInp, panMoved = false, nil, 0, 0, nil, f
 			applyPos()
 		elseif rsz then
 			local d = Vector2.new(input.Position.X, input.Position.Y) - rStart
-			if d.Magnitude > 4 then pointArrow(math.deg(math.atan2(d.Y, d.X)), 0.08) end
+			gripHi(true)
 			state.uiW, state.uiH = rW + d.X / baseFit, rH + d.Y / baseFit
 			clampSize()
 			state.uiX = panX + (state.uiW - rW) * baseFit / 2
@@ -38540,7 +39667,7 @@ local panDrag, panStart, panX, panY, panInp, panMoved = false, nil, 0, 0, nil, f
 	end)
 	bind(UserInputService.InputEnded, function(input)
 		if (panDrag or rsz) and (input.UserInputType == Enum.UserInputType.MouseButton1 or (input.UserInputType == Enum.UserInputType.Touch and input == (panDrag and panInp or rInp))) then
-			if rsz then pointArrow(45, 0.3) end
+			if rsz then gripHi(false) end
 			panDrag, rsz = false, false
 			saveSoon()
 		end
@@ -40251,7 +41378,7 @@ local panDrag, panStart, panX, panY, panInp, panMoved = false, nil, 0, 0, nil, f
 		regionInfo.label = labelTxt
 		local pavg = U.pingStat and U.pingStat()
 		regionBtn.Text = "Server: " .. labelTxt .. (pavg and ("  ·  " .. pavg .. " ms") or "")
-		local srcTxt = ({ dc = "tabel data center Roblox (IP cocok) ✓", geoip = "geo-IP (bisa meleset untuk IP Roblox)", est = "perkiraan dari ping + lokasimu" })[regionInfo.src] or "…"
+		local srcTxt = ({ dc = "tabel data center Roblox (IP cocok) {i:check}", geoip = "geo-IP (bisa meleset untuk IP Roblox)", est = "perkiraan dari ping + lokasimu" })[regionInfo.src] or "…"
 		local pingStr = "?"
 		if U.pingStat then
 			local a, mn, mx = U.pingStat()
@@ -40478,7 +41605,7 @@ local function play(char, pos)
 	announce(tierName(combo) or T("ELIMINATED"), string.upper(who) .. "  \u{2022}  " .. string.upper(name) .. (combo > 1 and ("   x" .. combo) or ""), e.color)
 	if U.killLog then pcall(U.killLog, who, name, char) end
 	addFeed(who, e)
-	popup(pos, "\u{1F480} " .. string.upper(who), e.color, 24)
+	popup(pos, string.upper(who), e.color, 24, "skull")
 	fire(char, pos, name, true)
 	if U.kfxPublish then pcall(U.kfxPublish, name, char, pos) end
 	if combo >= 3 then
