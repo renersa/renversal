@@ -175,9 +175,10 @@ local ContentProvider = game:GetService("ContentProvider")
 
 -- ===== CONFIG =====
 local CONFIG = {
+	VERSION = "4.18",
 	-- PRESENCE (siapa yang online): buat Firebase Realtime Database gratis, tempel URL-nya di sini, contoh "https://nama-project-default-rtdb.firebaseio.com" (tanpa "/" di akhir).
 	-- Rules database: { "rules": { ".read": true, ".write": true } }. Kosongkan (nil) = fitur online & siaran mati.
-	PRESENCE_URL = "https://rendraversal-default-rtdb.asia-southeast1.firebasedatabase.app",
+	PRESENCE_URL = "https://rendrawoi-default-rtdb.asia-southeast1.firebasedatabase.app",
 	SELF_URL = "https://pastebin.com/raw/qhHDLLES", -- opsional: URL loader script ini, supaya ikut jalan otomatis setelah server hop
 	SELF_FILE = nil, -- opsional: nama file script ini di folder workspace executor (dipakai kalau SELF_URL kosong). Kosong = dicari otomatis (script*.lua / .txt)
 	-- sumber tambahan Search script (endpoint bisa kamu ubah). {q} = kata kunci, {slug} = id script untuk URL raw
@@ -203,6 +204,8 @@ local CONFIG = {
 	GEMINI_KEY = "AIzaSyAIZi_az1TCPDjayA1AmzuthiYtjrINK74", -- key yang sama dipakai untuk Gemini di tab AI bila belum ada key tersimpan
 	EXCLUSIVE_PASS_ID = 2058250250, -- Game Pass ID untuk Exclusive (0 = tombol beli nonaktif)
 	EXCLUSIVE_PLACE_ID = 99651852970892, -- game tempat Game Pass dijual (untuk teleport kalau jendela beli tidak muncul)
+	TP_SFX = {}, -- opsional: id suara sendiri per gaya teleport, contoh { enderman = 123456, minato = 123457, smoke = 0, portal = 0 }
+	REQUIRE_SCRIPT_ACCESS = false, -- false = tanpa gate akses: langsung dapat akses saat execute. true = pakai sa/<UserId> + AUTO_SCRIPT_ACCESS
 	AUTO_SCRIPT_ACCESS = true, -- true = semua pengguna RV otomatis dapat script access (keyless). Creator tetap bisa mencabut per orang
 	EXCLUSIVE_GIVES_SCRIPT = false, -- true = pembeli juga otomatis dapat script access (keyless). Default: hanya tab Exclusive
 	EXCLUSIVE_PERM = { online = true, bring = true, troll = true, siaran = true, tools = true, find = true, avatar = true, stats = true }, -- semua fitur Exclusive (tanpa script access / access)
@@ -368,7 +371,7 @@ local SAVE_FILE = "ucb20ce_" .. tostring(game:GetService("Players").LocalPlayer.
 local OLD_FILE = "vcb20ce.json"
 local custom, favs = {}, {}
 local SAVE_KEYS = { "theme", "range", "volSfx", "volClick", "volMusic", "music", "intensity", "sound", "shake", "cinema", "banner", "feedOn", "blur", "random", "mode", "musicCustom", "musicId", "musicSaved", "ytKey", "audPl", "outAuto", "outA", "outB", "outThick", "outAnim", "bgCustom", "bgA", "bgB", "bgRot", "bgTrans", "fbLast", "uiScale", "uiX", "uiY", "lang", "scripts", "execIdx", "notes", "selected", "cat", "kills", "hud", "aura", "daytime", "dayDate", "clock12", "weather", "lastAnn", "autoExec", "watch", "joinNote", "lookHist", "lookSaved", "lookSeen", "scanSpeed", "scanInstant", "autoTr", "scanCrossN", "fov", "grav", "zoomFree", "hopSess", "perf", "afk", "hopMode", "hopMax", "hopLow", "hopRegion", "fullbright", "nofog", "ctp", "ctpMode", "shader", "shMode", "wpAuto", "wp", "fly", "flySpeed", "noclip", "moveOn", "walk", "jump", "infJump", "esp", "espName", "espDist", "espHp", "hudX", "hudY", "uiW", "uiH", "aiProv", "aiModel", "aiUsed", "aiLock", "aiDay", "themePack", "kbOpen", "kbQuick", "kbTest", "kbFly", "macroOn", "targetNotes", "quickItems", "bgImageId", "bgShine", "titleShine", "logoOld", "slOn", "antiFall", "themeSet", "accFollow", "themeNote", "chOn", "chStyle", "chCustom", "chSize", "chX", "chY", "chColor", "curOn", "curStyle", "curCustom", "curSize", "curColor", "chKind", "chSaved", "curKind", "curSaved", "musicSpeed", "shine", "lastReqSeen", "ccatCustom" }
-for _, k in ipairs({ "aiCount", "wxLoc", "lastHistSeen", "espCustom", "espCol", "ckMulti", "hk", "peerNote", "tpAfter", "antiFling", "flingReturn", "ccatSaves", "ccatFav", "chatDev", "chatSeen", "chatNotif", "chatGSeen", "exPromoOff", "ccatT", "ccatLast", "ccatAuto", "flingPose", "espIcon", "espHl", "espTeam", "espTeamCol", "animSaved", "flingMode", "thirdPerson", "fpAsk", "geoShare", "cfgAuto", "cfgLast", "emotes", "vkKeys", "vkScale", "quickOn", "fbName", "showcase", "cmdPrefix", "cmdAlias", "presets", "wl", "bl", "wlMode", "antiKick", "akRejoin", "chatSpy", "instPP", "antiSit", "renderOn", "renderDist", "invDist", "invClient", "invPct", "afkRender", "modWarn", "dodge", "spyAuto", "skyMode", "skyIds", "polish", "polishAmt", "polishStyle", "polishFuture", "fflList", "fflAuto", "phys", "physThr", "cdZero", "cdWait", "cdMin", "abRec", "abGap", "microFx", "secOpen", "mapScripts", "mapLight", "mapCap", "sbHit", "sbLoop", "sbAnti", "sbHl", "sbView", "sbReset", "sbKill", "sbRemote", "tkSpeed", "sbMethod", "noEquip", "batKey" }) do SAVE_KEYS[#SAVE_KEYS + 1] = k end
+for _, k in ipairs({ "tpFx", "tpStyle", "aiCount", "wxLoc", "lastHistSeen", "espCustom", "espCol", "ckMulti", "hk", "peerNote", "tpAfter", "antiFling", "flingReturn", "ccatSaves", "ccatFav", "chatDev", "chatSeen", "chatNotif", "chatGSeen", "exPromoOff", "ccatT", "ccatLast", "ccatAuto", "flingPose", "espIcon", "espHl", "espTeam", "espTeamCol", "animSaved", "flingMode", "thirdPerson", "fpAsk", "geoShare", "cfgAuto", "cfgLast", "emotes", "vkKeys", "vkScale", "quickOn", "fbName", "showcase", "cmdPrefix", "cmdAlias", "presets", "wl", "bl", "wlMode", "antiKick", "akRejoin", "chatSpy", "instPP", "antiSit", "renderOn", "renderDist", "invDist", "invClient", "invPct", "afkRender", "modWarn", "dodge", "spyAuto", "skyMode", "skyIds", "polish", "polishAmt", "polishStyle", "polishFuture", "fflList", "fflAuto", "phys", "physThr", "cdZero", "cdWait", "cdMin", "abRec", "abGap", "microFx", "secOpen", "mapScripts", "mapLight", "mapCap", "sbHit", "sbLoop", "sbAnti", "sbHl", "sbView", "sbReset", "sbKill", "sbRemote", "tkSpeed", "sbMethod", "noEquip", "batKey" }) do SAVE_KEYS[#SAVE_KEYS + 1] = k end
 local U -- (diisi nanti) dipakai saveCfg untuk sinkron akun
 local function cfgTable()
 	local d = { custom = custom, favs = favs }
@@ -610,6 +613,13 @@ U.paidMap = {}
 		["lock"] = { 16898613509, 918, 857 },
 		["lock-open"] = { 16898613509, 967, 808 },
 		["map-pin"] = { 16898613613, 820, 257 },
+		["move"] = { 16898613613, 453, 820 },
+		["battery"] = { 16898612629, 967, 857 },
+		["battery-full"] = { 16898612629, 967, 808 },
+		["battery-medium"] = { 16898612629, 869, 906 },
+		["battery-low"] = { 16898612629, 918, 857 },
+		["battery-charging"] = { 16898612629, 771, 955 },
+		["battery-warning"] = { 16898612629, 820, 955 },
 		["moon"] = { 16898613613, 306, 918 },
 		["mountain"] = { 16898613613, 869, 612 },
 		["music"] = { 16898613613, 967, 563 },
@@ -957,31 +967,41 @@ do
 	local function ms() return os.time() * 1000 end
 
 	local function fb(method, path, body)
-		if not PURL0 then return nil, false end
+		if not PURL0 then U.fbErr = "CONFIG.PRESENCE_URL kosong" return nil, false end
 		local url = PURL0 .. "/" .. path .. ".json"
 		local req = httpReq()
 		local raw
 		if req then
 			local ok, r = pcall(req, { Url = url, Method = method, Headers = { ["Content-Type"] = "application/json" }, Body = body ~= nil and HttpService:JSONEncode(body) or nil })
-			if ok and type(r) == "table" and type(r.Body) == "string" then
+			if not ok then U.fbErr = "request gagal: " .. tostring(r):sub(1, 90) return nil, false end
+			if type(r) == "table" and type(r.Body) == "string" then
 				local code = tonumber(r.StatusCode or r.status_code)
-				if code and (code < 200 or code >= 300) then return nil, false end
+				if code and (code < 200 or code >= 300) then
+					U.fbErr = "HTTP " .. tostring(code) .. " " .. r.Body:sub(1, 90)
+					return nil, false
+				end
 				raw = r.Body
+			else
+				U.fbErr = "respon kosong dari executor"
 			end
 		elseif method == "GET" then
 			local ok, b = pcall(function() return game:HttpGet(url) end)
-			if ok and type(b) == "string" then raw = b end
+			if ok and type(b) == "string" then raw = b else U.fbErr = "HttpGet gagal: " .. tostring(b):sub(1, 90) end
+		else
+			U.fbErr = "executor tidak punya fungsi request, tidak bisa " .. method
 		end
 		if raw == nil then return nil, false end
-		if raw == "" or raw == "null" then return {}, true end
+		if raw == "" or raw == "null" then U.fbErr = nil return {}, true end
 		local okj, d = pcall(function() return HttpService:JSONDecode(raw) end)
-		if okj then return d, true end
+		if okj then U.fbErr = nil return d, true end
+		U.fbErr = "respon bukan JSON: " .. raw:sub(1, 90)
 		return nil, false
 	end
 	U.fb = fb
 	U.fbUrl = PURL0
 
 	local function checkAccess()
+		if not CONFIG.REQUIRE_SCRIPT_ACCESS then return true, true end
 		if CONFIG.CREATORS[uid0] then return true, true end
 		local d, ok = fb("GET", "sa/" .. uid0)
 		if not ok then return false, false end
@@ -1013,7 +1033,13 @@ do
 			local c = (tonumber(o.c) or 0) + (bump and 1 or 0)
 			if c < 1 then c = 1 end
 			local dev, ex = deviceInfo()
-			fb("PUT", "hist/" .. uid0, { n = player.Name, d = player.DisplayName, c = c, f = tonumber(o.f) or ms(), t = bump and ms() or (tonumber(o.t) or ms()), dev = dev, ex = ex, p = game.PlaceId, a = hasAcc and 1 or 0 })
+			local rec = { n = player.Name, d = player.DisplayName, c = c, f = tonumber(o.f) or ms(), t = bump and ms() or (tonumber(o.t) or ms()), dev = dev, ex = ex, p = game.PlaceId, j = game.JobId, a = hasAcc and 1 or 0 }
+			local _, okw = fb("PUT", "hist/" .. uid0, rec)
+			if not okw then
+				task.wait(3)
+				_, okw = fb("PUT", "hist/" .. uid0, rec)
+			end
+			U.histOk = okw and true or false
 		end)
 	end
 
@@ -1027,7 +1053,7 @@ do
 		if not done0 then has, reach = false, false end
 	end
 	-- semua pengguna RV otomatis dapat script access (keyless), kecuali yang dicabut manual oleh creator (sablock/<uid>)
-	if not has and reach and PURL0 and CONFIG.AUTO_SCRIPT_ACCESS ~= false then
+	if CONFIG.REQUIRE_SCRIPT_ACCESS and not has and reach and PURL0 and CONFIG.AUTO_SCRIPT_ACCESS ~= false then
 		local blk = fb("GET", "sablock/" .. uid0)
 		if not (type(blk) == "table" and blk.t) then
 			local _, okw = fb("PUT", "sa/" .. uid0, { n = player.Name, by = "auto", t = ms() })
@@ -1311,6 +1337,10 @@ if CONFIG.PRESENCE_URL then
 			task.wait(3)
 			while alive() do
 				local d, ok = U.fb("GET", "hist")
+				if not ok and not U.dbWarned then
+					U.dbWarned = true
+					U.notif("Database error", tostring(U.fbErr or "tidak diketahui") .. " | Cek Firebase rules (.read/.write true)", 14)
+				end
 				if ok and type(d) == "table" then
 					local seen = tonumber(state.lastHistSeen) or 0
 					local newest = seen
@@ -8820,7 +8850,9 @@ U.boot = function()
 	local function tpTo(p)
 		local root, ch = myRoot()
 		if not root then return end
+		local from = root.Position
 		ch:PivotTo(CFrame.new(p + V3(0, 3.2, 0)) * (root.CFrame - root.CFrame.Position))
+		if U.tpFx then pcall(U.tpFx, from, p + V3(0, 3.2, 0)) end
 	end
 	local function rayAt(x, y)
 		local c = cam()
@@ -12822,6 +12854,8 @@ U.boot = function()
 			vf.CurrentCamera = cam
 			vf.Parent = parent
 			local model, root, animator, atrack, atrack2, altAt
+			local liveParts, liveNames, liveMiss = {}, {}, {} -- untuk sinkron pose real-time (lihat syncLive di bawah)
+			local rootCF -- CFrame root klon saat refresh terakhir; harus direset (nil) tiap refresh() supaya tidak memakai posisi root yang lama
 			local yaw, pitch, dist, base, center = 0.35, 0.12, 8, 8, Vector3.new()
 			local auto, drag, last = true, false, nil
 			local function refresh()
@@ -12880,6 +12914,15 @@ U.boot = function()
 					base = math.max(size.Y * 1.35, 5.5)
 					if dist < base * 0.4 or dist > base * 3 then dist = base end
 				end
+				-- daftar part badan (selain root) yang posenya disalin langsung dari karakter asli tiap frame (lihat syncLive)
+				liveParts, liveNames, liveMiss = {}, {}, {}
+				for _, d in ipairs(cl:GetDescendants()) do
+					if d:IsA("BasePart") and d ~= root and d.Name ~= "HumanoidRootPart" and not liveParts[d.Name] then
+						liveParts[d.Name] = d
+						liveNames[#liveNames + 1] = d.Name
+					end
+				end
+				rootCF = nil -- root baru dari klon ini: hitung ulang di syncLive, jangan pakai punya klon sebelumnya
 			end
 			function P.refresh() refresh() end
 			local function place()
@@ -12925,19 +12968,42 @@ U.boot = function()
 			mkb("-", -56, 24, function() dist = math.clamp(dist + base * 0.15, base * 0.45, base * 2.2) end)
 			local ab = mkb(compact and "A" or "Auto", compact and -84 or -100, compact and 24 or 40, function() auto = not auto end)
 			if not compact then mkb("Refresh", -168, 60, function() refresh() end) end
+			-- real-time: salin pose (CFrame tiap bagian badan) dari karakter asli ke klon preview tiap frame.
+			-- root klon dibiarkan diam di tempat (rootCF): hanya rotasi sendi/anggota badan yang disalin, jadi jalan / lompat / pakai tool semuanya ikut persis tanpa model preview berpindah tempat.
+			local function syncLive()
+				if not root or #liveNames == 0 then return false end
+				local ch = (o.target and o.target.Character) or game:GetService("Players").LocalPlayer.Character
+				local rr = ch and ch:FindFirstChild("HumanoidRootPart")
+				if not rr then return false end
+				rootCF = rootCF or root.CFrame
+				local rrCF = rr.CFrame
+				for i = 1, #liveNames do
+					local nm = liveNames[i]
+					local cp = liveParts[nm]
+					local rp = cp and ch:FindFirstChild(nm)
+					if cp and rp and rp:IsA("BasePart") then
+						cp.CFrame = rootCF * rrCF:ToObjectSpace(rp.CFrame)
+					end
+				end
+				return true
+			end
 			local sig, acc2 = 0, 0
 			local rc
 			rc = game:GetService("RunService").RenderStepped:Connect(function(dt)
 				if not vf.Parent or not alive() then rc:Disconnect() cm:Disconnect() ce:Disconnect() return end
 				if auto and not drag then yaw = yaw + dt * 0.7 end
-				if animator then pcall(function() animator:StepAnimations(dt) end) end
-				if atrack2 and altAt and os.clock() > altAt then
-					altAt = os.clock() + 7 + math.random() * 6
-					pcall(function()
-						atrack:Stop(0.2)
-						atrack2:Play(0.2)
-						atrack2.Stopped:Once(function() pcall(function() atrack:Play(0.2) end) end)
-					end)
+				local okLive = false
+				pcall(function() okLive = syncLive() end)
+				if not okLive then -- fallback: karakter asli tidak ketemu (mati / jauh) - mainkan idle supaya tidak diam kaku
+					if animator then pcall(function() animator:StepAnimations(dt) end) end
+					if atrack2 and altAt and os.clock() > altAt then
+						altAt = os.clock() + 7 + math.random() * 6
+						pcall(function()
+							atrack:Stop(0.2)
+							atrack2:Play(0.2)
+							atrack2.Stopped:Once(function() pcall(function() atrack:Play(0.2) end) end)
+						end)
+					end
 				end
 				ab.TextColor3 = auto and Color3.fromRGB(110, 235, 170) or Color3.new(1, 1, 1)
 				acc2 = acc2 + dt
@@ -12945,7 +13011,7 @@ U.boot = function()
 					acc2 = 0
 					local ch = (o.target and o.target.Character) or game:GetService("Players").LocalPlayer.Character
 					local n = ch and #ch:GetDescendants() or 0
-					if n ~= sig then sig = n if sig ~= 0 and model then refresh() end end
+					if n ~= sig then sig = n if sig ~= 0 and model then rootCF = nil refresh() end end
 				end
 				place()
 			end)
@@ -16201,10 +16267,10 @@ local function buildUI()
 				local name, col
 				if pct == nil then name, col = "battery", GREY
 				elseif chg then name, col = "battery-charging", GREEN
-				elseif pct >= 70 then name, col = "battery-full", GREEN
-				elseif pct >= 40 then name, col = "battery-medium", (pct > 60) and GREEN or AMBER
-				elseif pct > 15 then name, col = "battery-low", (pct > LOW) and AMBER or REDB
-				else name, col = "battery-warning", REDB end
+				else
+					name = (pct >= 75 and "battery-full") or (pct >= 40 and "battery-medium") or (pct > 15 and "battery-low") or "battery-warning"
+					col = (pct >= 60 and GREEN) or (pct >= 30 and AMBER) or REDB -- >=60 hijau, 30-59 kuning, <30 merah
+				end
 				if name ~= shownName then
 					local e = U.ICONS[name]
 					if e then
@@ -16949,6 +17015,9 @@ local function buildUI()
 	acc(mk("UIStroke", { Thickness = 2, Color = WHITE }, avatarBtn), "Color")
 	local avatar = mk("ImageLabel", { Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, BorderSizePixel = 0, Image = "rbxthumb://type=AvatarHeadShot&id=" .. player.UserId .. "&w=150&h=150", ZIndex = 6 }, avatarBtn)
 	corner(avatar, 18)
+	local verPill = mk("TextLabel", { AnchorPoint = Vector2.new(1, 1), Position = UDim2.new(1, 3, 1, 3), Size = UDim2.fromOffset(28, 12), BackgroundColor3 = C3(20, 14, 16), Text = "v" .. CONFIG.VERSION, Font = FONTB, TextSize = 7, TextColor3 = WHITE, ZIndex = 7 }, avatarBtn)
+	corner(verPill, 6)
+	acc(mk("UIStroke", { Thickness = 1, Color = WHITE, Transparency = 0.4 }, verPill), "Color")
 	local nameRow = mk("Frame", { Position = UDim2.fromOffset(56, 22), Size = UDim2.fromOffset(0, 18), AutomaticSize = Enum.AutomaticSize.X, BackgroundTransparency = 1, ZIndex = 6 }, header)
 	mk("UIListLayout", { FillDirection = Enum.FillDirection.Horizontal, Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder, VerticalAlignment = Enum.VerticalAlignment.Center }, nameRow)
 	local userLbl = lab(nameRow, player.DisplayName or player.Name, 13, FONTK, TXT, UDim2.fromOffset(0, 0), UDim2.fromOffset(200, 18))
@@ -20698,6 +20767,22 @@ local function buildUI()
 				local rOpt = mkRow(sfE, nE, 26)
 				local loopB = btn(rOpt, 0, 0.5, "Loop: ON")
 				local mvB = btn(rOpt, 0.5, 1, "Stop saat jalan: ON")
+				head(sfE,nE,"TOOL EMOTE FE (script eksternal, dimuat saat ditekan)")
+				local rExt=mkRow(sfE,nE,30)
+				local extA=btn(rExt,0,0.5,"Survivor Emote")
+				local extB=btn(rExt,0.5,1,"Tenna Emote")
+				local function runExt(b,name,url)
+				b.MouseButton1Click:Connect(function()
+				click()
+				say("Memuat " .. name .. "...")
+				task.spawn(function()
+				local ok,err=pcall(function()loadstring(game:HttpGet(url))()end)
+				say(ok and(name .. " dijalankan.")or(name .. " gagal: " .. tostring(err):sub(1,60)))
+				end)
+				end)
+				end
+				runExt(extA,"Survivor Emote Tool","https://scriptblox.com/raw/Universal-Script-FE-R6-Best-Survivor-Emote-Tool-233267")
+				runExt(extB,"Tenna Emote Tool","https://scriptblox.com/raw/Universal-Script-FE-R6-Tenna-Emote-Tool-231336")
 				local secDef = { head(sfE, nE, "EMOTE BAWAAN ROBLOX") }
 				local defF = mk("Frame", { Size = UDim2.new(1, 0, 0, 0), AutomaticSize = Enum.AutomaticSize.Y, BackgroundTransparency = 1, LayoutOrder = nE() }, sfE)
 				mk("UIGridLayout", { CellSize = UDim2.new(0.25, -4, 0, 26), CellPadding = UDim2.fromOffset(4, 4), SortOrder = Enum.SortOrder.LayoutOrder }, defF)
@@ -35125,6 +35210,11 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 				if cr then back = cr.CFrame end
 				IV.flag = true
 				if real then
+					if clone then
+						for _, d in ipairs(clone:GetChildren()) do
+							if d:IsA("Tool") then pcall(function() d.Parent = real end) end
+						end
+					end
 					local rr = real:FindFirstChild("HumanoidRootPart")
 					real.Parent = workspace
 					if rr then
@@ -35156,6 +35246,9 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 				real.Archivable = true
 				local clone = real:Clone()
 				if not clone then IV.busy = false IV.flag = false setStatus("Clone failed (Archivable blocked)") return end
+				for _, d in ipairs(clone:GetChildren()) do
+					if d:IsA("Tool") then pcall(function() d:Destroy() end) end -- salinan Tool: script bisa hilang -> tool mati; yang dipakai nanti Tool ASLI
+				end
 				clone.Parent = Lighting2
 				-- 1) kirim badan asli jauh ke atas dan tunggu supaya posisi itu sampai ke server dulu
 				pcall(function() real:MoveTo(Vector3.new(IV.cf.X, (tonumber(state.invDist) or 20000000), IV.cf.Z)) end)
@@ -35173,6 +35266,9 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 				local cr = clone:FindFirstChild("HumanoidRootPart")
 				if cr then cr.CFrame = IV.cf end
 				player.Character = clone
+				for _, d in ipairs(real:GetChildren()) do -- tool yang sedang dipegang: pindahkan instance ASLI (bukan salinan) ke klon
+					if d:IsA("Tool") then pcall(function() d.Parent = clone end) end
+				end
 				camTo(clone)
 				pcall(bounce, clone)
 				IV.on, IV.real, IV.clone, IV.conns, IV.orig = true, real, clone, {}, {}
@@ -35250,7 +35346,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 			note("Infinite-Yield style: your real body is sent far into the sky and frozen, you play a local copy. Others cannot see you. Turn off to return to the same spot. If a game kicks for position, turn off.", 40)
 		end)()
 
-		-- ===================== v4.10 UTILITY PACK: anti-kick (+Adonis), chat spy, instant prompt, anti-sit, AFK no-render, render distance, remote spy, mod warning =====================
+		-- ===================== v4.10 UTILITY PACK: anti-kick, chat spy, instant prompt, anti-sit, AFK no-render, render distance, remote spy, mod warning =====================
 		;(function()
 			local Lighting3 = game:GetService("Lighting")
 			local PPS = game:GetService("ProximityPromptService")
@@ -35261,12 +35357,12 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 
 			-- ---------- ANTI KICK ----------
 			hdr("ANTI KICK  (default ON)")
-			local AK = { n = 0, hooked = false, last = "", adonis = 0 }
+			local AK = { n = 0, hooked = false, last = "" }
 			local function akLog(reason)
 				AK.n += 1
 				AK.last = tostring(reason or "")
 				U.note("Anti-kick blocked a kick" .. ((AK.last ~= "" and AK.last ~= "nil") and (": " .. AK.last:sub(1, 60)) or ""))
-				if U.say then U.say("antikick", "Blocked " .. AK.n .. " kick attempt(s). Last: " .. ((AK.last ~= "" and AK.last ~= "nil") and AK.last:sub(1, 70) or "-") .. (AK.adonis > 0 and ("   |   Adonis neutralized: " .. AK.adonis) or "")) end
+				if U.say then U.say("antikick", "Blocked " .. AK.n .. " kick attempt(s). Last: " .. ((AK.last ~= "" and AK.last ~= "nil") and AK.last:sub(1, 70) or "-")) end
 			end
 			local function installAK()
 				if AK.hooked then return end
@@ -35304,31 +35400,6 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 					end)
 				end
 			end
-			-- Adonis: matikan fungsi Detected / Kill di client-nya (hanya kalau game memakai Adonis)
-			local adSeen = setmetatable({}, { __mode = "k" })
-			local function adonisSweep()
-				if not (getgc and (hookfunction or setreadonly)) then return 0 end
-				local n = 0
-				local okG, gc = pcall(getgc, true)
-				if not okG or type(gc) ~= "table" then return 0 end
-				for _, v in ipairs(gc) do
-					if type(v) == "table" and not adSeen[v] then
-						local okR, d = pcall(rawget, v, "Detected")
-						if okR and type(d) == "function" and (rawget(v, "Kill") or rawget(v, "Disconnect") or rawget(v, "Init") or rawget(v, "RLocked") ~= nil or rawget(v, "Name") == "Anti") then
-							adSeen[v] = true
-							local done = false
-							if hookfunction then done = pcall(function() hookfunction(d, nc(function() return true end)) end) end
-							if not done then
-								pcall(function() if setreadonly then setreadonly(v, false) end rawset(v, "Detected", nc(function() return true end)) done = true end)
-							end
-							if done then n += 1 end
-							local k = rawget(v, "Kill")
-							if type(k) == "function" and hookfunction then pcall(function() hookfunction(k, nc(function() return nil end)) end) end
-						end
-					end
-				end
-				return n
-			end
 			local function rejoinSame()
 				local TP = game:GetService("TeleportService")
 				pcall(function()
@@ -35337,13 +35408,6 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 				end)
 			end
 			installAK()
-			task.spawn(function()
-				for i = 1, 6 do
-					if not alive() then return end
-					if state.antiKick then AK.adonis += (adonisSweep() or 0) end
-					task.wait(i < 3 and 2 or 6)
-				end
-			end)
 			task.spawn(function()
 				local okP, overlay = pcall(function() return game:GetService("CoreGui"):WaitForChild("RobloxPromptGui", 15):WaitForChild("promptOverlay", 15) end)
 				if not okP or not overlay then return end
@@ -35356,10 +35420,10 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 					end
 				end)
 			end)
-			switchRow(sc, nxt(), "Anti kick (blocks Kick / Shutdown + Adonis detections)", "antiKick", function(v) if v then installAK() task.spawn(function() AK.adonis += adonisSweep() end) end end)
+			switchRow(sc, nxt(), "Anti kick (blocks Kick / Shutdown)", "antiKick", function(v) if v then installAK() end end)
 			switchRow(sc, nxt(), "Auto-rejoin same server if a kick still gets through", "akRejoin")
 			stat("antikick").Text = "Hooks active. Blocked 0 kick attempts."
-			note("Blocks LocalPlayer:Kick() and game:Shutdown() (including hookfunction-style calls), neutralizes the Adonis client 'Detected' / 'Kill' functions, and rejoins the same server if a server-side kick (e.g. a remote you cannot block) still disconnects you.", 52)
+			note("Blocks LocalPlayer:Kick() and game:Shutdown() (including hookfunction-style calls), and rejoins the same server if a server-side kick (e.g. a remote you cannot block) still disconnects you.", 52)
 
 			-- ---------- CHAT SPY ----------
 			hdr("CHAT SPY  (default ON)")
@@ -36031,6 +36095,14 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 		hdr("CLICK TELEPORT")
 		switchRow(sc, nxt(), "Click Teleport", "ctp", function() U.ctpRefresh() end)
 		cycleRow(sc, nxt(), "Mode klik", function() return state.ctpMode == 1 and T("Klik langsung") or T("Gear tool") end, function() state.ctpMode = state.ctpMode % 2 + 1 U.ctpRefresh() end)
+		switchRow(sc, nxt(), "Efek teleport (VFX + SFX)", "tpFx")
+		cycleRow(sc, nxt(), "Gaya teleport", function() return state.tpStyle or "Enderman" end, function()
+			local l, i = U.TP_STYLES or {}, 1
+			for k, n in ipairs(l) do if n == state.tpStyle then i = k end end
+			state.tpStyle = l[i % #l + 1] or "Enderman"
+			saveSoon()
+			if U.tpFxPreview then pcall(U.tpFxPreview) end
+		end)
 
 
 		-- GERAK
@@ -38721,7 +38793,7 @@ local url = "https://www.haxscripts.com/feeds/posts/default" .. (lbl and ("/-/" 
 					local hs, ok3 = fb("GET", "hist")
 					if my ~= renderTok or not alive() then return end
 					ld:Destroy()
-					if not ok1 or type(sa) ~= "table" then bigNote("Couldn't read the database.", 20) return end
+					if not ok1 or type(sa) ~= "table" then bigNote("Couldn't read the database: " .. tostring(U.fbErr or "?") .. "\nSet Firebase rules: { \"rules\": { \".read\": true, \".write\": true } }", 40) return end
 					local function head(t)
 						local h = lab(list, t, 12, FONTK, TXT, nil, UDim2.new(1, 0, 0, 22))
 						h.LayoutOrder = nextOrd()
@@ -39617,24 +39689,21 @@ local panDrag, panStart, panX, panY, panInp, panMoved = false, nil, 0, 0, nil, f
 			panDrag, panStart, panX, panY, panInp, panMoved = true, Vector2.new(input.Position.X, input.Position.Y), state.uiX, state.uiY, input, false
 		end
 	end)
-	-- handle resize: tanda panah di luar sudut kanan bawah, arahnya mengikuti tarikan
+	-- handle resize: ikon "move" (Lucide) di sudut kanan bawah; menyala saat hover / ditarik
 	local grip = mk("TextButton", { AnchorPoint = Vector2.new(0, 0), Position = UDim2.new(1, -34, 1, -34), Size = UDim2.fromOffset(32, 32), BackgroundTransparency = 1, Text = "", AutoButtonColor = false, ZIndex = 30 }, holder)
-	-- handle bentuk "」" (dua garis + diagonal kecil) seperti script contoh; menyala saat hover / ditarik
-	local arr = mk("Frame", { BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), ZIndex = 31 }, grip)
-	local gripLines = {}
-	local function gline(x, y, w, h, rot)
-		local f = acc(mk("Frame", { Position = UDim2.fromOffset(x, y), Size = UDim2.fromOffset(w, h), BorderSizePixel = 0, Rotation = rot or 0, BackgroundTransparency = 0.55, ZIndex = 32 }, arr))
-		corner(f, 1)
-		gripLines[#gripLines + 1] = f
+	local gripIcon = U.icoImage and U.icoImage("move", grip, 20, Color3.new(1, 1, 1))
+	if gripIcon then
+		gripIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+		gripIcon.Position = UDim2.fromScale(0.5, 0.5)
+		gripIcon.ZIndex = 31
+		gripIcon.ImageTransparency = 0.45
+		acc(gripIcon, "ImageColor3")
 	end
-	gline(10, 24, 12, 2)
-	gline(20, 14, 2, 12)
-	gline(13, 20, 8, 2, -45)
 	local gripHot = false
 	local function gripHi(on)
 		if on == gripHot then return end
 		gripHot = on
-		for _, f in ipairs(gripLines) do tween(f, 0.12, { BackgroundTransparency = on and 0 or 0.55 }) end
+		if gripIcon then tween(gripIcon, 0.12, { ImageTransparency = on and 0 or 0.45 }) end
 	end
 	grip.MouseEnter:Connect(function() gripHi(true) end)
 	grip.MouseLeave:Connect(function() if not rsz then gripHi(false) end end)
@@ -41675,6 +41744,107 @@ end
 ------------------------------------------------------------------
 -- KILL DETECTION (player + NPC)
 ------------------------------------------------------------------
+-- ===== EFEK TELEPORT (Click TP): Enderman / Minato / Ninja Smoke / Portal / efek tab Effects =====
+do
+if state.tpFx==nil then state.tpFx=true end
+local TP_STYLES={"Enderman","Minato","Ninja Smoke","Portal","Efek tab Effects"}
+local okS=false
+for _,n in ipairs(TP_STYLES)do if n==state.tpStyle then okS=true end end
+if not okS then state.tpStyle="Enderman" end
+U.TP_STYLES=TP_STYLES
+local function snd(key,fallback,vol,pitch)
+local c=CONFIG.TP_SFX and CONFIG.TP_SFX[key]
+if c then
+local id=tostring(c)
+if id:match("^%d+$")then id="rbxassetid://" .. id end
+sfx(id,vol,pitch)
+else
+sfx(fallback,vol,pitch)
+end
+end
+local function streak(a,b,col,th,t)
+local d=(b-a).Magnitude
+if d<1 then return end
+local p=fxPart(Enum.PartType.Block,V3(th,th,d),col,CFrame.lookAt(a,b)*CFrame.new(0,0,-d/2),0)
+tween(p,t,{Transparency=1,Size=V3(th*0.15,th*0.15,d)})
+end
+local function ender(pos,arrive)
+local purple,dark=C3(170,60,255),C3(55,10,95)
+burst(pos,{Color=ColorSequence.new(C3(220,130,255),dark),Speed=NumberRange.new(4,14),Size=NS(0.5,0),Lifetime=NumberRange.new(0.7,1.4),Acceleration=V3(0,7,0),Drag=2},I(arrive and 45 or 60))
+burst(pos-UP*2.5,{Color=ColorSequence.new(purple,dark),Speed=NumberRange.new(2,8),Size=NS(0.8,0),Lifetime=NumberRange.new(0.6,1.1),Acceleration=V3(0,10,0),Drag=1},I(25))
+sphere(pos,purple,7,0.35,0.55)
+ring(pos-UP*2.8,purple,11,0.5)
+light(pos,purple,5,26,0.55)
+embers(pos,C3(200,110,255),I(14),7,7)
+end
+local function smoke(pos)
+burst(pos,{Color=ColorSequence.new(C3(235,235,235),C3(120,120,120)),Texture=TEX_SMOKE,LightEmission=0,Speed=NumberRange.new(8,22),Size=NS(5,1),Lifetime=NumberRange.new(0.8,1.5),Drag=3},I(26))
+burst(pos,{Color=ColorSequence.new(WHITE),Speed=NumberRange.new(10,26),Size=NS(0.4,0)},I(14))
+end
+local function portal(pos)
+local cy=C3(80,200,255)
+ring(pos-UP*2.8,cy,13,0.6)
+ring(pos-UP*2.8,WHITE,8,0.4,0.3)
+sphere(pos,cy,6,0.3,0.5)
+burst(pos,{Color=ColorSequence.new(WHITE,cy),Speed=NumberRange.new(10,26),Size=NS(0.6,0)},I(30))
+light(pos,cy,6,26,0.5)
+end
+local function minato(a,b)
+local gold,white=C3(255,222,60),C3(255,250,215)
+streak(a,b,gold,2.2,0.4)
+streak(a,b,white,0.9,0.3)
+for _,p in ipairs({a,b})do
+burst(p,{Color=ColorSequence.new(white,gold),Speed=NumberRange.new(14,38),Size=NS(0.7,0)},I(34))
+ring(p-UP*2.8,gold,14,0.4)
+light(p,gold,9,34,0.4)
+end
+bolt(b+V3(0,34,0),b,0.9,gold,0.25,1)
+flash(C3(255,238,150),0.28,0.45)
+shake(1.2,0.25)
+end
+function U.tpFx(a,b)
+if state.tpFx==false then return end
+if os.clock()-(U.tpFxAt or 0)<0.12 then return end
+U.tpFxAt=os.clock()
+local st=state.tpStyle
+if st=="Enderman" then
+ender(a,false)
+ender(b,true)
+snd("enderman",SND_PING,0.9,0.5)
+snd("enderman",SND_SNAP,0.8,0.6)
+task.delay(0.05,function()snd("enderman",SND_PING,0.8,0.85)end)
+elseif st=="Minato" then
+minato(a,b)
+snd("minato",SFX.thunder,0.7,1.7)
+snd("minato",SND_SNAP,0.9,1.35)
+elseif st=="Ninja Smoke" then
+smoke(a)
+smoke(b)
+snd("smoke",SND_BOOM,0.45,1.9)
+snd("smoke",SND_SNAP,0.7,0.9)
+elseif st=="Portal" then
+portal(a)
+portal(b)
+snd("portal",SND_PING,0.9,1.25)
+snd("portal",SND_BASS,0.5,1.3)
+elseif st=="Efek tab Effects" then
+local name=pickName()
+if byName[name]then
+local dummy,p2=makeDummy(CFrame.new(b))
+fire(dummy,p2,name,false)
+end
+end
+end
+function U.tpFxPreview()
+local char=player.Character
+local root=char and char:FindFirstChild("HumanoidRootPart")
+if not root then return end
+local flat=V3(root.CFrame.LookVector.X,0,root.CFrame.LookVector.Z)
+if flat.Magnitude<0.01 then flat=V3(0,0,-1)end
+U.tpFxAt=0
+U.tpFx(root.Position,root.Position+flat.Unit*14)
+end
+end
 local lastAttack = 0
 local hitByMe = setmetatable({}, { __mode = "k" })
 local function markAttack() lastAttack = os.clock() end
